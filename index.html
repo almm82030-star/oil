@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fuel Proof – Zahrani Logistics</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0b1220" />
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+  <style>
+    *{box-sizing:border-box;font-family:'Cairo',system-ui}
+    body{margin:0;background:#0b1220;color:#e5e7eb}
+    header{background:#020617;padding:18px 24px;display:flex;align-items:center;gap:16px;justify-content:flex-start}
+    header img{height:64px;max-width:220px;object-fit:contain}
+    header h1{font-size:18px;margin:0}
+
+    main{padding:20px;max-width:1200px;margin:auto}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+    .card{background:#020617;border-radius:18px;padding:18px;box-shadow:0 12px 32px rgba(0,0,0,.35)}
+    .card h3{margin-top:0;font-size:16px}
+
+    input,button{border-radius:14px;padding:12px;border:none}
+    input{width:100%;background:#020617;color:#e5e7eb;border:1px solid #334155}
+    button{background:#22c55e;font-weight:800;cursor:pointer}
+    button.secondary{background:#334155;color:#e5e7eb}
+
+    video,canvas,img{width:100%;border-radius:14px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .hidden{display:none}
+
+    footer{text-align:center;opacity:.6;font-size:12px;margin:30px 0}
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="https://i.ibb.co/yFCW2v98/Untitled.webp" alt="Fuel Proof">
+  <h1>Fuel Proof System</h1>
+</header>
+
+<!-- LOGIN -->
+<main id="loginBox">
+  <div class="card" style="max-width:420px;margin:auto">
+    <h3>تسجيل الدخول</h3>
+    <input id="email" placeholder="البريد الإلكتروني" value="تم هوندا" />
+    <br><br>
+    <input id="password" type="password" placeholder="كلمة المرور" value="0906" />
+    <br><br>
+    <button onclick="login()">دخول</button>
+  </div>
+</main>
+
+<!-- APP -->
+<main id="app" class="hidden">
+  <div class="grid">
+
+    <!-- DRIVER -->
+    <div class="card" id="driverBox">
+      <h3>📷 إثبات التعبئة</h3>
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas" hidden></canvas>
+      <img id="preview" />
+      <div class="row">
+        <button onclick="capture()">التقاط</button>
+        <button class="secondary" onclick="sendOperation()">إرسال</button>
+      </div>
+      <p style="font-size:13px;opacity:.7">※ الموقع والبيانات الحساسة لا تظهر للمندوب</p>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="card hidden" id="adminBox">
+      <h3>🧾 العمليات</h3>
+      <table style="width:100%;font-size:13px">
+        <thead><tr><th>صورة</th><th>وقت</th><th>OCR</th></tr></thead>
+        <tbody id="ops"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <footer>
+    جميع الحقوق محفوظة © شركة الزهراني لوجستيك 2025
+  </footer>
+</main>
+
+<script>
+/************** FIREBASE CONFIG **************/
+const firebaseConfig = {
+  apiKey: "AIzaSyBkOM7eSnUJ0B_3Mx4wVyh-lTvFEAhxWas",
+  authDomain: "tama-6219c.firebaseapp.com",
+  databaseURL: "https://tama-6219c-default-rtdb.firebaseio.com",
+  projectId: "tama-6219c",
+  appId: "1:285162278384:web:8264d5439564660b616135"
+};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();
+const db=firebase.database();
+
+/************** AUTH **************/
+function login(){
+  auth.signInWithEmailAndPassword(email.value,password.value)
+  .catch(e=>alert(e.message));
+}
+
+auth.onAuthStateChanged(async user=>{
+  if(!user){loginBox.classList.remove('hidden');return;}
+  loginBox.classList.add('hidden');
+  app.classList.remove('hidden');
+
+  const snap=await db.ref('users/'+user.uid).get();
+  const role=snap.val()?.role||'driver';
+
+  if(role==='admin'){
+    adminBox.classList.remove('hidden');
+    driverBox.classList.add('hidden');
+    loadAdmin();
+  }
+});
+
+/************** CAMERA **************/
+let stream;
+navigator.mediaDevices.getUserMedia({video:true}).then(s=>{
+  stream=s;video.srcObject=s;
+});
+
+function capture(){
+  canvas.width=video.videoWidth;
+  canvas.height=video.videoHeight;
+  canvas.getContext('2d').drawImage(video,0,0);
+  preview.src=canvas.toDataURL('image/jpeg',0.9);
+}
+
+/************** SEND OP **************/
+async function sendOperation(){
+  if(!preview.src) return alert('التقط صورة');
+
+  // OCR – Gemini Vision
+  const ocr=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=AIzaSyC0JhoFGiCh102Q9X0y0xaWgFG-NQINWUk",{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({contents:[{parts:[{text:'اقرأ رقم العداد ولوحة السيارة'},{inline_data:{mime_type:'image/jpeg',data:preview.src.split(',')[1]}}]}]})
+  }).then(r=>r.json());
+
+  const text=ocr.candidates?.[0]?.content?.parts?.[0]?.text||'';
+
+  db.ref('fuel_operations').push({
+    image:preview.src,
+    ocr:text,
+    created:new Date().toISOString(),
+    device:navigator.userAgent
+  });
+
+  alert('تم الإرسال');
+}
+
+/************** ADMIN **************/
+function loadAdmin(){
+  db.ref('fuel_operations').on('value',snap=>{
+    ops.innerHTML='';
+    snap.forEach(s=>{
+      const d=s.val();
+      ops.innerHTML+=`<tr><td><img src="${d.image}" height="50"></td><td>${d.created}</td><td>${d.ocr||''}</td></tr>`;
+    });
+  });
+}
+</script>
+
+</body>
+</html>
