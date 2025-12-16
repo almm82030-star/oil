@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fuel Proof – Zahrani Logistics</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#0b1220" />
-
   <!-- Font -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 
@@ -18,27 +14,34 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
   <style>
-    *{box-sizing:border-box;font-family:'Cairo',system-ui}
-    body{margin:0;background:#0b1220;color:#e5e7eb}
-    header{background:#020617;padding:18px 24px;display:flex;align-items:center;gap:16px;justify-content:flex-start}
-    header img{height:64px;max-width:220px;object-fit:contain}
-    header h1{font-size:18px;margin:0}
+    * {box-sizing:border-box;font-family:'Cairo',system-ui;}
+    body {margin:0;background:#0b1220;color:#e5e7eb;display:flex;flex-direction:column;min-height:100vh;}
+    header {background:#020617;padding:18px 24px;display:flex;align-items:center;gap:16px;justify-content:flex-start;}
+    header img {height:64px;max-width:220px;object-fit:contain;}
+    header h1 {font-size:18px;margin:0;}
 
-    main{padding:20px;max-width:1200px;margin:auto}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
-    .card{background:#020617;border-radius:18px;padding:18px;box-shadow:0 12px 32px rgba(0,0,0,.35)}
-    .card h3{margin-top:0;font-size:16px}
+    main {padding:20px;max-width:1200px;margin:auto;flex:1;}
+    .grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;}
+    .card {background:#020617;border-radius:18px;padding:24px;box-shadow:0 12px 32px rgba(0,0,0,.35);transition:transform .2s;}
+    .card:hover {transform:translateY(-5px);}
+    .card h3 {text-align:center;margin-top:0;font-size:18px;}
 
-    input,button{border-radius:14px;padding:12px;border:none}
-    input{width:100%;background:#020617;color:#e5e7eb;border:1px solid #334155}
-    button{background:#22c55e;font-weight:800;cursor:pointer}
-    button.secondary{background:#334155;color:#e5e7eb}
+    input, button {border-radius:14px;padding:12px;border:none;font-size:14px;}
+    input {width:100%;background:#020617;color:#e5e7eb;border:1px solid #334155;}
+    input:focus {outline:none;border-color:#22c55e;}
+    button {background:#22c55e;font-weight:800;cursor:pointer;color:#fff;transition:background .2s;}
+    button:hover {background:#16a34a;}
+    button.secondary {background:#334155;color:#e5e7eb;}
 
-    video,canvas,img{width:100%;border-radius:14px}
-    .row{display:flex;gap:12px;flex-wrap:wrap}
-    .hidden{display:none}
+    video, canvas, img {width:100%;border-radius:14px;}
+    .row {display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+    .hidden {display:none;}
 
-    footer{text-align:center;opacity:.6;font-size:12px;margin:30px 0}
+    footer {text-align:center;opacity:.6;font-size:12px;margin:30px 0;}
+
+    /* Center LOGIN & REGISTER */
+    #authBox {display:flex;align-items:center;justify-content:center;min-height:70vh;gap:20px;flex-wrap:wrap;}
+    #authBox .card {max-width:400px;width:100%;}
   </style>
 </head>
 <body>
@@ -48,15 +51,26 @@
   <h1>Fuel Proof System</h1>
 </header>
 
-<!-- LOGIN -->
-<main id="loginBox">
-  <div class="card" style="max-width:420px;margin:auto">
+<!-- LOGIN & REGISTER -->
+<main id="authBox">
+  <!-- Login Card -->
+  <div class="card">
     <h3>تسجيل الدخول</h3>
-    <input id="email" placeholder="البريد الإلكتروني" value="تم هوندا" />
+    <input id="email" type="email" placeholder="البريد الإلكتروني" />
     <br><br>
-    <input id="password" type="password" placeholder="كلمة المرور" value="0906" />
+    <input id="password" type="password" placeholder="كلمة المرور" />
     <br><br>
     <button onclick="login()">دخول</button>
+  </div>
+
+  <!-- Register Card -->
+  <div class="card">
+    <h3>تسجيل مستخدم جديد</h3>
+    <input id="newEmail" type="email" placeholder="البريد الإلكتروني" />
+    <br><br>
+    <input id="newPassword" type="password" placeholder="كلمة المرور" />
+    <br><br>
+    <button onclick="register()">تسجيل</button>
   </div>
 </main>
 
@@ -74,14 +88,14 @@
         <button onclick="capture()">التقاط</button>
         <button class="secondary" onclick="sendOperation()">إرسال</button>
       </div>
-      <p style="font-size:13px;opacity:.7">※ الموقع والبيانات الحساسة لا تظهر للمندوب</p>
+      <p style="font-size:13px;opacity:.7;text-align:center">※ الموقع والبيانات الحساسة لا تظهر للمندوب</p>
     </div>
 
     <!-- ADMIN -->
     <div class="card hidden" id="adminBox">
       <h3>🧾 العمليات</h3>
       <table style="width:100%;font-size:13px">
-        <thead><tr><th>صورة</th><th>وقت</th><th>OCR</th></tr></thead>
+        <thead><tr><th>صورة</th><th>وقت</th><th>OCR</th><th>اسم المستخدم</th></tr></thead>
         <tbody id="ops"></tbody>
       </table>
     </div>
@@ -103,24 +117,56 @@ const firebaseConfig = {
   appId: "1:285162278384:web:8264d5439564660b616135"
 };
 firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth();
-const db=firebase.database();
+const auth = firebase.auth();
+const db = firebase.database();
 
-/************** AUTH **************/
-function login(){
-  auth.signInWithEmailAndPassword(email.value,password.value)
-  .catch(e=>alert(e.message));
+/************** LOGIN **************/
+function login() {
+  const userEmail = document.getElementById('email').value.trim();
+  const userPassword = document.getElementById('password').value.trim();
+
+  if (!userEmail || !userPassword) {
+    return alert('يرجى إدخال البريد الإلكتروني وكلمة المرور');
+  }
+
+  auth.signInWithEmailAndPassword(userEmail, userPassword)
+    .catch(e => alert('خطأ في تسجيل الدخول: ' + e.message));
 }
 
-auth.onAuthStateChanged(async user=>{
-  if(!user){loginBox.classList.remove('hidden');return;}
-  loginBox.classList.add('hidden');
+/************** REGISTER **************/
+function register() {
+  const newEmail = document.getElementById('newEmail').value.trim();
+  const newPassword = document.getElementById('newPassword').value.trim();
+
+  if (!newEmail || !newPassword) {
+    return alert('يرجى إدخال البريد الإلكتروني وكلمة المرور');
+  }
+
+  auth.createUserWithEmailAndPassword(newEmail, newPassword)
+    .then(cred => {
+      // تعيين الدور الافتراضي كـ driver
+      db.ref('users/' + cred.user.uid).set({ role: 'driver', name: newEmail.split('@')[0] });  // أخذ اسم المستخدم من البريد الإلكتروني
+      alert('تم إنشاء الحساب بنجاح، يمكنك الآن تسجيل الدخول');
+      document.getElementById('newEmail').value = '';
+      document.getElementById('newPassword').value = '';
+    })
+    .catch(err => alert('خطأ في التسجيل: ' + err.message));
+}
+
+/************** AUTH STATE **************/
+auth.onAuthStateChanged(async user => {
+  if (!user) {
+    authBox.classList.remove('hidden');
+    app.classList.add('hidden');
+    return;
+  }
+  authBox.classList.add('hidden');
   app.classList.remove('hidden');
 
-  const snap=await db.ref('users/'+user.uid).get();
-  const role=snap.val()?.role||'driver';
+  const snap = await db.ref('users/' + user.uid).get();
+  const role = snap.val()?.role || 'driver';
 
-  if(role==='admin'){
+  if (role === 'admin') {
     adminBox.classList.remove('hidden');
     driverBox.classList.add('hidden');
     loadAdmin();
@@ -129,46 +175,55 @@ auth.onAuthStateChanged(async user=>{
 
 /************** CAMERA **************/
 let stream;
-navigator.mediaDevices.getUserMedia({video:true}).then(s=>{
-  stream=s;video.srcObject=s;
+navigator.mediaDevices.getUserMedia({ video: true }).then(s => {
+  stream = s; video.srcObject = s;
 });
 
-function capture(){
-  canvas.width=video.videoWidth;
-  canvas.height=video.videoHeight;
-  canvas.getContext('2d').drawImage(video,0,0);
-  preview.src=canvas.toDataURL('image/jpeg',0.9);
+function capture() {
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  preview.src = canvas.toDataURL('image/jpeg', 0.9);
 }
 
 /************** SEND OP **************/
-async function sendOperation(){
-  if(!preview.src) return alert('التقط صورة');
+async function sendOperation() {
+  if (!preview.src) return alert('التقط صورة');
 
   // OCR – Gemini Vision
-  const ocr=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=AIzaSyC0JhoFGiCh102Q9X0y0xaWgFG-NQINWUk",{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({contents:[{parts:[{text:'اقرأ رقم العداد ولوحة السيارة'},{inline_data:{mime_type:'image/jpeg',data:preview.src.split(',')[1]}}]}]})
-  }).then(r=>r.json());
+  const ocr = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=AIzaSyC0JhoFGiCh102Q9X0y0xaWgFG-NQINWUk", {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{ text: 'اقرأ رقم العداد ولوحة السيارة' }, { inline_data: { mime_type: 'image/jpeg', data: preview.src.split(',')[1] } }]
+      }]
+    })
+  }).then(r => r.json());
 
-  const text=ocr.candidates?.[0]?.content?.parts?.[0]?.text||'';
+  const text = ocr.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+  // جلب اسم المستخدم
+  const user = auth.currentUser;
+  const userName = (await db.ref('users/' + user.uid).get()).val()?.name || 'مجهول';
 
   db.ref('fuel_operations').push({
-    image:preview.src,
-    ocr:text,
-    created:new Date().toISOString(),
-    device:navigator.userAgent
+    image: preview.src,
+    ocr: text,
+    created: new Date().toISOString(),
+    device: navigator.userAgent,
+    userName: userName // حفظ اسم المستخدم في العملية
   });
 
   alert('تم الإرسال');
 }
 
 /************** ADMIN **************/
-function loadAdmin(){
-  db.ref('fuel_operations').on('value',snap=>{
-    ops.innerHTML='';
-    snap.forEach(s=>{
-      const d=s.val();
-      ops.innerHTML+=`<tr><td><img src="${d.image}" height="50"></td><td>${d.created}</td><td>${d.ocr||''}</td></tr>`;
+function loadAdmin() {
+  db.ref('fuel_operations').on('value', snap => {
+    ops.innerHTML = '';
+    snap.forEach(s => {
+      const d = s.val();
+      ops.innerHTML += `<tr><td><img src="${d.image}" height="50"></td><td>${d.created}</td><td>${d.ocr || ''}</td><td>${d.userName}</td></tr>`;
     });
   });
 }
