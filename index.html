@@ -100,9 +100,18 @@
     .stat-value {font-size:32px;font-weight:bold;margin:10px 0;}
     .stat-label {color:#94a3b8;font-size:14px;}
     
+    /* HUMAN VERIFICATION */
+    .human-verification {background:#1e293b;padding:20px;border-radius:12px;margin:20px 0;text-align:center;}
+    .verification-question {font-size:24px;margin-bottom:20px;color:#22c55e;font-weight:bold;}
+    .verification-options {display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+    .verification-option {padding:15px;background:#334155;border-radius:10px;cursor:pointer;transition:all 0.3s;font-size:18px;font-weight:bold;}
+    .verification-option:hover {background:#475569;transform:scale(1.05);}
+    .verification-option.correct {background:#22c55e;color:white;transform:scale(1.1);}
+    .verification-option.wrong {background:#dc2626;color:white;}
+    
     /* CUSTOM ALERT */
     .custom-alert {position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000;}
-    .custom-alert-content {background:#020617;border-radius:18px;padding:30px;max-width:600px;width:90%;max-height:90vh;overflow-y:auto;box-shadow:0 12px 32px rgba(0,0,0,0.5);position:relative;}
+    .custom-alert-content {background:#020617;border-radius:18px;padding:30px;max-width:500px;width:90%;box-shadow:0 12px 32px rgba(0,0,0,0.5);position:relative;}
     .close-alert {position:absolute;top:15px;left:15px;background:#dc2626;color:white;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;}
   </style>
 </head>
@@ -115,6 +124,23 @@
     <!-- سيتم تعبئته ديناميكياً -->
   </div>
 </header>
+
+<!-- HUMAN VERIFICATION MODAL (يظهر قبل تسجيل الدخول) -->
+<div id="humanVerificationModal" class="custom-alert hidden">
+  <div class="custom-alert-content">
+    <button class="close-alert" onclick="closeVerification()">✕</button>
+    <div class="human-verification">
+      <h3>🔒 تحقق من أنك لست روبوت</h3>
+      <p style="color:#94a3b8;margin-bottom:20px;">أجب على السؤال التالي للمتابعة:</p>
+      
+      <div id="verificationContent">
+        <!-- سيتم تعبئته ديناميكياً -->
+      </div>
+      
+      <div id="verificationResult" style="margin-top:20px;"></div>
+    </div>
+  </div>
+</div>
 
 <!-- AUTHENTICATION PAGE -->
 <main id="authPage" class="auth-page">
@@ -133,7 +159,7 @@
       <div class="form-group">
         <input id="password" type="password" placeholder="كلمة المرور" />
       </div>
-      <button onclick="login()">دخول</button>
+      <button onclick="verifyHumanBeforeLogin()">دخول</button>
     </div>
     
     <!-- REGISTER FORM -->
@@ -186,7 +212,7 @@
         <input id="newPassword" type="password" placeholder="6 أحرف على الأقل" />
       </div>
       
-      <button onclick="registerDriver()" class="success-btn">تسجيل كسائق</button>
+      <button onclick="verifyHumanBeforeRegister()" class="success-btn">تسجيل كسائق</button>
       <p style="text-align:center;font-size:12px;color:#94a3b8;margin-top:10px;">
         ⚠️ سيتم مراجعة بياناتك من قبل الإدارة قبل تفعيل الحساب
       </p>
@@ -436,6 +462,117 @@ let afterImageData = null;
 let kmBefore = 0;
 let kmAfter = 0;
 let currentDriverProfile = null;
+let isHumanVerified = false;
+let verificationAttempts = 0;
+const MAX_VERIFICATION_ATTEMPTS = 3;
+
+/************** HUMAN VERIFICATION QUESTIONS **************/
+const verificationQuestions = [
+  {
+    question: 'ما هو ناتج 7 + 8؟',
+    options: ['13', '14', '15', '16'],
+    correct: '15',
+    explanation: '7 + 8 = 15'
+  }
+];
+
+/************** HUMAN VERIFICATION FUNCTIONS **************/
+function showHumanVerification(type) {
+  verificationAttempts = 0;
+  isHumanVerified = false;
+  
+  // استخدام السؤال الوحيد
+  const question = verificationQuestions[0];
+  
+  let verificationHTML = `
+    <div class="verification-question">${question.question}</div>
+    <div class="verification-options">
+      ${question.options.map((option, index) => `
+        <div class="verification-option" onclick="checkVerificationAnswer('${option}', '${question.correct}', '${question.explanation}', '${type}')">
+          ${option}
+        </div>
+      `).join('')}
+    </div>
+  `;
+  
+  document.getElementById('verificationContent').innerHTML = verificationHTML;
+  document.getElementById('verificationResult').innerHTML = '';
+  document.getElementById('humanVerificationModal').classList.remove('hidden');
+}
+
+function checkVerificationAnswer(selectedAnswer, correctAnswer, explanation, type) {
+  const resultElement = document.getElementById('verificationResult');
+  const options = document.querySelectorAll('.verification-option');
+  
+  // إظهار الإجابات الصحيحة والخاطئة
+  options.forEach(option => {
+    option.classList.remove('correct', 'wrong');
+    if (option.textContent === correctAnswer) {
+      option.classList.add('correct');
+    } else if (option.textContent === selectedAnswer && selectedAnswer !== correctAnswer) {
+      option.classList.add('wrong');
+    }
+  });
+  
+  if (selectedAnswer === correctAnswer) {
+    isHumanVerified = true;
+    resultElement.innerHTML = `
+      <div style="color:#22c55e;font-weight:bold;margin-bottom:10px;">
+        ✅ إجابة صحيحة! ${explanation}
+      </div>
+      <button class="success-btn" onclick="proceedAfterVerification('${type}')">
+        متابعة
+      </button>
+    `;
+  } else {
+    verificationAttempts++;
+    
+    if (verificationAttempts >= MAX_VERIFICATION_ATTEMPTS) {
+      resultElement.innerHTML = `
+        <div style="color:#dc2626;font-weight:bold;margin-bottom:10px;">
+          ❌ لقد تجاوزت الحد المسموح من المحاولات (${MAX_VERIFICATION_ATTEMPTS})
+        </div>
+        <button class="secondary" onclick="closeVerification()">
+          إغلاق
+        </button>
+      `;
+    } else {
+      resultElement.innerHTML = `
+        <div style="color:#f59e0b;font-weight:bold;margin-bottom:10px;">
+          ❌ إجابة خاطئة! ${explanation}
+        </div>
+        <div style="color:#94a3b8;font-size:12px;margin-bottom:10px;">
+          محاولات متبقية: ${MAX_VERIFICATION_ATTEMPTS - verificationAttempts}
+        </div>
+        <button class="warning-btn" onclick="showHumanVerification('${type}')">
+          حاول مرة أخرى
+        </button>
+      `;
+    }
+  }
+}
+
+function proceedAfterVerification(type) {
+  closeVerification();
+  
+  if (type === 'login') {
+    performLogin();
+  } else if (type === 'register') {
+    registerDriver();
+  }
+}
+
+function closeVerification() {
+  document.getElementById('humanVerificationModal').classList.add('hidden');
+}
+
+function verifyHumanBeforeLogin() {
+  showHumanVerification('login');
+}
+
+function verifyHumanBeforeRegister() {
+  showHumanVerification('register');
+}
 
 /************** AUTH TABS **************/
 function switchAuthTab(tab) {
@@ -575,13 +712,14 @@ function updateDriverProfile(userData) {
   }
 }
 
-/************** LOGIN **************/
-function login() {
+/************** LOGIN FUNCTION **************/
+function performLogin() {
   const userEmail = document.getElementById('email').value.trim();
   const userPassword = document.getElementById('password').value.trim();
 
   if (!userEmail || !userPassword) {
-    return alert('يرجى إدخال البريد الإلكتروني وكلمة المرور');
+    alert('يرجى إدخال البريد الإلكتروني وكلمة المرور');
+    return;
   }
 
   auth.signInWithEmailAndPassword(userEmail, userPassword)
@@ -589,7 +727,19 @@ function login() {
       document.getElementById('email').value = '';
       document.getElementById('password').value = '';
     })
-    .catch(e => alert('خطأ في تسجيل الدخول: ' + e.message));
+    .catch(e => {
+      if (e.code === 'auth/wrong-password') {
+        alert('❌ كلمة المرور غير صحيحة');
+      } else if (e.code === 'auth/user-not-found') {
+        alert('❌ البريد الإلكتروني غير مسجل');
+      } else if (e.code === 'auth/invalid-email') {
+        alert('❌ بريد إلكتروني غير صالح');
+      } else if (e.code === 'auth/too-many-requests') {
+        alert('❌ تم تجاوز عدد المحاولات المسموح بها. يرجى المحاولة لاحقاً');
+      } else {
+        alert('❌ خطأ في تسجيل الدخول: ' + e.message);
+      }
+    });
 }
 
 /************** REGISTER DRIVER **************/
@@ -604,40 +754,48 @@ function registerDriver() {
 
   // التحقق من الحقول المطلوبة
   if (!name) {
-    return alert('يرجى إدخال اسم السائق');
+    alert('يرجى إدخال اسم السائق');
+    return;
   }
 
   if (!project) {
-    return alert('يرجى إدخال اسم المشروع');
+    alert('يرجى إدخال اسم المشروع');
+    return;
   }
 
   // تحديد المنطقة
   let region;
   if (regionSelect === 'other') {
     if (!customRegion) {
-      return alert('يرجى إدخال المنطقة يدوياً');
+      alert('يرجى إدخال المنطقة يدوياً');
+      return;
     }
     region = customRegion;
   } else if (!regionSelect) {
-    return alert('يرجى اختيار المنطقة');
+    alert('يرجى اختيار المنطقة');
+    return;
   } else {
     region = regionSelect;
   }
 
   if (!vehicle) {
-    return alert('يرجى إدخال نوع السيارة');
+    alert('يرجى إدخال نوع السيارة');
+    return;
   }
 
   if (!email) {
-    return alert('يرجى إدخال البريد الإلكتروني');
+    alert('يرجى إدخال البريد الإلكتروني');
+    return;
   }
 
   if (!password) {
-    return alert('يرجى إدخال كلمة المرور');
+    alert('يرجى إدخال كلمة المرور');
+    return;
   }
 
   if (password.length < 6) {
-    return alert('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+    alert('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+    return;
   }
 
   // إنشاء حساب المستخدم
@@ -677,8 +835,12 @@ function registerDriver() {
     .catch(err => {
       if (err.code === 'auth/email-already-in-use') {
         alert('❌ هذا البريد الإلكتروني مسجل مسبقاً');
+      } else if (err.code === 'auth/invalid-email') {
+        alert('❌ بريد إلكتروني غير صالح');
+      } else if (err.code === 'auth/weak-password') {
+        alert('❌ كلمة المرور ضعيفة. يرجى استخدام كلمة أقوى');
       } else {
-        alert('خطأ في التسجيل: ' + err.message);
+        alert('❌ خطأ في التسجيل: ' + err.message);
       }
     });
 }
@@ -692,12 +854,22 @@ auth.onAuthStateChanged(async user => {
   }
   
   const snap = await db.ref('users/' + user.uid).get();
-  const userData = snap.val();
+  let userData = snap.val();
   
   if (!userData) {
-    alert('❌ بيانات المستخدم غير موجودة');
-    auth.signOut();
-    return;
+    // إذا كان المستخدم ليس لديه بيانات، ننشئ له بيانات افتراضية
+    const newUserData = {
+      role: 'driver',
+      email: user.email,
+      name: user.email.split('@')[0],
+      project: 'غير محدد',
+      region: 'غير محددة',
+      status: 'active',
+      createdAt: new Date().toISOString()
+    };
+    
+    await db.ref('users/' + user.uid).set(newUserData);
+    userData = newUserData;
   }
   
   updateHeader(user, userData);
@@ -1687,11 +1859,59 @@ function closeCustomAlert() {
 
 /************** INITIALIZE PAGE **************/
 document.addEventListener('DOMContentLoaded', function() {
+  // إنشاء حساب المدير التلقائي إذا لم يكن موجوداً
+  createAdminAccount();
+  
   // جعل الكاميرا تبدأ تلقائياً عند فتح صفحة السائق
   if (window.location.hash === '#camera') {
     startCamera();
   }
 });
+
+/************** CREATE ADMIN ACCOUNT AUTOMATICALLY **************/
+function createAdminAccount() {
+  const adminEmail = "honda@gmail.com";
+  const adminPassword = "212775@#";
+  
+  // التحقق مما إذا كان حساب المدير موجوداً بالفعل
+  auth.signInWithEmailAndPassword(adminEmail, adminPassword)
+    .then(() => {
+      // الحساب موجود بالفعل
+      console.log("✅ حساب المدير موجود بالفعل");
+      // تسجيل الخروج
+      auth.signOut();
+    })
+    .catch(error => {
+      if (error.code === 'auth/user-not-found') {
+        // إنشاء حساب المدير
+        auth.createUserWithEmailAndPassword(adminEmail, adminPassword)
+          .then(cred => {
+            // حفظ بيانات المدير
+            return db.ref('users/' + cred.user.uid).set({
+              role: 'admin',
+              email: adminEmail,
+              name: 'مدير النظام',
+              project: 'إدارة النظام',
+              region: 'الرياض',
+              vehicleType: 'سيارة إدارية',
+              status: 'active',
+              createdAt: new Date().toISOString(),
+              isAutoCreated: true
+            });
+          })
+          .then(() => {
+            console.log("✅ تم إنشاء حساب المدير التلقائي بنجاح");
+            // تسجيل الخروج بعد الإنشاء
+            auth.signOut();
+          })
+          .catch(createError => {
+            console.log("⚠️ خطأ في إنشاء حساب المدير:", createError.message);
+          });
+      } else {
+        console.log("⚠️ خطأ في التحقق من حساب المدير:", error.message);
+      }
+    });
+}
 </script>
 </body>
 </html>
