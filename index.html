@@ -18,9 +18,10 @@
     body {margin:0;background:#0b1220;color:#e5e7eb;display:flex;flex-direction:column;min-height:100vh;}
     header {background:#020617;padding:18px 24px;display:flex;align-items:center;gap:16px;justify-content:flex-start;}
     header img {height:64px;max-width:220px;object-fit:contain;}
-    header h1 {font-size:18px;margin:0;}
+    header h1 {font-size:18px;margin:0;flex-grow:1;}
+    .header-buttons {display:flex;gap:10px;}
 
-    main {padding:20px;max-width:1200px;margin:auto;flex:1;}
+    main {padding:20px;max-width:1200px;margin:auto;flex:1;width:100%;}
     .grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;}
     .card {background:#020617;border-radius:18px;padding:24px;box-shadow:0 12px 32px rgba(0,0,0,.35);transition:transform .2s;}
     .card:hover {transform:translateY(-5px);}
@@ -32,6 +33,8 @@
     button {background:#22c55e;font-weight:800;cursor:pointer;color:#fff;transition:background .2s;}
     button:hover {background:#16a34a;}
     button.secondary {background:#334155;color:#e5e7eb;}
+    button.logout-btn {background:#dc2626;}
+    button.login-btn {background:#3b82f6;}
 
     video, canvas, img {width:100%;border-radius:14px;}
     .row {display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
@@ -39,9 +42,13 @@
 
     footer {text-align:center;opacity:.6;font-size:12px;margin:30px 0;}
 
-    /* Center LOGIN & REGISTER */
-    #authBox {display:flex;align-items:center;justify-content:center;min-height:70vh;gap:20px;flex-wrap:wrap;}
-    #authBox .card {max-width:400px;width:100%;}
+    /* AUTH PAGES */
+    .auth-page {display:flex;align-items:center;justify-content:center;min-height:80vh;width:100%;}
+    .auth-container {max-width:400px;width:100%;}
+    .auth-tabs {display:flex;margin-bottom:20px;border-bottom:2px solid #334155;}
+    .auth-tab {flex:1;text-align:center;padding:12px;cursor:pointer;background:none;border:none;color:#94a3b8;font-weight:600;}
+    .auth-tab.active {color:#22c55e;border-bottom:3px solid #22c55e;}
+    .user-info {display:flex;align-items:center;gap:10px;color:#e5e7eb;font-size:14px;}
   </style>
 </head>
 <body>
@@ -49,32 +56,42 @@
 <header>
   <img src="https://i.ibb.co/yFCW2v98/Untitled.webp" alt="Fuel Proof">
   <h1>Fuel Proof System</h1>
+  <div class="header-buttons" id="headerButtons">
+    <!-- سيتم تعبئته ديناميكياً -->
+  </div>
 </header>
 
-<!-- LOGIN & REGISTER -->
-<main id="authBox">
-  <!-- Login Card -->
-  <div class="card">
-    <h3>تسجيل الدخول</h3>
-    <input id="email" type="email" placeholder="البريد الإلكتروني" />
-    <br><br>
-    <input id="password" type="password" placeholder="كلمة المرور" />
-    <br><br>
-    <button onclick="login()">دخول</button>
-  </div>
-
-  <!-- Register Card -->
-  <div class="card">
-    <h3>تسجيل مستخدم جديد</h3>
-    <input id="newEmail" type="email" placeholder="البريد الإلكتروني" />
-    <br><br>
-    <input id="newPassword" type="password" placeholder="كلمة المرور" />
-    <br><br>
-    <button onclick="register()">تسجيل</button>
+<!-- AUTHENTICATION PAGE (تظهر فقط عند عدم تسجيل الدخول) -->
+<main id="authPage" class="auth-page">
+  <div class="auth-container">
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">تسجيل الدخول</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">تسجيل سائق جديد</button>
+    </div>
+    
+    <!-- LOGIN FORM -->
+    <div class="card" id="loginForm">
+      <h3>تسجيل الدخول</h3>
+      <input id="email" type="email" placeholder="البريد الإلكتروني" />
+      <br><br>
+      <input id="password" type="password" placeholder="كلمة المرور" />
+      <br><br>
+      <button onclick="login()">دخول</button>
+    </div>
+    
+    <!-- REGISTER FORM -->
+    <div class="card hidden" id="registerForm">
+      <h3>تسجيل سائق جديد</h3>
+      <input id="newEmail" type="email" placeholder="البريد الإلكتروني" />
+      <br><br>
+      <input id="newPassword" type="password" placeholder="كلمة المرور" />
+      <br><br>
+      <button onclick="registerDriver()">تسجيل كسائق</button>
+    </div>
   </div>
 </main>
 
-<!-- APP -->
+<!-- MAIN APP (تظهر فقط بعد تسجيل الدخول) -->
 <main id="app" class="hidden">
   <div class="grid">
 
@@ -88,7 +105,6 @@
         <button onclick="capture()">التقاط</button>
         <button class="secondary" onclick="sendOperation()">إرسال</button>
       </div>
-      <p style="font-size:13px;opacity:.7;text-align:center">※ الموقع والبيانات الحساسة لا تظهر للمندوب</p>
     </div>
 
     <!-- ADMIN -->
@@ -120,6 +136,67 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
+/************** AUTH TABS **************/
+function switchAuthTab(tab) {
+  // تحديث التبويبات
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  if (tab === 'login') {
+    document.querySelector('.auth-tab:nth-child(1)').classList.add('active');
+    document.getElementById('loginForm').classList.remove('hidden');
+    document.getElementById('registerForm').classList.add('hidden');
+  } else {
+    document.querySelector('.auth-tab:nth-child(2)').classList.add('active');
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('registerForm').classList.remove('hidden');
+  }
+}
+
+/************** UPDATE HEADER **************/
+function updateHeader(user, role) {
+  const headerButtons = document.getElementById('headerButtons');
+  headerButtons.innerHTML = '';
+  
+  if (!user) {
+    // غير مسجل دخول - لا تظهر أي أزرار في الهيدر
+    // (لأن الصفحة الرئيسية هي صفحة المصادقة)
+  } else {
+    // مسجل دخول - إظهار معلومات المستخدم وزر تسجيل الخروج
+    const userInfo = document.createElement('div');
+    userInfo.className = 'user-info';
+    
+    const userName = user.email ? user.email.split('@')[0] : 'مستخدم';
+    const userRole = role === 'admin' ? ' (أدمن)' : ' (سائق)';
+    
+    userInfo.innerHTML = `
+      <span>مرحباً، ${userName}${userRole}</span>
+    `;
+    
+    const logoutBtn = document.createElement('button');
+    logoutBtn.textContent = 'تسجيل الخروج';
+    logoutBtn.className = 'logout-btn';
+    logoutBtn.onclick = () => {
+      if (confirm('هل تريد تسجيل الخروج؟')) {
+        auth.signOut();
+      }
+    };
+    
+    headerButtons.appendChild(userInfo);
+    headerButtons.appendChild(logoutBtn);
+  }
+}
+
+/************** PAGE NAVIGATION **************/
+function showAuthPage() {
+  document.getElementById('authPage').classList.remove('hidden');
+  document.getElementById('app').classList.add('hidden');
+  switchAuthTab('login'); // دائماً نبدأ بتسجيل الدخول
+}
+
+function showAppPage() {
+  document.getElementById('authPage').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+}
+
 /************** LOGIN **************/
 function login() {
   const userEmail = document.getElementById('email').value.trim();
@@ -130,11 +207,15 @@ function login() {
   }
 
   auth.signInWithEmailAndPassword(userEmail, userPassword)
+    .then(() => {
+      document.getElementById('email').value = '';
+      document.getElementById('password').value = '';
+    })
     .catch(e => alert('خطأ في تسجيل الدخول: ' + e.message));
 }
 
-/************** REGISTER **************/
-function register() {
+/************** REGISTER DRIVER **************/
+function registerDriver() {
   const newEmail = document.getElementById('newEmail').value.trim();
   const newPassword = document.getElementById('newPassword').value.trim();
 
@@ -142,11 +223,23 @@ function register() {
     return alert('يرجى إدخال البريد الإلكتروني وكلمة المرور');
   }
 
+  if (newPassword.length < 6) {
+    return alert('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+  }
+
   auth.createUserWithEmailAndPassword(newEmail, newPassword)
     .then(cred => {
-      // تعيين الدور الافتراضي كـ driver
-      db.ref('users/' + cred.user.uid).set({ role: 'driver', name: newEmail.split('@')[0] });  // أخذ اسم المستخدم من البريد الإلكتروني
-      alert('تم إنشاء الحساب بنجاح، يمكنك الآن تسجيل الدخول');
+      return db.ref('users/' + cred.user.uid).set({ 
+        role: 'driver', 
+        name: newEmail.split('@')[0],
+        email: newEmail,
+        createdAt: new Date().toISOString()
+      });
+    })
+    .then(() => {
+      alert('تم إنشاء حساب سائق بنجاح! يمكنك الآن تسجيل الدخول');
+      // التبديل إلى تبويب تسجيل الدخول بعد التسجيل
+      switchAuthTab('login');
       document.getElementById('newEmail').value = '';
       document.getElementById('newPassword').value = '';
     })
@@ -156,77 +249,153 @@ function register() {
 /************** AUTH STATE **************/
 auth.onAuthStateChanged(async user => {
   if (!user) {
-    authBox.classList.remove('hidden');
-    app.classList.add('hidden');
+    // غير مسجل دخول
+    updateHeader(null, null);
+    showAuthPage();
     return;
   }
-  authBox.classList.add('hidden');
-  app.classList.remove('hidden');
-
+  
+  // مسجل دخول
   const snap = await db.ref('users/' + user.uid).get();
-  const role = snap.val()?.role || 'driver';
+  const userData = snap.val();
+  const role = userData?.role || 'driver';
+  
+  updateHeader(user, role);
+  showAppPage();
 
   if (role === 'admin') {
-    adminBox.classList.remove('hidden');
-    driverBox.classList.add('hidden');
+    document.getElementById('adminBox').classList.remove('hidden');
+    document.getElementById('driverBox').classList.add('hidden');
     loadAdmin();
+  } else {
+    document.getElementById('driverBox').classList.remove('hidden');
+    document.getElementById('adminBox').classList.add('hidden');
+    startCamera();
   }
 });
 
 /************** CAMERA **************/
 let stream;
-navigator.mediaDevices.getUserMedia({ video: true }).then(s => {
-  stream = s; video.srcObject = s;
-});
+function startCamera() {
+  if (document.getElementById('driverBox').classList.contains('hidden')) return;
+  
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+  }
+  
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(s => {
+      stream = s; 
+      document.getElementById('video').srcObject = s;
+    })
+    .catch(err => {
+      console.log('Camera error:', err);
+      alert('خطأ في تشغيل الكاميرا. يرجى التحقق من الصلاحيات.');
+    });
+}
 
 function capture() {
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const preview = document.getElementById('preview');
+  
+  if (!video.videoWidth) {
+    return alert('الكاميرا غير جاهزة. يرجى الانتظار قليلاً');
+  }
+  
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext('2d').drawImage(video, 0, 0);
   preview.src = canvas.toDataURL('image/jpeg', 0.9);
 }
 
-/************** SEND OP **************/
+/************** SEND OPERATION **************/
 async function sendOperation() {
-  if (!preview.src) return alert('التقط صورة');
+  const preview = document.getElementById('preview');
+  if (!preview.src || preview.src.startsWith('data:') === false) {
+    return alert('يرجى التقاط صورة أولاً');
+  }
 
-  // OCR – Gemini Vision
-  const ocr = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=AIzaSyC0JhoFGiCh102Q9X0y0xaWgFG-NQINWUk", {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{
-        parts: [{ text: 'اقرأ رقم العداد ولوحة السيارة' }, { inline_data: { mime_type: 'image/jpeg', data: preview.src.split(',')[1] } }]
-      }]
-    })
-  }).then(r => r.json());
-
-  const text = ocr.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-  // جلب اسم المستخدم
   const user = auth.currentUser;
+  if (!user) {
+    alert('يرجى تسجيل الدخول أولاً');
+    return;
+  }
+
   const userName = (await db.ref('users/' + user.uid).get()).val()?.name || 'مجهول';
+
+  let ocrText = '';
+  try {
+    const ocr = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=AIzaSyC0JhoFGiCh102Q9X0y0xaWgFG-NQINWUk", {
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { text: 'اقرأ رقم العداد ولوحة السيارة من الصورة' }, 
+            { inline_data: { mime_type: 'image/jpeg', data: preview.src.split(',')[1] } }
+          ]
+        }]
+      })
+    }).then(r => r.json());
+
+    ocrText = ocr.candidates?.[0]?.content?.parts?.[0]?.text || 'لم يتم قراءة النص';
+  } catch (error) {
+    console.error('OCR Error:', error);
+    ocrText = 'خطأ في قراءة الصورة';
+  }
 
   db.ref('fuel_operations').push({
     image: preview.src,
-    ocr: text,
+    ocr: ocrText,
     created: new Date().toISOString(),
-    device: navigator.userAgent,
-    userName: userName // حفظ اسم المستخدم في العملية
+    userId: user.uid,
+    userName: userName,
+    userEmail: user.email
   });
 
-  alert('تم الإرسال');
+  alert('تم إرسال العملية بنجاح');
+  preview.src = '';
 }
 
 /************** ADMIN **************/
 function loadAdmin() {
-  db.ref('fuel_operations').on('value', snap => {
-    ops.innerHTML = '';
-    snap.forEach(s => {
-      const d = s.val();
-      ops.innerHTML += `<tr><td><img src="${d.image}" height="50"></td><td>${d.created}</td><td>${d.ocr || ''}</td><td>${d.userName}</td></tr>`;
+  db.ref('fuel_operations').orderByChild('created').limitToLast(50).on('value', snap => {
+    const opsElement = document.getElementById('ops');
+    opsElement.innerHTML = '';
+    
+    if (!snap.exists()) {
+      opsElement.innerHTML = '<tr><td colspan="4" style="text-align:center">لا توجد عمليات</td></tr>';
+      return;
+    }
+    
+    const operations = [];
+    snap.forEach(child => {
+      operations.push({ id: child.key, ...child.val() });
+    });
+    
+    operations.reverse();
+    
+    operations.forEach(op => {
+      const date = new Date(op.created);
+      const formattedDate = date.toLocaleString('ar-SA');
+      
+      opsElement.innerHTML += `
+        <tr>
+          <td><img src="${op.image}" height="50" style="border-radius:8px;cursor:pointer" onclick="window.open('${op.image}')"></td>
+          <td>${formattedDate}</td>
+          <td style="max-width:200px;word-break:break-all">${op.ocr || ''}</td>
+          <td>${op.userName || op.userEmail || 'مجهول'}</td>
+        </tr>
+      `;
     });
   });
 }
+
+/************** INITIALIZE **************/
+document.addEventListener('DOMContentLoaded', function() {
+  // الصفحة ستظهر بناءً على حالة المصادقة تلقائياً
+});
 </script>
 
 </body>
