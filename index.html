@@ -1,15 +1,11 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="mainHtml">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fuel Proof AI | Al Zahrani Logistics</title>
     
-    <meta name="theme-color" content="#0f172a">
-    <meta name="mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="https://i.ibb.co/yFCW2v98/Untitled.webp">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -17,97 +13,95 @@
 
     <style>
         :root { --p: #3b82f6; --s: #22c55e; --d: #ef4444; --bg: #0f172a; --c: #1e293b; --t: #f8fafc; }
-        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; transition: 0.3s; }
+        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { margin: 0; background: var(--bg); color: var(--t); overflow-x: hidden; }
 
-        header { background: var(--c); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--p); position: sticky; top: 0; z-index: 1000; }
-        .logo-wrap { display: flex; align-items: center; gap: 12px; }
+        /* الشاشة الافتتاحية للتحميل */
+        #loadingScreen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        header { background: var(--c); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--p); }
         .logo-wrap img { height: 45px; border-radius: 8px; }
 
-        .lang-btn { background: var(--p); color: white; border: none; padding: 6px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
+        .card { background: var(--c); padding: 20px; border-radius: 18px; border: 1px solid #334155; margin-bottom: 20px; }
 
-        .container { max-width: 1300px; margin: 0 auto; padding: 15px; }
-        .card { background: var(--c); padding: 20px; border-radius: 18px; border: 1px solid #334155; box-shadow: 0 8px 25px rgba(0,0,0,0.3); margin-bottom: 20px; }
-
-        /* Stats Widgets */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .stat-item { background: #0f172a; padding: 15px; border-radius: 15px; text-align: center; border-left: 4px solid var(--p); }
-        .stat-item h4 { margin: 0; font-size: 12px; color: #94a3b8; }
-        .stat-item div { font-size: 24px; font-weight: 900; color: var(--p); }
-
-        input, button { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #475569; background: #0f172a; color: white; }
+        input, button { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 16px; }
         button { border: none; font-weight: 900; cursor: pointer; }
         .btn-main { background: var(--p); }
         .btn-success { background: var(--s); }
-        .btn-export { background: #6366f1; width: auto; padding: 8px 20px; font-size: 14px; margin-bottom: 15px; }
-
-        /* Media View */
-        video#camView { width: 100%; border-radius: 15px; border: 2px solid var(--p); background: #000; }
-        .media-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
-        .media-box { text-align: center; font-size: 11px; }
-        .media-box img, .vid-icon { width: 100%; height: 95px; border-radius: 10px; background: #000; object-fit: cover; border: 1px solid #444; }
-
+        
         .hidden { display: none !important; }
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-        th { background: #0f172a; padding: 12px; color: var(--p); border-bottom: 2px solid #334155; }
-        td { padding: 10px; border-bottom: 1px solid #334155; text-align: center; }
-        .thumb { width: 40px; height: 40px; border-radius: 5px; cursor: pointer; }
-        .badge-alert { background: var(--d); color: white; padding: 3px 8px; border-radius: 5px; font-size: 10px; animation: blink 1s infinite; }
-        @keyframes blink { 0% {opacity: 1} 50% {opacity: 0.5} 100% {opacity: 1} }
+
+        /* تصميم الجدول والوسائط */
+        .table-wrap { overflow-x: auto; background: #1e293b; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th { background: #0f172a; padding: 12px; color: var(--p); text-align: center; }
+        td { padding: 10px; border-bottom: 1px solid #334155; text-align: center; font-size: 13px; }
+        .thumb { width: 45px; height: 45px; border-radius: 5px; cursor: zoom-in; border: 1px solid #444; margin: 2px; }
+
+        /* نافذة عرض الصور */
+        #imgModal { position: fixed; inset:0; background:rgba(0,0,0,0.9); z-index:10000; display:none; align-items:center; justify-content:center; }
+        #imgModal img { max-width: 90%; max-height: 80%; border: 3px solid var(--p); }
+        .close-modal { position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; }
+
+        /* إحصائيات */
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: #0f172a; padding: 15px; border-radius: 12px; text-align: center; border-bottom: 3px solid var(--p); }
     </style>
 </head>
 <body>
 
+<div id="loadingScreen">جاري التحقق من الصلاحيات...</div>
+<div id="imgModal"><span class="close-modal" onclick="closeImg()">&times;</span><img id="modalImg"></div>
+
 <header>
     <div class="logo-wrap">
         <img src="https://i.ibb.co/yFCW2v98/Untitled.webp" alt="Logo">
-        <div style="font-weight:900; color:var(--p); font-size: 17px;">FUEL PROOF AI</div>
+        <span style="font-weight:900; color:var(--p); margin-right:10px;">FUEL PROOF AI</span>
     </div>
-    <button class="lang-btn" id="langBtn" onclick="toggleLanguage()">English</button>
+    <button onclick="logout()" style="width:auto; padding:5px 15px; margin:0; background:var(--d);">خروج</button>
 </header>
 
 <div class="container">
-    <section id="sec_auth">
+    <section id="sec_auth" class="hidden">
         <div class="card" style="max-width:400px; margin: 40px auto;">
-            <h2 id="txt_authTitle" style="text-align:center; color:var(--p);">تسجيل الدخول</h2>
-            <div id="login_ui">
+            <h2 style="text-align:center; color:var(--p);">دخول النظام</h2>
+            <div id="login_box">
                 <input type="text" id="userInp" placeholder="اسم المستخدم">
                 <input type="password" id="passInp" placeholder="كلمة المرور">
-                <div style="background:#000; padding:10px; border-radius:10px; text-align:center; margin-bottom:10px; color:var(--s); font-size:28px; font-weight:900; letter-spacing:8px;" id="capDisp"></div>
-                <input type="text" id="capInp" placeholder="كود التحقق">
-                <button class="btn-main" onclick="handleLogin()" id="btn_login">دخول</button>
-                <button style="background:transparent; border:1px solid var(--p); color:var(--p);" onclick="setRegMode(true)" id="btn_toReg">سائق جديد</button>
+                <div id="capDisp" style="background:#000; color:var(--s); text-align:center; font-size:30px; font-weight:900; letter-spacing:10px; padding:10px; margin-bottom:10px; border-radius:10px;"></div>
+                <input type="text" id="capInp" placeholder="أدخل رمز التحقق">
+                <button class="btn-main" onclick="handleLogin()">دخول</button>
+                <button onclick="toggleAuth(true)" style="background:transparent; color:var(--p); border:1px solid var(--p);">سائق جديد؟ سجل هنا</button>
             </div>
-            <div id="reg_ui" class="hidden">
-                <input type="text" id="r_name" placeholder="الاسم">
-                <input type="text" id="r_proj" placeholder="المشروع">
+            <div id="reg_box" class="hidden">
+                <input type="text" id="r_name" placeholder="الاسم الكامل">
+                <input type="text" id="r_proj" placeholder="المشروع (مثال: حمرية)">
                 <input type="text" id="r_reg" placeholder="المنطقة">
                 <input type="text" id="r_user" placeholder="اسم المستخدم">
                 <input type="password" id="r_pass" placeholder="كلمة المرور">
-                <button class="btn-success" onclick="handleRegister()" id="btn_reg">تأكيد</button>
-                <button style="background:transparent; border:1px solid var(--p); color:var(--p);" onclick="setRegMode(false)" id="btn_back">رجوع</button>
+                <button class="btn-success" onclick="handleRegister()">إنشاء الحساب</button>
+                <button onclick="toggleAuth(false)" style="background:transparent; color:var(--p);">رجوع للدخول</button>
             </div>
         </div>
     </section>
 
     <section id="sec_admin" class="hidden">
-        <div class="stats-grid">
-            <div class="stat-item"><h4 id="stat_1">إجمالي العمليات</h4><div id="count_all">0</div></div>
-            <div class="stat-item" style="border-color:var(--d)"><h4 id="stat_2">عمليات مشبوهة</h4><div id="count_susp">0</div></div>
-            <div class="stat-item" style="border-color:var(--s)"><h4 id="stat_3">المشاريع النشطة</h4><div id="count_proj">0</div></div>
+        <div class="stats">
+            <div class="stat-card"><h4>إجمالي العمليات</h4><div id="c1" style="font-size:24px; font-weight:900;">0</div></div>
+            <div class="stat-card" style="border-color:var(--d);"><h4>مشبوهة</h4><div id="c2" style="font-size:24px; font-weight:900; color:var(--d);">0</div></div>
         </div>
         <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3 id="txt_adminHead">التقارير الميدانية</h3>
-                <button class="btn-export" onclick="exportToExcel()">Excel 📥</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3>سجل التقارير الذكي</h3>
+                <button onclick="exportToExcel()" style="width:auto; background:#6366f1; padding:8px 15px;">Excel 📥</button>
             </div>
             <div class="table-wrap">
-                <table id="reportsTable">
+                <table id="resTable">
                     <thead>
-                        <tr><th id="th_1">السائق</th><th id="th_2">المشروع</th><th id="th_3">الموقع</th><th id="th_4">الوسائط</th><th id="th_5">الحالة</th><th id="th_6">الوقت</th></tr>
+                        <tr><th>السائق</th><th>المشروع/المنطقة</th><th>الموقع</th><th>الصور</th><th>الحالة</th><th>الوقت</th></tr>
                     </thead>
-                    <tbody id="adminLogs"></tbody>
+                    <tbody id="adminBody"></tbody>
                 </table>
             </div>
         </div>
@@ -115,79 +109,90 @@
 
     <section id="sec_driver" class="hidden">
         <div class="card">
-            <h3 id="txt_driverHead">توثيق التعبئة</h3>
-            <video id="camView" autoplay playsinline></video>
-            <div class="media-grid">
-                <div class="media-box" onclick="capture('plate')"><img id="v_plate"><b>صورة اللوحة</b></div>
-                <div class="media-box" onclick="capture('before')"><img id="v_before"><b>عداد قبل</b></div>
-                <div class="media-box" onclick="capture('after')"><img id="v_after"><b>عداد بعد</b></div>
-                <div class="media-box" onclick="startVid()"><div class="vid-icon" id="v_stat">🎥</div><b>فيديو (10ث)</b></div>
+            <h3>📸 توثيق التعبئة</h3>
+            <video id="cam" autoplay playsinline style="width:100%; border-radius:15px; border:2px solid var(--p); background:#000;"></video>
+            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; margin-top:15px;">
+                <div onclick="snap('plate')" style="text-align:center;"><img id="p_plate" class="thumb" style="width:100%; height:80px;"><br>صورة اللوحة</div>
+                <div onclick="snap('before')" style="text-align:center;"><img id="p_before" class="thumb" style="width:100%; height:80px;"><br>عداد قبل</div>
+                <div onclick="snap('after')" style="text-align:center;"><img id="p_after" class="thumb" style="width:100%; height:80px;"><br>عداد بعد</div>
+                <div onclick="startVid()" style="text-align:center;"><div id="v_stat" style="height:80px; background:#000; display:flex; align-items:center; justify-content:center; border-radius:10px; font-size:30px;">🎥</div>فيديو (10ث)</div>
             </div>
-            <button class="btn-success" style="margin-top:20px;" onclick="uploadReport()" id="btn_submit">إرسال التقرير</button>
+            <button class="btn-success" style="margin-top:20px;" onclick="saveReport()">إرسال التقرير النهائي</button>
         </div>
     </section>
 </div>
 
 <script>
-// Firebase & Core Logic
-const config = { apiKey: "AIzaSyBkOM7eSnUJ0B_3Mx4wVyh-lTvFEAhxWas", authDomain: "tama-6219c.firebaseapp.com", databaseURL: "https://tama-6219c-default-rtdb.firebaseio.com", projectId: "tama-6219c", appId: "1:285162278384:web:8264d5439564660b616135" };
-firebase.initializeApp(config);
+// الإعدادات
+const fb = { apiKey: "AIzaSyBkOM7eSnUJ0B_3Mx4wVyh-lTvFEAhxWas", authDomain: "tama-6219c.firebaseapp.com", databaseURL: "https://tama-6219c-default-rtdb.firebaseio.com", projectId: "tama-6219c", appId: "1:285162278384:web:8264d5439564660b616135" };
+firebase.initializeApp(fb);
 const auth = firebase.auth(); const db = firebase.database();
 
-let lang = 'ar';
-function toggleLanguage() {
-    lang = lang === 'ar' ? 'en' : 'ar';
-    document.getElementById('mainHtml').dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.getElementById('langBtn').innerText = lang === 'ar' ? 'English' : 'العربية';
-    // التغيير السريع للنصوص الأساسية
-    document.getElementById('txt_authTitle').innerText = lang === 'ar' ? 'تسجيل الدخول' : 'Sign In';
-    document.getElementById('txt_adminHead').innerText = lang === 'ar' ? 'التقارير الميدانية' : 'Field Reports';
+// نظام الحماية وإدارة الشاشات
+auth.onAuthStateChanged(user => {
+    document.getElementById('loadingScreen').style.display = 'none';
+    if (!user) {
+        showSection('sec_auth');
+        genCap();
+    } else {
+        db.ref('users/' + user.uid).once('value', s => {
+            const data = s.val();
+            if (data && data.role === 'admin') {
+                showSection('sec_admin'); loadAdmin();
+            } else if (data) {
+                showSection('sec_driver'); initCam(); window.currUser = data;
+            } else {
+                logout(); // إذا دخل مستخدم ليس له بيانات
+            }
+        });
+    }
+});
+
+function showSection(id) {
+    document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
 }
 
-let cap = ""; function genCap() { cap = Math.floor(1000 + Math.random() * 9000).toString(); document.getElementById('capDisp').innerText = cap; } genCap();
+// Captcha
+let code = ""; function genCap() { code = Math.floor(1000 + Math.random()*9000).toString(); document.getElementById('capDisp').innerText = code; }
 
-function setRegMode(r) { document.getElementById('login_ui').classList.toggle('hidden', r); document.getElementById('reg_ui').classList.toggle('hidden', !r); }
+function toggleAuth(reg) {
+    document.getElementById('login_box').classList.toggle('hidden', reg);
+    document.getElementById('reg_box').classList.toggle('hidden', !reg);
+}
 
+// Login/Reg
 async function handleLogin() {
     const u = document.getElementById('userInp').value.trim(), p = document.getElementById('passInp').value;
-    if(document.getElementById('capInp').value !== cap) return alert("Captcha!");
-    const email = u.includes('@') ? u : `${u}@fuel.com`;
+    if(document.getElementById('capInp').value !== code) return alert("رمز التحقق خطأ");
     try {
-        const res = await auth.signInWithEmailAndPassword(email, p);
-        if(u === "honda@gmail.com") await db.ref('users/'+res.user.uid).update({role:'admin', name:'مدير النظام'});
-        location.reload();
-    } catch(e) { alert("Error in data"); }
+        const mail = u.includes('@') ? u : `${u}@fuel.com`;
+        await auth.signInWithEmailAndPassword(mail, p);
+    } catch(e) { alert("خطأ في بيانات الدخول"); }
 }
 
 async function handleRegister() {
     const u = document.getElementById('r_user').value.trim(), p = document.getElementById('r_pass').value, n = document.getElementById('r_name').value, pr = document.getElementById('r_proj').value, rg = document.getElementById('r_reg').value;
     try {
         const res = await auth.createUserWithEmailAndPassword(`${u}@fuel.com`, p);
-        await db.ref('users/'+res.user.uid).set({name:n, project:pr, region:rg, role:'driver'});
-        location.reload();
+        await db.ref('users/' + res.user.uid).set({name:n, project:pr, region:rg, role:'driver'});
     } catch(e) { alert(e.message); }
 }
 
-auth.onAuthStateChanged(user => {
-    if(user) {
-        db.ref('users/'+user.uid).once('value', s => {
-            const d = s.val();
-            document.getElementById('sec_auth').classList.add('hidden');
-            if(d.role === 'admin') { document.getElementById('sec_admin').classList.remove('hidden'); loadAdmin(); }
-            else { document.getElementById('sec_driver').classList.remove('hidden'); initCam(); window.uData = d; }
-        });
-    }
-});
+function logout() { auth.signOut().then(() => location.reload()); }
 
-let media = { plate: null, before: null, after: null, video: null };
-let stream, recorder, chunks = [];
+// Media Logic
+let media = { plate: null, before: null, after: null, video: null }, stream, recorder, chunks = [];
 
-async function initCam() { stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:true}); document.getElementById('camView').srcObject = stream; }
+async function initCam() { 
+    try { stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:true}); document.getElementById('cam').srcObject = stream; } 
+    catch(e) { alert("يرجى تفعيل الكاميرا"); }
+}
 
-function capture(t) {
-    const v = document.getElementById('camView'); const c = document.createElement('canvas');
+function snap(t) {
+    const v = document.getElementById('cam'); const c = document.createElement('canvas');
     c.width = v.videoWidth; c.height = v.videoHeight; c.getContext('2d').drawImage(v, 0, 0);
-    media[t] = c.toDataURL('image/jpeg', 0.5); document.getElementById('v_'+t).src = media[t];
+    media[t] = c.toDataURL('image/jpeg', 0.5); document.getElementById('p_'+t).src = media[t];
 }
 
 function startVid() {
@@ -201,47 +206,49 @@ function startVid() {
     setTimeout(() => recorder.stop(), 10000);
 }
 
-function uploadReport() {
-    if(!media.plate || !media.before || !media.after || !media.video) return alert("All media required!");
+function saveReport() {
+    if(!media.plate || !media.before || !media.after || !media.video) return alert("أكمل الوسائط أولاً");
     navigator.geolocation.getCurrentPosition(pos => {
         db.ref('reports').push({
-            driver: window.uData.name, project: window.uData.project + ' / ' + window.uData.region,
-            ...media, lat: pos.coords.latitude, lng: pos.coords.longitude, time: new Date().toISOString()
-        }).then(() => location.reload());
+            name: window.currUser.name, project: window.currUser.project, region: window.currUser.region,
+            ...media, lat: pos.coords.latitude, lng: pos.coords.longitude, time: Date.now()
+        }).then(() => { alert("تم الإرسال"); location.reload(); });
     });
 }
 
+// Admin Logic
 function loadAdmin() {
     db.ref('reports').on('value', s => {
-        let h = '', count = 0, susp = 0, projs = new Set();
+        let h = '', count = 0, susp = 0;
         s.forEach(c => {
             const v = c.val(); count++;
-            const isSusp = !v.video || v.lat === 0; if(isSusp) susp++;
-            projs.add(v.project);
+            if(!v.video) susp++;
             h += `<tr>
-                <td><b>${v.driver}</b></td><td>${v.project}</td>
-                <td><a href="https://www.google.com/maps?q=${v.lat},${v.lng}" target="_blank">📍 Maps</a></td>
+                <td>${v.name}</td>
+                <td>${v.project || '---'} / ${v.region || '---'}</td>
+                <td><a href="https://www.google.com/maps?q=${v.lat},${v.lng}" target="_blank" style="color:var(--p)">📍 الخريطة</a></td>
                 <td>
-                    <img src="${v.plate}" class="thumb" onclick="window.open(this.src)">
-                    <img src="${v.before}" class="thumb" onclick="window.open(this.src)">
-                    <img src="${v.after}" class="thumb" onclick="window.open(this.src)">
-                    <a href="${v.video}" download="vid.mp4" style="font-size:10px; display:block; color:var(--s)">🎥 Download</a>
+                    <img src="${v.plate}" class="thumb" onclick="viewImg(this.src)">
+                    <img src="${v.before}" class="thumb" onclick="viewImg(this.src)">
+                    <img src="${v.after}" class="thumb" onclick="viewImg(this.src)">
+                    <a href="${v.video}" download="vid.mp4" style="color:var(--s); display:block; font-size:10px;">📥 فيديو</a>
                 </td>
-                <td>${isSusp ? '<span class="badge-alert">مشبوه 🚩</span>' : 'آمن ✅'}</td>
+                <td>${!v.video ? '<b style="color:var(--d)">مشبوه 🚩</b>' : '<b style="color:var(--s)">آمن ✅</b>'}</td>
                 <td>${new Date(v.time).toLocaleString('ar-SA')}</td>
             </tr>`;
         });
-        document.getElementById('adminLogs').innerHTML = h;
-        document.getElementById('count_all').innerText = count;
-        document.getElementById('count_susp').innerText = susp;
-        document.getElementById('count_proj').innerText = projs.size;
+        document.getElementById('adminBody').innerHTML = h;
+        document.getElementById('c1').innerText = count; document.getElementById('c2').innerText = susp;
     });
 }
 
+function viewImg(s) { if(!s) return; document.getElementById('modalImg').src = s; document.getElementById('imgModal').style.display='flex'; }
+function closeImg() { document.getElementById('imgModal').style.display='none'; }
+
 function exportToExcel() {
-    const table = document.getElementById('reportsTable');
-    const wb = XLSX.utils.table_to_book(table, {sheet: "Reports"});
-    XLSX.writeFile(wb, "Zahrani_Fuel_Report.xlsx");
+    const table = document.getElementById('resTable');
+    const wb = XLSX.utils.table_to_book(table, {sheet: "Zahrani Fuel"});
+    XLSX.writeFile(wb, "Fuel_Log_AlZahrani.xlsx");
 }
 </script>
 </body>
