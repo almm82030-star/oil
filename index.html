@@ -1,211 +1,270 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Al Zahrani Logistics | Turbo System</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fuel System Ultra – الزهراني</title>
 
-    <style>
-        :root { --p: #3b82f6; --s: #22c55e; --d: #ef4444; --bg: #0f172a; --c: #1e293b; --t: #f8fafc; }
-        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { margin: 0; background: var(--bg); color: var(--t); }
+<!-- ================= PWA (inline) ================= -->
+<link rel="manifest" href="data:application/json,{
+ &quot;name&quot;:&quot;Fuel System Ultra – الزهراني&quot;,
+ &quot;short_name&quot;:&quot;FuelUltra&quot;,
+ &quot;start_url&quot;:&quot;.&quot;,
+ &quot;display&quot;:&quot;standalone&quot;,
+ &quot;background_color&quot;:&quot;#0f172a&quot;,
+ &quot;theme_color&quot;:&quot;#0f172a&quot;
+}">
+<meta name="theme-color" content="#0f172a">
 
-        #loadingScreen, #uploadOverlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        header { background: var(--c); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--p); }
-        .logo-wrap img { height: 45px; border-radius: 8px; }
+<!-- ================= Firebase ================= -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
-        .container { max-width: 1400px; margin: 0 auto; padding: 15px; }
-        .card { background: var(--c); padding: 20px; border-radius: 18px; border: 1px solid #334155; margin-bottom: 20px; }
-
-        input, button, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 14px; margin-top: 10px; }
-        
-        table { width: 100%; border-collapse: collapse; min-width: 1100px; }
-        th { background: #0f172a; padding: 12px; color: var(--p); border-bottom: 2px solid var(--p); }
-        td { padding: 10px; border-bottom: 1px solid #334155; text-align: center; }
-        
-        .thumb { width: 50px; height: 50px; border-radius: 6px; cursor: pointer; object-fit: cover; border: 1px solid #555; margin: 2px; }
-        .btn-main { background: var(--p); border: none; font-weight: bold; cursor: pointer; color: white; }
-        .hidden { display: none !important; }
-        
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--p); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
+<style>
+/* ================= UI ================= */
+:root{--bg:#0f172a;--card:#1e293b;--p:#3b82f6;--s:#22c55e;--d:#ef4444}
+body{margin:0;font-family:tahoma;background:var(--bg);color:#fff}
+.card{background:var(--card);margin:10px;padding:15px;border-radius:12px}
+input,button,select{width:100%;padding:12px;margin-top:8px;border-radius:8px;border:none}
+button{background:var(--p);color:#fff;font-weight:bold;cursor:pointer}
+.hidden{display:none}
+.top{display:flex;gap:6px}
+.top button{flex:1}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{border:1px solid #334155;padding:6px;text-align:center}
+img{width:70px;border-radius:6px}
+video{width:120px}
+</style>
 </head>
+
 <body>
 
-<div id="loadingScreen"> <div class="loader"></div> <p>جاري تحميل النظام...</p> </div>
-
-<div id="uploadOverlay" class="hidden">
-    <div class="loader"></div>
-    <h3 id="uploadStatus">جاري رفع 4 ملفات في وقت واحد...</h3>
-    <p style="color: #94a3b8;">يرجى عدم إغلاق الصفحة حتى اكتمال الرفع</p>
+<!-- ================= TOP BAR ================= -->
+<div class="card top">
+<button onclick="toggleLang()">🌐</button>
+<button id="installBtn" class="hidden">📲 تثبيت</button>
 </div>
 
-<header>
-    <div class="logo-wrap">
-        <img src="https://i.ibb.co/yFCW2v98/Untitled.webp" alt="Logo">
-        <span style="font-weight:900; color:var(--p); margin-right:10px;">AL ZAHRANI FUEL</span>
-    </div>
-    <button onclick="logout()" style="width:auto; background:var(--d); border:none; padding:5px 15px; margin:0;">خروج</button>
-</header>
+<!-- ================= AUTH ================= -->
+<div id="auth" class="card">
+<h3 id="t_login">تسجيل الدخول</h3>
+<input id="l_user" placeholder="اسم المستخدم">
+<input id="l_pass" type="password" placeholder="كلمة المرور">
+<button onclick="login()">دخول</button>
 
-<div class="container">
-    <section id="sec_auth" class="hidden">
-        <div class="card" style="max-width:400px; margin: 50px auto; text-align:center;">
-            <h2>دخول المندوبين</h2>
-            <input type="text" id="userInp" placeholder="اسم المستخدم">
-            <input type="password" id="passInp" placeholder="كلمة المرور">
-            <button class="btn-main" onclick="handleLogin()">دخول</button>
-        </div>
-    </section>
+<hr>
+<button style="background:var(--s)" onclick="showReg()">+ تسجيل سائق جديد</button>
 
-    <section id="sec_driver" class="hidden">
-        <div class="card" style="text-align:center;">
-            <h3 id="driverTag" style="color:var(--p);">...</h3>
-            <video id="cam" autoplay playsinline style="width:100%; max-width:500px; border-radius:15px; border:2px solid var(--p); background:#000;"></video>
-            <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin-top:15px;">
-                <button class="btn-main" onclick="snap('p')">📸 اللوحة</button>
-                <button class="btn-main" onclick="snap('b')">📸 قبل</button>
-                <button class="btn-main" onclick="snap('a')">📸 بعد</button>
-                <button class="btn-main" id="vidBtn" onclick="startVid()" style="background:var(--d);">🎥 فيديو (8 ثواني)</button>
-            </div>
-            <div id="previewIcons" style="margin-top:10px; color:var(--s); font-weight:bold;"></div>
-            <button class="btn-main" id="sendBtn" style="height:60px; margin-top:20px; background:var(--s);" onclick="saveReport()" disabled>إرسال التقرير النهائي</button>
-        </div>
-    </section>
+<div id="regBox" class="hidden">
+<input id="r_name" placeholder="اسم السائق">
+<input id="r_user" placeholder="اسم المستخدم">
+<input id="r_pass" type="password" placeholder="كلمة المرور">
+<input id="r_project" placeholder="اسم المشروع">
+<input id="r_area" placeholder="المنطقة">
+<button onclick="register()">تأكيد التسجيل</button>
+</div>
+</div>
 
-    <section id="sec_admin" class="hidden">
-        <div class="card" style="overflow-x:auto;">
-            <h3>سجل الرقابة الميدانية</h3>
-            <table id="resTable">
-                <thead>
-                    <tr>
-                        <th>المندوب</th><th>اللوحة</th><th>المشروع</th><th>الوقت</th><th>الصور</th><th>الفيديو</th><th>الموقع</th>
-                    </tr>
-                </thead>
-                <tbody id="adminBody"></tbody>
-            </table>
-        </div>
-    </section>
+<!-- ================= DRIVER ================= -->
+<div id="driver" class="card hidden">
+<h3 id="driverName"></h3>
+<video id="cam" autoplay playsinline></video>
+<button onclick="capture()">📸 صورة</button>
+<button onclick="record()">🎥 فيديو 5 ثواني</button>
+<button onclick="send()">📤 إرسال التقرير</button>
+</div>
+
+<!-- ================= ADMIN ================= -->
+<div id="admin" class="card hidden">
+<h3 id="t_admin">لوحة المدير</h3>
+<table>
+<thead>
+<tr>
+<th>السائق</th><th>المشروع</th><th>المنطقة</th>
+<th>الوقت</th><th>الجهاز</th>
+<th>الصورة</th><th>الفيديو</th><th>التوقيع</th>
+</tr>
+</thead>
+<tbody id="rows"></tbody>
+</table>
 </div>
 
 <script>
-// الإعدادات
-const CLOUD_NAME = "dfgp8dwj3";
-const CLOUD_UPLOAD_PRESET = "ml_default"; 
-
-const firebaseConfig = { apiKey: "AIzaSyBkOM7eSnUJ0B_3Mx4wVyh-lTvFEAhxWas", authDomain: "tama-6219c.firebaseapp.com", databaseURL: "https://tama-6219c-default-rtdb.firebaseio.com", projectId: "tama-6219c", appId: "1:285162278384:web:8264d5439564660b616135" };
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth(); const db = firebase.database();
-
-// نظام الدخول والمزامنة
-auth.onAuthStateChanged(user => {
-    document.getElementById('loadingScreen').style.display = 'none';
-    if (!user) showSection('sec_auth');
-    else {
-        db.ref('users/' + user.uid).on('value', s => {
-            const d = s.val();
-            if (d?.role === 'admin') { showSection('sec_admin'); loadAdmin(); }
-            else if (d) { window.u = d; showSection('sec_driver'); document.getElementById('driverTag').innerText = `${d.name} | ${d.plate}`; initCam(); }
-        });
-    }
+/* ================= CONFIG ================= */
+// Firebase
+firebase.initializeApp({
+ apiKey: "PUT_YOUR_KEY",
+ authDomain: "PUT_YOUR.firebaseapp.com",
+ databaseURL: "https://PUT_YOUR.firebaseio.com",
+ projectId: "PUT_YOUR"
 });
 
-function showSection(id) { document.querySelectorAll('section').forEach(s => s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
-async function handleLogin() {
-    const u = document.getElementById('userInp').value, p = document.getElementById('passInp').value;
-    try { await auth.signInWithEmailAndPassword(`${u}@zahrani.com`, p); } catch(e) { alert("بيانات خاطئة"); }
-}
-function logout() { auth.signOut().then(() => location.reload()); }
+// Cloudinary
+const CLOUD_NAME="dfgp8dwj3";
+const UPLOAD_PRESET="fuel_unsigned";
 
-// الميديا والرفع المتوازي
-let media = { p: null, b: null, a: null, vBlob: null }, stream, recorder, chunks = [];
+// Encryption
+const ENC_KEY="fuel-ultra-key";
 
-async function initCam() { stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:true}); document.getElementById('cam').srcObject = stream; }
+// ================= GLOBAL =================
+const authF=firebase.auth(), db=firebase.database();
+let currentUserData=null, lang="ar";
+let stream, imgEnc=null, videoBlob=null;
 
-function snap(t) {
-    const v = document.getElementById('cam'); const canvas = document.createElement('canvas');
-    canvas.width = 640; canvas.height = 480;
-    canvas.getContext('2d').drawImage(v, 0, 0, 640, 480);
-    media[t] = canvas.toDataURL('image/jpeg', 0.6); // ضغط الصورة لسرعة الرفع
-    document.getElementById('previewIcons').innerHTML += " ✅ " + t;
-    checkReady();
-}
-
-function startVid() {
-    recorder = new MediaRecorder(stream); chunks = [];
-    recorder.ondataavailable = e => chunks.push(e.data);
-    recorder.onstop = () => {
-        media.vBlob = new Blob(chunks, {type:'video/mp4'});
-        document.getElementById('previewIcons').innerHTML += " ✅ فيديو";
-        checkReady();
-    };
-    recorder.start(); document.getElementById('vidBtn').innerText = "🔴 جاري التسجيل...";
-    setTimeout(() => { if(recorder.state==='recording') recorder.stop(); document.getElementById('vidBtn').innerText = "🎥 فيديو جاهز"; }, 8000);
+/* ================= LANGUAGE ================= */
+const dict={
+ ar:{login:"تسجيل الدخول",admin:"لوحة المدير"},
+ en:{login:"Login",admin:"Admin Panel"}
+};
+function toggleLang(){
+ lang=lang==="ar"?"en":"ar";
+ document.dir=lang==="ar"?"rtl":"ltr";
+ t_login.textContent=dict[lang].login;
+ t_admin.textContent=dict[lang].admin;
 }
 
-function checkReady() { if(media.p && media.b && media.a && media.vBlob) document.getElementById('sendBtn').disabled = false; }
+/* ================= PWA ================= */
+let deferredPrompt;
+window.addEventListener("beforeinstallprompt",e=>{
+ e.preventDefault(); deferredPrompt=e;
+ installBtn.classList.remove("hidden");
+});
+installBtn.onclick=()=>{deferredPrompt.prompt();};
 
-// دالة الرفع الأساسية
-async function uploadFile(fileData, isVideo = false) {
-    const formData = new FormData();
-    formData.append('file', fileData);
-    formData.append('upload_preset', CLOUD_UPLOAD_PRESET);
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${isVideo?'video':'image'}/upload`, { method: 'POST', body: formData });
-    const data = await res.json();
-    return data.secure_url;
+/* ================= DEVICE ID ================= */
+async function deviceId(){
+ const d=navigator.userAgent+screen.width+screen.height;
+ const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(d));
+ return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,"0")).join("");
 }
 
-// دالة الحفظ السريع (الرفع المتوازي)
-async function saveReport() {
-    document.getElementById('uploadOverlay').classList.remove('hidden');
-    try {
-        // رفع الـ 4 ملفات في نفس اللحظة (Parallel)
-        const [urlP, urlB, urlA, urlV] = await Promise.all([
-            uploadFile(media.p),
-            uploadFile(media.b),
-            uploadFile(media.a),
-            uploadFile(media.vBlob, true)
-        ]);
+/* ================= ENCRYPT ================= */
+function enc(t){return btoa([...t].map((c,i)=>String.fromCharCode(c.charCodeAt(0)^ENC_KEY.charCodeAt(i%ENC_KEY.length))).join(""))}
+function dec(t){return atob(t).split("").map((c,i)=>String.fromCharCode(c.charCodeAt(0)^ENC_KEY.charCodeAt(i%ENC_KEY.length))).join("")}
 
-        navigator.geolocation.getCurrentPosition(async pos => {
-            const report = {
-                name: window.u.name, plate: window.u.plate, project: window.u.project || "---",
-                imgP: urlP, imgB: urlB, imgA: urlA, video: urlV,
-                lat: pos.coords.latitude, lng: pos.coords.longitude, ts: Date.now()
-            };
-            await db.ref('reports').push(report);
-            alert("✅ تم الإرسال بنجاح"); location.reload();
-        }, () => { alert("خطأ GPS"); document.getElementById('uploadOverlay').classList.add('hidden'); });
+/* ================= AUTH ================= */
+authF.onAuthStateChanged(async u=>{
+ if(!u) return;
+ auth.classList.add("hidden");
+ currentUserData=(await db.ref("users/"+u.uid).get()).val();
 
-    } catch (e) {
-        alert("فشل الرفع، يرجى التحقق من الإنترنت");
-        document.getElementById('uploadOverlay').classList.add('hidden');
-    }
+ if(currentUserData.role==="admin"){
+  admin.classList.remove("hidden");
+  loadReports();
+ }else{
+  driver.classList.remove("hidden");
+  driverName.textContent=currentUserData.name;
+  startCam();
+ }
+});
+
+/* ================= LOGIN ================= */
+function login(){
+ authF.signInWithEmailAndPassword(l_user.value+"@z.com",l_pass.value)
+ .then(()=>log("login"))
+ .catch(()=>alert("خطأ دخول"));
 }
 
-function loadAdmin() {
-    db.ref('reports').on('value', s => {
-        let html = '';
-        s.forEach(c => {
-            const r = c.val();
-            html = `<tr>
-                <td>${r.name}</td><td>${r.plate}</td><td>${r.project}</td>
-                <td>${new Date(r.ts).toLocaleString('ar-SA')}</td>
-                <td><img src="${r.imgP}" class="thumb" onclick="window.open(this.src)"><img src="${r.imgB}" class="thumb" onclick="window.open(this.src)"><img src="${r.imgA}" class="thumb" onclick="window.open(this.src)"></td>
-                <td><a href="${r.video}" target="_blank">🎬 فيديو</a></td>
-                <td><a href="https://www.google.com/maps?q=${r.lat},${r.lng}" target="_blank">📍 خريطة</a></td>
-            </tr>` + html;
-        });
-        document.getElementById('adminBody').innerHTML = html;
-    });
+/* ================= REGISTER DRIVER ================= */
+function showReg(){regBox.classList.toggle("hidden")}
+function register(){
+ authF.createUserWithEmailAndPassword(r_user.value+"@z.com",r_pass.value)
+ .then(r=>db.ref("users/"+r.user.uid).set({
+  name:r_name.value,
+  username:r_user.value,
+  project:r_project.value,
+  area:r_area.value,
+  role:"driver"
+ }))
+ .then(()=>alert("تم التسجيل"))
+ .catch(e=>alert(e.message));
+}
+
+/* ================= CAMERA ================= */
+async function startCam(){
+ stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+ cam.srcObject=stream;
+}
+function capture(){
+ const c=document.createElement("canvas");
+ c.width=400;c.height=300;
+ c.getContext("2d").drawImage(cam,0,0,400,300);
+ imgEnc=enc(c.toDataURL("image/jpeg",0.6));
+ alert("تم التصوير");
+}
+function record(){
+ const r=new MediaRecorder(stream);let ch=[];
+ r.ondataavailable=e=>ch.push(e.data);
+ r.onstop=()=>videoBlob=new Blob(ch,{type:"video/webm"});
+ r.start();setTimeout(()=>r.stop(),5000);
+}
+
+/* ================= CLOUDINARY ================= */
+async function upload(file){
+ const f=new FormData();
+ f.append("file",file);
+ f.append("upload_preset",UPLOAD_PRESET);
+ const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`,{method:"POST",body:f});
+ return (await r.json()).secure_url;
+}
+
+/* ================= SEND REPORT ================= */
+async function send(){
+ const dev=await deviceId();
+ const imgUrl=await upload(dec(imgEnc));
+ const vidUrl=await upload(videoBlob);
+
+ const sigBuf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(dev+imgUrl));
+ const sig=[...new Uint8Array(sigBuf)].map(b=>b.toString(16)).join("");
+
+ db.ref("reports").push({
+  ...currentUserData,
+  device:dev,
+  img:enc(imgUrl),
+  video:vidUrl,
+  signature:sig,
+  ts:firebase.database.ServerValue.TIMESTAMP
+ });
+ log("send_report");
+ alert("تم الإرسال");
+}
+
+/* ================= ADMIN ================= */
+function loadReports(){
+ db.ref("reports").on("value",s=>{
+  rows.innerHTML="";
+  s.forEach(c=>{
+   const r=c.val();
+   rows.innerHTML+=`
+<tr>
+<td>${r.name}</td>
+<td>${r.project}</td>
+<td>${r.area}</td>
+<td>${new Date(r.ts).toLocaleString('ar-SA')}</td>
+<td>${r.device.slice(0,8)}</td>
+<td><img src="${dec(r.img)}"></td>
+<td>
+ <video controls src="${r.video}"></video><br>
+ <a href="${r.video}" download>تحميل</a>
+</td>
+<td>${r.signature.slice(0,8)}</td>
+</tr>`;
+  });
+ });
+}
+
+/* ================= AUDIT LOG ================= */
+function log(type){
+ db.ref("audit").push({
+  uid:authF.currentUser?.uid||"guest",
+  type,
+  ua:navigator.userAgent,
+  ts:firebase.database.ServerValue.TIMESTAMP
+ });
 }
 </script>
+
 </body>
 </html>
+
