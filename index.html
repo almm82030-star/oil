@@ -3,325 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fuel System Pro | Version 4.0</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Fuel System Ultra | Al Zahrani</title>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-
     <style>
         :root { --p: #3b82f6; --s: #22c55e; --d: #ef4444; --bg: #0f172a; --c: #1e293b; --t: #f8fafc; }
-        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { margin: 0; background: var(--bg); color: var(--t); }
-
-        #loadingScreen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        header { background: var(--c); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--p); }
-        .logo-wrap img { height: 45px; border-radius: 8px; }
-
-        .container { max-width: 1400px; margin: 0 auto; padding: 15px; }
-        .card { background: var(--c); padding: 20px; border-radius: 18px; border: 1px solid #334155; margin-bottom: 20px; }
-
-        /* لوحة التحكم والبحث */
-        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; background: #1e293b; padding: 20px; border-radius: 15px; border: 1px solid var(--p); }
-        input, button, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 14px; }
-        
-        .table-wrap { overflow-x: auto; background: #1e293b; border-radius: 12px; }
-        table { width: 100%; border-collapse: collapse; min-width: 1200px; }
-        th { background: #0f172a; padding: 15px; color: var(--p); text-align: center; border-bottom: 2px solid var(--p); }
-        td { padding: 12px; border-bottom: 1px solid #334155; text-align: center; }
-        
-        .thumb { width: 50px; height: 50px; border-radius: 8px; cursor: pointer; object-fit: cover; border: 1px solid #444; }
-        .plate-box { background: #fff; color: #000; padding: 3px 10px; border-radius: 5px; font-weight: 900; border: 2px solid #000; font-size: 13px; }
-        
-        /* حالة الإرسال */
-        #statusOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10001; display: none; align-items: center; justify-content: center; flex-direction: column; }
-        .loader-box { text-align: center; padding: 30px; background: #1e293b; border-radius: 20px; border: 1px solid var(--p); }
-
-        .btn-main { background: var(--p); border: none; font-weight: 900; cursor: pointer; transition: 0.3s; color: white; }
-        .btn-success { background: var(--s); }
+        * { box-sizing: border-box; font-family: sans-serif; }
+        body { margin: 0; background: var(--bg); color: var(--t); text-align: right; }
+        .card { background: var(--c); padding: 15px; border-radius: 12px; margin: 10px; border: 1px solid #334155; }
+        input, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; border: 1px solid #444; background: #0f172a; color: white; }
+        .btn-success { background: var(--s); font-weight: bold; border: none; cursor: pointer; height: 55px; }
         .hidden { display: none !important; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; font-size: 13px; }
+        th, td { border: 1px solid #334155; padding: 10px; text-align: center; }
+        .thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; margin: 2px; }
+        #statusOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; }
     </style>
 </head>
 <body>
 
-<div id="loadingScreen">
-    <div style="font-size: 40px; margin-bottom: 20px;">⚡</div>
-    <b>جاري تجهيز النظام...</b>
-</div>
-
 <div id="statusOverlay">
-    <div class="loader-box">
-        <div id="statusIcon" style="font-size: 50px; margin-bottom: 15px;">⏳</div>
-        <h3 id="statusMsg">جاري رفع البيانات...</h3>
-        <p style="font-size: 12px; color: #94a3b8;">يرجى عدم إغلاق الصفحة حتى اكتمال العملية</p>
-        <button id="okBtn" class="btn-main hidden" onclick="location.reload()" style="margin-top:15px; width:150px;">تم</button>
+    <div style="text-align: center;">
+        <div id="loader" style="font-size: 40px;">⏳</div>
+        <h3 id="statusTxt">جاري الحفظ والرفع...</h3>
+        <p id="subStatus">يرجى الانتظار، جاري ضغط الملفات</p>
+        <button id="okBtn" class="hidden" onclick="location.reload()" style="background:var(--p); width:150px;">موافق</button>
     </div>
 </div>
-
-<header>
-    <div class="logo-wrap">
-        <img src="https://i.ibb.co/yFCW2v98/Untitled.webp" alt="Logo">
-        <span style="font-weight:900; color:var(--p); margin-right:10px;">نظام رقابة الوقود الذكي</span>
-    </div>
-    <button onclick="logout()" style="width:auto; background:var(--d); border:none; padding:8px 20px; border-radius:10px; color:white; font-weight:bold; cursor:pointer;">خروج</button>
-</header>
 
 <div class="container">
     <section id="sec_auth" class="hidden">
-        <div class="card" style="max-width:400px; margin: 50px auto; text-align:center;">
-            <div id="login_box">
-                <h2>تسجيل الدخول</h2>
-                <input type="text" id="uInp" placeholder="اسم المستخدم أو الإيميل">
-                <input type="password" id="pInp" placeholder="كلمة المرور">
-                <button class="btn-main" style="height:55px; margin-top:15px;" onclick="handleLogin()">دخول النظام</button>
-                <button onclick="toggleAuth(true)" style="background:transparent; color:var(--p); border:none; margin-top:15px;">إنشاء حساب جديد</button>
-            </div>
-            <div id="reg_box" class="hidden">
-                <h2>حساب سائق جديد</h2>
-                <input type="text" id="r_name" placeholder="الاسم الرباعي للمندوب">
-                <input type="text" id="r_plate" placeholder="رقم اللوحة (مثال: أ ب ج 1234)">
-                <input type="text" id="r_proj" placeholder="اسم المشروع">
-                <input type="text" id="r_reg" placeholder="المنطقة">
-                <input type="text" id="r_user" placeholder="اسم المستخدم للدخول">
+        <div class="card" style="max-width: 400px; margin: 50px auto;">
+            <h2 style="text-align:center;">دخول النظام</h2>
+            <input type="text" id="uInp" placeholder="اسم المستخدم">
+            <input type="password" id="pInp" placeholder="كلمة المرور">
+            <button onclick="handleLogin()" style="background:var(--p);">دخول</button>
+            <button onclick="document.getElementById('regBox').classList.toggle('hidden')" style="background:none; border:none; color:var(--p);">+ تسجيل سائق جديد</button>
+            <div id="regBox" class="hidden">
+                <input type="text" id="r_n" placeholder="اسم السائق">
+                <input type="text" id="r_pl" placeholder="رقم اللوحة">
+                <input type="text" id="r_pj" placeholder="المشروع">
+                <input type="text" id="r_user" placeholder="اسم مستخدم جديد">
                 <input type="password" id="r_pass" placeholder="كلمة المرور">
-                <button class="btn-main btn-success" onclick="handleRegister()" style="height:55px; margin-top:15px;">تأكيد التسجيل</button>
-                <button onclick="toggleAuth(false)" style="background:transparent; color:var(--p); border:none;">رجوع للدخول</button>
+                <button onclick="handleReg()" style="background:var(--s);">تأكيد الحساب</button>
             </div>
         </div>
     </section>
 
     <section id="sec_admin" class="hidden">
-        <div class="filter-grid">
-            <input type="text" id="sPlate" placeholder="بحث برقم اللوحة..." oninput="filterData()">
-            <div style="display:flex; align-items:center; gap:5px;">
-                <label style="font-size:12px;">من:</label>
-                <input type="date" id="dFrom" onchange="filterData()">
-            </div>
-            <div style="display:flex; align-items:center; gap:5px;">
-                <label style="font-size:12px;">إلى:</label>
-                <input type="date" id="dTo" onchange="filterData()">
-            </div>
-            <button onclick="exportToExcel()" style="background:#4f46e5; font-weight:bold;">تصدير ملف Excel 📥</button>
-        </div>
-
         <div class="card">
-            <div class="table-wrap">
-                <table id="adminTable">
-                    <thead>
-                        <tr>
-                            <th>المندوب</th>
-                            <th>اللوحة</th>
-                            <th>المشروع / المنطقة</th>
-                            <th>التاريخ والوقت</th>
-                            <th>لوحة / قبل / بعد</th>
-                            <th>الفيديو</th>
-                            <th>الموقع</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
+            <h3>لوحة المدير - فلترة البيانات</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+                <input type="text" id="fPlate" placeholder="بحث باللوحة..." oninput="filter()">
+                <input type="date" id="fFrom" onchange="filter()">
+                <input type="date" id="fTo" onchange="filter()">
             </div>
+            <button onclick="exportExcel()" style="background:#4f46e5; margin-top:10px;">تصدير Excel</button>
+        </div>
+        <div class="card" style="overflow-x: auto;">
+            <table id="adminTable">
+                <thead>
+                    <tr>
+                        <th>السائق</th><th>اللوحة</th><th>المشروع</th><th>الوقت</th><th>الصور</th><th>الفيديو</th><th>الموقع</th>
+                    </tr>
+                </thead>
+                <tbody id="tBody"></tbody>
+            </table>
         </div>
     </section>
 
     <section id="sec_driver" class="hidden">
-        <div class="card" style="text-align:center;">
-            <h3 id="driverName" style="color:var(--p); margin-bottom:5px;">...</h3>
-            <p id="driverInfo" style="font-size:13px; margin-top:0; color:#94a3b8;"></p>
-            
-            <video id="v" autoplay playsinline style="width:100%; max-width:500px; border-radius:15px; border:3px solid var(--p); background:#000; margin-bottom:15px;"></video>
-            
-            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:10px;">
-                <button class="btn-main" onclick="takePic('p')">📸 تصوير اللوحة</button>
-                <button class="btn-main" onclick="takePic('b')">📸 عداد (قبل)</button>
-                <button class="btn-main" onclick="takePic('a')">📸 عداد (بعد)</button>
-                <button class="btn-main" id="vBtn" onclick="toggleVid()" style="background:var(--d);">🎥 تسجيل فيديو</button>
+        <div class="card" style="text-align: center;">
+            <h3 id="dName">...</h3>
+            <video id="v" autoplay playsinline style="width:100%; max-width:400px; border-radius:10px; background:#000;"></video>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-top:10px;">
+                <button onclick="capture('p')">📸 اللوحة</button>
+                <button onclick="capture('b')">📸 قبل</button>
+                <button onclick="capture('a')">📸 بعد</button>
+                <button id="vBtn" onclick="toggleV()" style="background:var(--d);">🎥 فيديو 5 ثواني</button>
             </div>
-
-            <div style="display:flex; justify-content:center; gap:10px; margin: 15px 0;">
-                <div id="prv_p" class="hidden">🖼️ اللوحة</div>
-                <div id="prv_b" class="hidden">🖼️ قبل</div>
-                <div id="prv_a" class="hidden">🖼️ بعد</div>
-                <div id="prv_v" class="hidden">🎬 فيديو</div>
-            </div>
-
-            <button class="btn-main btn-success" id="sBtn" style="height:65px; font-size:18px;" onclick="uploadReport()" disabled>إرسال التقرير للمدير</button>
+            <button id="sendBtn" class="btn-success" style="margin-top:15px;" onclick="finalUpload()" disabled>إرسال التقرير الآن</button>
         </div>
     </section>
 </div>
 
 <script>
-// الإعدادات الرسمية
-const fb = { apiKey: "AIzaSyBkOM7eSnUJ0B_3Mx4wVyh-lTvFEAhxWas", authDomain: "tama-6219c.firebaseapp.com", databaseURL: "https://tama-6219c-default-rtdb.firebaseio.com", projectId: "tama-6219c", appId: "1:285162278384:web:8264d5439564660b616135" };
-firebase.initializeApp(fb);
-const auth = firebase.auth(); const db = firebase.database();
+const config = { apiKey: "AIzaSyBkOM7eSnUJ0B_3Mx4wVyh-lTvFEAhxWas", authDomain: "tama-6219c.firebaseapp.com", databaseURL: "https://tama-6219c-default-rtdb.firebaseio.com", projectId: "tama-6219c", appId: "1:285162278384:web:8264d5439564660b616135" };
+firebase.initializeApp(config);
+const auth = firebase.auth(), db = firebase.database();
+let userData = null, reports = [], media = { p:null, b:null, a:null, v:null };
 
-let currentUserData = null;
-let reportsList = [];
-let mediaData = { p:null, b:null, a:null, v:null };
-
-// مراقبة تسجيل الدخول
-auth.onAuthStateChanged(user => {
-    document.getElementById('loadingScreen').style.display = 'none';
-    if (!user) { show('sec_auth'); }
-    else {
-        db.ref('users/' + user.uid).once('value', s => {
-            const d = s.val();
-            if (d && d.role === 'admin') { show('sec_admin'); loadAdminData(); }
-            else if (d) {
-                currentUserData = d;
-                show('sec_driver');
-                document.getElementById('driverName').innerText = d.name;
-                document.getElementById('driverInfo').innerText = `المشروع: ${d.project} | اللوحة: ${d.plate}`;
-                startCam();
-            }
-        });
-    }
+auth.onAuthStateChanged(u => {
+    if(!u) show('sec_auth');
+    else db.ref('users/'+u.uid).once('value', s => {
+        const d = s.val();
+        if(d?.role==='admin') { show('sec_admin'); loadAdmin(); }
+        else if(d) { userData=d; show('sec_driver'); document.getElementById('dName').innerText=d.name; initCam(); }
+    });
 });
 
-function show(id) { document.querySelectorAll('section').forEach(s => s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
-function toggleAuth(reg) { document.getElementById('login_box').classList.toggle('hidden', reg); document.getElementById('reg_box').classList.toggle('hidden', !reg); }
-
-// معالجة الدخول والتسجيل
-async function handleLogin() {
-    const u = document.getElementById('uInp').value, p = document.getElementById('pInp').value;
-    try { await auth.signInWithEmailAndPassword(u.includes('@') ? u : `${u}@fuel.com`, p); } catch(e) { alert("خطأ في بيانات الدخول"); }
+function show(id) { document.querySelectorAll('section').forEach(s=>s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+function handleLogin() { 
+    const u = document.getElementById('uInp').value; 
+    auth.signInWithEmailAndPassword(u.includes('@')?u:u+'@z.com', document.getElementById('pInp').value).catch(e=>alert("خطأ في الدخول"));
 }
 
-async function handleRegister() {
-    const d = { n: document.getElementById('r_name').value, pl: document.getElementById('r_plate').value, pj: document.getElementById('r_proj').value, rg: document.getElementById('r_reg').value, u: document.getElementById('r_user').value, p: document.getElementById('r_pass').value };
-    if(!d.n || !d.u || !d.p) return alert("يرجى ملء كافة البيانات");
-    try {
-        const res = await auth.createUserWithEmailAndPassword(`${d.u}@fuel.com`, d.p);
-        await db.ref('users/' + res.user.uid).set({name:d.n, plate:d.pl, project:d.pj, region:d.rg, role:'driver'});
-        alert("تم إنشاء الحساب بنجاح"); location.reload();
-    } catch(e) { alert(e.message); }
+function handleReg() {
+    const d = { n: document.getElementById('r_n').value, pl: document.getElementById('r_pl').value, pj: document.getElementById('r_pj').value, u: document.getElementById('r_user').value, p: document.getElementById('r_pass').value };
+    auth.createUserWithEmailAndPassword(d.u+'@z.com', d.p).then(r => {
+        db.ref('users/'+r.user.uid).set({name:d.n, plate:d.pl, project:d.pj, role:'driver'});
+        location.reload();
+    }).catch(e=>alert(e.message));
 }
 
-function logout() { auth.signOut().then(() => location.reload()); }
+let stream, rec, chunks = [];
+async function initCam() { stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:true}); document.getElementById('v').srcObject = stream; }
 
-// السائق: الكاميرا والمعالجة
-let stream, recorder, chunks = [];
-
-async function startCam() {
-    try {
-        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:true});
-        document.getElementById('v').srcObject = stream;
-    } catch(e) { alert("يجب السماح بالوصول للكاميرا للمتابعة"); }
+function capture(t) {
+    const canvas = document.createElement('canvas'); 
+    canvas.width = 400; canvas.height = 300; // تقليل الحجم لضمان الرفع
+    canvas.getContext('2d').drawImage(document.getElementById('v'), 0, 0, 400, 300);
+    media[t] = canvas.toDataURL('image/jpeg', 0.5); // ضغط 50%
+    alert("تم التقاط الصورة"); checkBtn();
 }
 
-function takePic(type) {
-    const video = document.getElementById('v');
-    const canvas = document.createElement('canvas');
-    canvas.width = 640; canvas.height = 480; // حجم متوسط لضمان جودة وسرعة رفع
-    canvas.getContext('2d').drawImage(video, 0, 0, 640, 480);
-    mediaData[type] = canvas.toDataURL('image/jpeg', 0.6); // ضغط الصورة بنسبة 60%
-    document.getElementById('prv_'+type).classList.remove('hidden');
-    checkStatus();
+function toggleV() {
+    rec = new MediaRecorder(stream); chunks = [];
+    rec.ondataavailable = e => chunks.push(e.data);
+    rec.onstop = () => {
+        const reader = new FileReader();
+        reader.readAsDataURL(new Blob(chunks, {type:'video/mp4'}));
+        reader.onloadend = () => { media.v = reader.result; alert("الفيديو جاهز"); checkBtn(); };
+    };
+    rec.start(); document.getElementById('vBtn').innerText="🔴 جاري التسجيل...";
+    setTimeout(()=> { rec.stop(); document.getElementById('vBtn').innerText="🎥 تسجيل فيديو"; }, 5000);
 }
 
-function toggleVid() {
-    if (recorder && recorder.state === "recording") {
-        recorder.stop();
-        document.getElementById('vBtn').innerText = "🎥 تسجيل فيديو";
-    } else {
-        chunks = [];
-        recorder = new MediaRecorder(stream);
-        recorder.ondataavailable = e => chunks.push(e.data);
-        recorder.onstop = () => {
-            const blob = new Blob(chunks, {type:'video/mp4'});
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onloadend = () => {
-                mediaData.v = reader.result;
-                document.getElementById('prv_v').classList.remove('hidden');
-                checkStatus();
-            };
-        };
-        recorder.start();
-        document.getElementById('vBtn').innerText = "🔴 جاري التسجيل (8ث)...";
-        setTimeout(() => { if(recorder.state === "recording") recorder.stop(); }, 8000);
-    }
-}
+function checkBtn() { if(media.p && media.b && media.a && media.v) document.getElementById('sendBtn').disabled = false; }
 
-function checkStatus() {
-    if(mediaData.p && mediaData.b && mediaData.a && mediaData.v) document.getElementById('sBtn').disabled = false;
-}
-
-// رفع التقرير النهائي
-function uploadReport() {
-    document.getElementById('statusOverlay').style.display = 'flex';
+async function finalUpload() {
+    document.getElementById('statusOverlay').style.display='flex';
     navigator.geolocation.getCurrentPosition(async pos => {
         const report = {
-            name: currentUserData.name, plate: currentUserData.plate, project: currentUserData.project, 
-            region: currentUserData.region, imgP: mediaData.p, imgB: mediaData.b, imgA: mediaData.a, 
-            video: mediaData.v, lat: pos.coords.latitude, lng: pos.coords.longitude, ts: Date.now()
+            name: userData.name, plate: userData.plate, project: userData.project,
+            ts: Date.now(), lat: pos.coords.latitude, lng: pos.coords.longitude,
+            imgP: media.p, imgB: media.b, imgA: media.a, video: media.v
         };
-        
-        try {
-            await db.ref('reports').push(report);
-            document.getElementById('statusIcon').innerText = "✅";
-            document.getElementById('statusMsg').innerText = "تم الإرسال بنجاح!";
-            document.getElementById('okBtn').classList.remove('hidden');
-        } catch(e) {
-            alert("حدث خطأ أثناء الرفع، يرجى المحاولة مرة أخرى.");
-            document.getElementById('statusOverlay').style.display = 'none';
-        }
-    }, () => {
-        alert("يجب تفعيل GPS لإرسال التقرير");
-        document.getElementById('statusOverlay').style.display = 'none';
-    });
+        // محاولة الرفع مع معالجة الأخطاء
+        db.ref('reports').push(report)
+            .then(() => {
+                document.getElementById('statusIcon').innerText="✅";
+                document.getElementById('statusTxt').innerText="تم الإرسال بنجاح!";
+                document.getElementById('okBtn').classList.remove('hidden');
+            })
+            .catch(e => {
+                alert("فشل الرفع: ربما حجم الملف كبير جداً. حاول تقليل مدة الفيديو.");
+                document.getElementById('statusOverlay').style.display='none';
+            });
+    }, () => { alert("يجب تفعيل GPS"); document.getElementById('statusOverlay').style.display='none'; });
 }
 
-// لوحة المدير والفلترة
-function loadAdminData() {
+function loadAdmin() {
     db.ref('reports').on('value', s => {
-        reportsList = [];
-        s.forEach(child => { reportsList.push({id: child.key, ...child.val()}); });
-        filterData();
+        reports = []; s.forEach(c => { reports.push(c.val()); });
+        filter();
     });
 }
 
-function filterData() {
-    const q = document.getElementById('sPlate').value.toLowerCase();
-    const from = document.getElementById('dFrom').value;
-    const to = document.getElementById('dTo').value;
-
-    let filtered = reportsList.filter(r => {
-        const matchPlate = r.plate.toLowerCase().includes(q);
-        const rDate = new Date(r.ts).toISOString().split('T')[0];
-        const matchDate = (!from || rDate >= from) && (!to || rDate <= to);
-        return matchPlate && matchDate;
+function filter() {
+    const p = document.getElementById('fPlate').value.toLowerCase();
+    const f = document.getElementById('fFrom').value, t = document.getElementById('fTo').value;
+    let filtered = reports.filter(r => {
+        const mP = r.plate.toLowerCase().includes(p);
+        const rD = new Date(r.ts).toISOString().split('T')[0];
+        const mD = (!f || rD >= f) && (!t || rD <= t);
+        return mP && mD;
     });
-
-    renderTable(filtered);
+    render(filtered);
 }
 
-function renderTable(data) {
-    let html = '';
+function render(data) {
+    let h = '';
     data.reverse().forEach(r => {
-        const dt = new Date(r.ts).toLocaleString('ar-SA');
-        html += `<tr>
-            <td><b>${r.name}</b></td>
-            <td><span class="plate-box">${r.plate}</span></td>
-            <td>${r.project} / ${r.region}</td>
-            <td>${dt}</td>
-            <td>
-                <img src="${r.imgP}" class="thumb" onclick="vFull(this.src)" title="اللوحة">
-                <img src="${r.imgB}" class="thumb" onclick="vFull(this.src)" title="قبل">
-                <img src="${r.imgA}" class="thumb" onclick="vFull(this.src)" title="بعد">
-            </td>
-            <td><a href="${r.video}" download="fuel_video.mp4" style="color:var(--s); font-size:12px;">📥 تحميل الفيديو</a></td>
-            <td><a href="https://www.google.com/maps?q=${r.lat},${r.lng}" target="_blank" style="color:var(--p);">📍 فتح الموقع</a></td>
+        h += `<tr>
+            <td>${r.name}</td><td>${r.plate}</td><td>${r.project}</td>
+            <td>${new Date(r.ts).toLocaleString('ar-SA')}</td>
+            <td><img src="${r.imgP}" class="thumb"><img src="${r.imgB}" class="thumb"><img src="${r.imgA}" class="thumb"></td>
+            <td><a href="${r.video}" download="v.mp4">تحميل 🎥</a></td>
+            <td><a href="https://maps.google.com/?q=${r.lat},${r.lng}" target="_blank">الخريطة 📍</a></td>
         </tr>`;
     });
-    document.getElementById('tableBody').innerHTML = html || '<tr><td colspan="7">لا توجد بيانات حالياً</td></tr>';
+    document.getElementById('tBody').innerHTML = h;
 }
 
-function vFull(s) { const w = window.open(""); w.document.write(`<img src="${s}" style="width:100%">`); }
-function exportToExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById('adminTable')), "Fuel_Audit_Report.xlsx"); }
+function exportExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById('adminTable')), "Report.xlsx"); }
 </script>
 </body>
 </html>
