@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fuel Proof AI | Al Zahrani Logistics</title>
+    <title>Fuel Proof AI | نظام الزهراني المطور</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -14,11 +14,9 @@
     <style>
         :root { --p: #3b82f6; --s: #22c55e; --d: #ef4444; --bg: #0f172a; --c: #1e293b; --t: #f8fafc; }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { margin: 0; background: var(--bg); color: var(--t); overflow-x: hidden; }
+        body { margin: 0; background: var(--bg); color: var(--t); }
 
-        /* الشاشة الافتتاحية للتحميل */
         #loadingScreen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-
         header { background: var(--c); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--p); }
         .logo-wrap img { height: 45px; border-radius: 8px; }
 
@@ -29,37 +27,37 @@
         button { border: none; font-weight: 900; cursor: pointer; }
         .btn-main { background: var(--p); }
         .btn-success { background: var(--s); }
-        
         .hidden { display: none !important; }
 
-        /* تصميم الجدول والوسائط */
+        /* الجدول والوسائط */
         .table-wrap { overflow-x: auto; background: #1e293b; border-radius: 10px; }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th { background: #0f172a; padding: 12px; color: var(--p); text-align: center; }
-        td { padding: 10px; border-bottom: 1px solid #334155; text-align: center; font-size: 13px; }
-        .thumb { width: 45px; height: 45px; border-radius: 5px; cursor: zoom-in; border: 1px solid #444; margin: 2px; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { background: #0f172a; padding: 15px; color: var(--p); text-align: center; font-size: 14px; }
+        td { padding: 12px; border-bottom: 1px solid #334155; text-align: center; font-size: 13px; }
+        .thumb { width: 50px; height: 50px; border-radius: 5px; cursor: zoom-in; border: 1px solid #444; margin: 2px; object-fit: cover; }
 
-        /* نافذة عرض الصور */
         #imgModal { position: fixed; inset:0; background:rgba(0,0,0,0.9); z-index:10000; display:none; align-items:center; justify-content:center; }
         #imgModal img { max-width: 90%; max-height: 80%; border: 3px solid var(--p); }
-        .close-modal { position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; }
 
-        /* إحصائيات */
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: #0f172a; padding: 15px; border-radius: 12px; text-align: center; border-bottom: 3px solid var(--p); }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: #0f172a; padding: 20px; border-radius: 12px; text-align: center; border-bottom: 4px solid var(--p); }
+
+        /* رسالة النجاح */
+        #successMsg { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--s); color: white; padding: 15px 30px; border-radius: 50px; font-weight: bold; z-index: 10001; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
-<div id="loadingScreen">جاري التحقق من الصلاحيات...</div>
-<div id="imgModal"><span class="close-modal" onclick="closeImg()">&times;</span><img id="modalImg"></div>
+<div id="loadingScreen">جاري تشغيل نظام الزهراني...</div>
+<div id="successMsg">✅ تم إرسال بياناتك للنظام بنجاح</div>
+<div id="imgModal" onclick="this.style.display='none'"><img id="modalImg"></div>
 
 <header>
     <div class="logo-wrap">
         <img src="https://i.ibb.co/yFCW2v98/Untitled.webp" alt="Logo">
         <span style="font-weight:900; color:var(--p); margin-right:10px;">FUEL PROOF AI</span>
     </div>
-    <button onclick="logout()" style="width:auto; padding:5px 15px; margin:0; background:var(--d);">خروج</button>
+    <button onclick="logout()" style="width:auto; padding:5px 15px; background:var(--d);">خروج</button>
 </header>
 
 <div class="container">
@@ -70,36 +68,36 @@
                 <input type="text" id="userInp" placeholder="اسم المستخدم">
                 <input type="password" id="passInp" placeholder="كلمة المرور">
                 <div id="capDisp" style="background:#000; color:var(--s); text-align:center; font-size:30px; font-weight:900; letter-spacing:10px; padding:10px; margin-bottom:10px; border-radius:10px;"></div>
-                <input type="text" id="capInp" placeholder="أدخل رمز التحقق">
+                <input type="text" id="capInp" placeholder="أدخل الرمز أعلاه">
                 <button class="btn-main" onclick="handleLogin()">دخول</button>
-                <button onclick="toggleAuth(true)" style="background:transparent; color:var(--p); border:1px solid var(--p);">سائق جديد؟ سجل هنا</button>
+                <button onclick="toggleAuth(true)" style="background:transparent; color:var(--p); border:1px solid var(--p);">تسجيل سائق جديد</button>
             </div>
             <div id="reg_box" class="hidden">
                 <input type="text" id="r_name" placeholder="الاسم الكامل">
-                <input type="text" id="r_proj" placeholder="المشروع (مثال: حمرية)">
+                <input type="text" id="r_proj" placeholder="اسم المشروع">
                 <input type="text" id="r_reg" placeholder="المنطقة">
                 <input type="text" id="r_user" placeholder="اسم المستخدم">
                 <input type="password" id="r_pass" placeholder="كلمة المرور">
-                <button class="btn-success" onclick="handleRegister()">إنشاء الحساب</button>
-                <button onclick="toggleAuth(false)" style="background:transparent; color:var(--p);">رجوع للدخول</button>
+                <button class="btn-success" onclick="handleRegister()">تأكيد التسجيل</button>
+                <button onclick="toggleAuth(false)" style="background:transparent; color:var(--p);">العودة للدخول</button>
             </div>
         </div>
     </section>
 
     <section id="sec_admin" class="hidden">
         <div class="stats">
-            <div class="stat-card"><h4>إجمالي العمليات</h4><div id="c1" style="font-size:24px; font-weight:900;">0</div></div>
-            <div class="stat-card" style="border-color:var(--d);"><h4>مشبوهة</h4><div id="c2" style="font-size:24px; font-weight:900; color:var(--d);">0</div></div>
+            <div class="stat-card"><h4>إجمالي التقارير</h4><div id="c1" style="font-size:28px; font-weight:900; color:var(--p);">0</div></div>
+            <div class="stat-card" style="border-color:var(--d);"><h4>عمليات مشبوهة</h4><div id="c2" style="font-size:28px; font-weight:900; color:var(--d);">0</div></div>
         </div>
         <div class="card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3>سجل التقارير الذكي</h3>
-                <button onclick="exportToExcel()" style="width:auto; background:#6366f1; padding:8px 15px;">Excel 📥</button>
+                <h3>سجل الرقابة الميدانية</h3>
+                <button onclick="exportToExcel()" style="width:auto; background:#6366f1; padding:8px 15px;">تحميل إكسل 📥</button>
             </div>
             <div class="table-wrap">
                 <table id="resTable">
                     <thead>
-                        <tr><th>السائق</th><th>المشروع/المنطقة</th><th>الموقع</th><th>الصور</th><th>الحالة</th><th>الوقت</th></tr>
+                        <tr><th>السائق</th><th>المشروع / المنطقة</th><th>الموقع</th><th>الصور الموثقة</th><th>الحالة</th><th>التاريخ والوقت</th></tr>
                     </thead>
                     <tbody id="adminBody"></tbody>
                 </table>
@@ -109,40 +107,37 @@
 
     <section id="sec_driver" class="hidden">
         <div class="card">
-            <h3>📸 توثيق التعبئة</h3>
+            <h3>📸 توثيق عملية التعبئة</h3>
             <video id="cam" autoplay playsinline style="width:100%; border-radius:15px; border:2px solid var(--p); background:#000;"></video>
-            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; margin-top:15px;">
-                <div onclick="snap('plate')" style="text-align:center;"><img id="p_plate" class="thumb" style="width:100%; height:80px;"><br>صورة اللوحة</div>
-                <div onclick="snap('before')" style="text-align:center;"><img id="p_before" class="thumb" style="width:100%; height:80px;"><br>عداد قبل</div>
-                <div onclick="snap('after')" style="text-align:center;"><img id="p_after" class="thumb" style="width:100%; height:80px;"><br>عداد بعد</div>
-                <div onclick="startVid()" style="text-align:center;"><div id="v_stat" style="height:80px; background:#000; display:flex; align-items:center; justify-content:center; border-radius:10px; font-size:30px;">🎥</div>فيديو (10ث)</div>
+            <div style="display:grid; grid-template-columns: repeat(2, 2fr); gap:10px; margin-top:15px;">
+                <div onclick="snap('plate')" style="text-align:center;"><img id="p_plate" class="thumb" style="width:100%; height:90px; background:#222;"><br>صورة اللوحة</div>
+                <div onclick="snap('before')" style="text-align:center;"><img id="p_before" class="thumb" style="width:100%; height:90px; background:#222;"><br>العداد قبل</div>
+                <div onclick="snap('after')" style="text-align:center;"><img id="p_after" class="thumb" style="width:100%; height:90px; background:#222;"><br>العداد بعد</div>
+                <div onclick="startVid()" style="text-align:center;"><div id="v_stat" style="height:90px; background:#000; display:flex; align-items:center; justify-content:center; border-radius:10px; font-size:30px;">🎥</div>فيديو (10ث)</div>
             </div>
-            <button class="btn-success" style="margin-top:20px;" onclick="saveReport()">إرسال التقرير النهائي</button>
+            <button class="btn-success" id="sendBtn" style="margin-top:20px; height:60px; font-size:20px;" onclick="saveReport()">إرسال التقرير الآن</button>
         </div>
     </section>
 </div>
 
 <script>
-// الإعدادات
+// إعدادات Firebase
 const fb = { apiKey: "AIzaSyBkOM7eSnUJ0B_3Mx4wVyh-lTvFEAhxWas", authDomain: "tama-6219c.firebaseapp.com", databaseURL: "https://tama-6219c-default-rtdb.firebaseio.com", projectId: "tama-6219c", appId: "1:285162278384:web:8264d5439564660b616135" };
 firebase.initializeApp(fb);
 const auth = firebase.auth(); const db = firebase.database();
 
-// نظام الحماية وإدارة الشاشات
+// إدارة الشاشات
 auth.onAuthStateChanged(user => {
     document.getElementById('loadingScreen').style.display = 'none';
     if (!user) {
-        showSection('sec_auth');
-        genCap();
+        showSection('sec_auth'); genCap();
     } else {
-        db.ref('users/' + user.uid).once('value', s => {
+        db.ref('users/' + user.uid).on('value', s => {
             const data = s.val();
             if (data && data.role === 'admin') {
                 showSection('sec_admin'); loadAdmin();
             } else if (data) {
                 showSection('sec_driver'); initCam(); window.currUser = data;
-            } else {
-                logout(); // إذا دخل مستخدم ليس له بيانات
             }
         });
     }
@@ -155,44 +150,41 @@ function showSection(id) {
 
 // Captcha
 let code = ""; function genCap() { code = Math.floor(1000 + Math.random()*9000).toString(); document.getElementById('capDisp').innerText = code; }
+function toggleAuth(reg) { document.getElementById('login_box').classList.toggle('hidden', reg); document.getElementById('reg_box').classList.toggle('hidden', !reg); }
 
-function toggleAuth(reg) {
-    document.getElementById('login_box').classList.toggle('hidden', reg);
-    document.getElementById('reg_box').classList.toggle('hidden', !reg);
-}
-
-// Login/Reg
+// Login & Reg
 async function handleLogin() {
     const u = document.getElementById('userInp').value.trim(), p = document.getElementById('passInp').value;
-    if(document.getElementById('capInp').value !== code) return alert("رمز التحقق خطأ");
-    try {
-        const mail = u.includes('@') ? u : `${u}@fuel.com`;
-        await auth.signInWithEmailAndPassword(mail, p);
-    } catch(e) { alert("خطأ في بيانات الدخول"); }
+    if(document.getElementById('capInp').value !== code) return alert("الرمز غير صحيح");
+    try { await auth.signInWithEmailAndPassword(u.includes('@') ? u : `${u}@fuel.com`, p); } catch(e) { alert("خطأ في البيانات"); }
 }
 
 async function handleRegister() {
     const u = document.getElementById('r_user').value.trim(), p = document.getElementById('r_pass').value, n = document.getElementById('r_name').value, pr = document.getElementById('r_proj').value, rg = document.getElementById('r_reg').value;
+    if(!u || !p || !n) return alert("أكمل البيانات");
     try {
         const res = await auth.createUserWithEmailAndPassword(`${u}@fuel.com`, p);
         await db.ref('users/' + res.user.uid).set({name:n, project:pr, region:rg, role:'driver'});
+        alert("تم تسجيلك بنجاح");
     } catch(e) { alert(e.message); }
 }
 
 function logout() { auth.signOut().then(() => location.reload()); }
 
-// Media Logic
+// الميديا
 let media = { plate: null, before: null, after: null, video: null }, stream, recorder, chunks = [];
 
 async function initCam() { 
-    try { stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:true}); document.getElementById('cam').srcObject = stream; } 
-    catch(e) { alert("يرجى تفعيل الكاميرا"); }
+    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:true});
+    document.getElementById('cam').srcObject = stream;
 }
 
 function snap(t) {
     const v = document.getElementById('cam'); const c = document.createElement('canvas');
-    c.width = v.videoWidth; c.height = v.videoHeight; c.getContext('2d').drawImage(v, 0, 0);
-    media[t] = c.toDataURL('image/jpeg', 0.5); document.getElementById('p_'+t).src = media[t];
+    c.width = v.videoWidth; c.height = v.videoHeight;
+    c.getContext('2d').drawImage(v, 0, 0);
+    media[t] = c.toDataURL('image/jpeg', 0.6);
+    document.getElementById('p_'+t).src = media[t];
 }
 
 function startVid() {
@@ -206,49 +198,67 @@ function startVid() {
     setTimeout(() => recorder.stop(), 10000);
 }
 
-function saveReport() {
-    if(!media.plate || !media.before || !media.after || !media.video) return alert("أكمل الوسائط أولاً");
-    navigator.geolocation.getCurrentPosition(pos => {
-        db.ref('reports').push({
-            name: window.currUser.name, project: window.currUser.project, region: window.currUser.region,
-            ...media, lat: pos.coords.latitude, lng: pos.coords.longitude, time: Date.now()
-        }).then(() => { alert("تم الإرسال"); location.reload(); });
-    });
+// إرسال التقرير مع التأكد من البيانات
+async function saveReport() {
+    if(!media.plate || !media.before || !media.after || !media.video) return alert("يرجى التقاط الصور والفيديو أولاً");
+    
+    document.getElementById('sendBtn').innerText = "جاري الإرسال...";
+    document.getElementById('sendBtn').disabled = true;
+
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        const reportData = {
+            driverName: window.currUser.name || "غير معروف",
+            projectName: window.currUser.project || "---",
+            regionName: window.currUser.region || "---",
+            plateImg: media.plate,
+            beforeImg: media.before,
+            afterImg: media.after,
+            videoFile: media.video,
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        await db.ref('reports').push(reportData);
+        
+        document.getElementById('successMsg').style.display = 'block';
+        setTimeout(() => { location.reload(); }, 3000);
+    }, (err) => { alert("يرجى تفعيل الموقع (GPS) للإرسال"); document.getElementById('sendBtn').disabled = false; });
 }
 
-// Admin Logic
+// لوحة التحكم
 function loadAdmin() {
-    db.ref('reports').on('value', s => {
+    db.ref('reports').orderByChild('timestamp').on('value', s => {
         let h = '', count = 0, susp = 0;
         s.forEach(c => {
             const v = c.val(); count++;
-            if(!v.video) susp++;
-            h += `<tr>
-                <td>${v.name}</td>
-                <td>${v.project || '---'} / ${v.region || '---'}</td>
-                <td><a href="https://www.google.com/maps?q=${v.lat},${v.lng}" target="_blank" style="color:var(--p)">📍 الخريطة</a></td>
+            const date = v.timestamp ? new Date(v.timestamp).toLocaleString('ar-SA') : '---';
+            if(!v.videoFile) susp++;
+            
+            h = `<tr>
+                <td><b>${v.driverName}</b></td>
+                <td>${v.projectName} / ${v.regionName}</td>
+                <td><a href="https://www.google.com/maps?q=${v.lat},${v.lng}" target="_blank" style="color:var(--p)">📍 عرض الموقع</a></td>
                 <td>
-                    <img src="${v.plate}" class="thumb" onclick="viewImg(this.src)">
-                    <img src="${v.before}" class="thumb" onclick="viewImg(this.src)">
-                    <img src="${v.after}" class="thumb" onclick="viewImg(this.src)">
-                    <a href="${v.video}" download="vid.mp4" style="color:var(--s); display:block; font-size:10px;">📥 فيديو</a>
+                    <img src="${v.plateImg}" class="thumb" onclick="viewImg(this.src)">
+                    <img src="${v.beforeImg}" class="thumb" onclick="viewImg(this.src)">
+                    <img src="${v.afterImg}" class="thumb" onclick="viewImg(this.src)">
+                    <br><a href="${v.videoFile}" download="fuel_video.mp4" style="color:var(--s); font-size:11px;">📥 تحميل الفيديو</a>
                 </td>
-                <td>${!v.video ? '<b style="color:var(--d)">مشبوه 🚩</b>' : '<b style="color:var(--s)">آمن ✅</b>'}</td>
-                <td>${new Date(v.time).toLocaleString('ar-SA')}</td>
-            </tr>`;
+                <td>${!v.videoFile ? '<b style="color:var(--d)">مشبوه 🚩</b>' : '<b style="color:var(--s)">آمن ✅</b>'}</td>
+                <td>${date}</td>
+            </tr>` + h;
         });
         document.getElementById('adminBody').innerHTML = h;
         document.getElementById('c1').innerText = count; document.getElementById('c2').innerText = susp;
     });
 }
 
-function viewImg(s) { if(!s) return; document.getElementById('modalImg').src = s; document.getElementById('imgModal').style.display='flex'; }
-function closeImg() { document.getElementById('imgModal').style.display='none'; }
+function viewImg(s) { document.getElementById('modalImg').src = s; document.getElementById('imgModal').style.display='flex'; }
 
 function exportToExcel() {
-    const table = document.getElementById('resTable');
-    const wb = XLSX.utils.table_to_book(table, {sheet: "Zahrani Fuel"});
-    XLSX.writeFile(wb, "Fuel_Log_AlZahrani.xlsx");
+    const wb = XLSX.utils.table_to_book(document.getElementById('resTable'));
+    XLSX.writeFile(wb, "تقرير_الزهراني_للوقود.xlsx");
 }
 </script>
 </body>
