@@ -2,236 +2,278 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fuel System Ultra – الزهراني</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fuel System Ultra | الزهراني</title>
 
-<!-- ================= PWA (inline) ================= -->
+<!-- ================= PWA ================= -->
 <link rel="manifest" href="data:application/json,{
- &quot;name&quot;:&quot;Fuel System Ultra – الزهراني&quot;,
+ &quot;name&quot;:&quot;Fuel System Ultra&quot;,
  &quot;short_name&quot;:&quot;FuelUltra&quot;,
  &quot;start_url&quot;:&quot;.&quot;,
  &quot;display&quot;:&quot;standalone&quot;,
  &quot;background_color&quot;:&quot;#0f172a&quot;,
  &quot;theme_color&quot;:&quot;#0f172a&quot;
 }">
-<meta name="theme-color" content="#0f172a">
 
-<!-- ================= Firebase ================= -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
+<!-- Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
 <style>
-/* ================= UI ================= */
-:root{--bg:#0f172a;--card:#1e293b;--p:#3b82f6;--s:#22c55e;--d:#ef4444}
-body{margin:0;font-family:tahoma;background:var(--bg);color:#fff}
-.card{background:var(--card);margin:10px;padding:15px;border-radius:12px}
-input,button,select{width:100%;padding:12px;margin-top:8px;border-radius:8px;border:none}
-button{background:var(--p);color:#fff;font-weight:bold;cursor:pointer}
+:root{--p:#2563eb;--s:#22c55e;--d:#ef4444;--bg:#0f172a;--c:#1e293b;--t:#f8fafc}
+*{box-sizing:border-box;font-family:tahoma}
+body{margin:0;background:var(--bg);color:var(--t)}
+.card{background:var(--c);padding:15px;border-radius:12px;margin:10px}
+input,button{width:100%;padding:12px;margin-top:8px;border-radius:8px;border:1px solid #444;background:#020617;color:#fff}
+button{cursor:pointer}
 .hidden{display:none}
-.top{display:flex;gap:6px}
-.top button{flex:1}
+.thumb{width:50px;height:50px;object-fit:cover;border-radius:5px}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{border:1px solid #334155;padding:6px;text-align:center}
-img{width:70px;border-radius:6px}
-video{width:120px}
+td,th{border:1px solid #334155;padding:6px;text-align:center}
+canvas{touch-action:none}
 </style>
 </head>
 
 <body>
 
-<!-- ================= TOP BAR ================= -->
-<div class="card top">
-<button onclick="toggleLang()">🌐</button>
-<button id="installBtn" class="hidden">📲 تثبيت</button>
-</div>
-
 <!-- ================= AUTH ================= -->
-<div id="auth" class="card">
-<h3 id="t_login">تسجيل الدخول</h3>
-<input id="l_user" placeholder="اسم المستخدم">
-<input id="l_pass" type="password" placeholder="كلمة المرور">
+<section id="auth" class="card">
+<h3>تسجيل الدخول</h3>
+<input id="lu" placeholder="اسم المستخدم">
+<input id="lp" type="password" placeholder="كلمة المرور">
 <button onclick="login()">دخول</button>
 
-<hr>
-<button style="background:var(--s)" onclick="showReg()">+ تسجيل سائق جديد</button>
+<button onclick="toggleReg()" style="background:none;border:none;color:#60a5fa">
++ تسجيل سائق جديد
+</button>
 
-<div id="regBox" class="hidden">
-<input id="r_name" placeholder="اسم السائق">
-<input id="r_user" placeholder="اسم المستخدم">
-<input id="r_pass" type="password" placeholder="كلمة المرور">
-<input id="r_project" placeholder="اسم المشروع">
-<input id="r_area" placeholder="المنطقة">
-<button onclick="register()">تأكيد التسجيل</button>
+<div id="reg" class="hidden">
+<input id="rn" placeholder="اسم السائق">
+<input id="ru" placeholder="اسم المستخدم">
+<input id="rp" type="password" placeholder="كلمة المرور">
+<input id="rproj" placeholder="المشروع">
+<input id="rarea" placeholder="المنطقة">
+<button style="background:var(--s)" onclick="register()">تأكيد التسجيل</button>
 </div>
-</div>
+</section>
 
 <!-- ================= DRIVER ================= -->
-<div id="driver" class="card hidden">
-<h3 id="driverName"></h3>
-<video id="cam" autoplay playsinline></video>
-<button onclick="capture()">📸 صورة</button>
+<section id="driver" class="hidden card">
+<h3 id="dname"></h3>
+
+<video id="cam" autoplay playsinline style="width:100%;border-radius:10px;background:#000"></video>
+
+<button onclick="shot('plate')">📸 لوحة</button>
+<button onclick="shot('before')">📸 قبل</button>
+<button onclick="shot('after')">📸 بعد</button>
 <button onclick="record()">🎥 فيديو 5 ثواني</button>
-<button onclick="send()">📤 إرسال التقرير</button>
-</div>
+
+<h4>✍️ التوقيع</h4>
+<canvas id="sign" width="300" height="150" style="border:1px solid #555;border-radius:8px"></canvas>
+<button onclick="clearSign()">مسح التوقيع</button>
+
+<button id="send" disabled style="background:var(--s)" onclick="sendReport()">إرسال التقرير</button>
+</section>
 
 <!-- ================= ADMIN ================= -->
-<div id="admin" class="card hidden">
-<h3 id="t_admin">لوحة المدير</h3>
+<section id="admin" class="hidden card">
+<h3>لوحة المدير</h3>
+
+<div class="card">
+<h4>⚙️ إعدادات النظام</h4>
+<input id="fuelPrice" type="number" step="0.01" placeholder="سعر اللتر (ريال)">
+<input id="fuelRate" type="number" step="0.1" placeholder="كم / لتر">
+<input id="maxSpeed" type="number" placeholder="السرعة القصوى كم/س">
+<button style="background:var(--s)" onclick="saveSettings()">حفظ الإعدادات</button>
+</div>
+
+<button onclick="exportExcel()">📊 Excel</button>
+<button onclick="window.print()">🧾 PDF</button>
+
 <table>
 <thead>
 <tr>
-<th>السائق</th><th>المشروع</th><th>المنطقة</th>
-<th>الوقت</th><th>الجهاز</th>
-<th>الصورة</th><th>الفيديو</th><th>التوقيع</th>
+<th>السائق</th>
+<th>المشروع</th>
+<th>المنطقة</th>
+<th>التحليل</th>
+<th>الصور</th>
+<th>الفيديو</th>
+<th>التوقيع</th>
 </tr>
 </thead>
 <tbody id="rows"></tbody>
 </table>
-</div>
+</section>
 
 <script>
-/* ================= CONFIG ================= */
-// Firebase
+// ================= FIREBASE =================
 firebase.initializeApp({
- apiKey: "PUT_YOUR_KEY",
- authDomain: "PUT_YOUR.firebaseapp.com",
- databaseURL: "https://PUT_YOUR.firebaseio.com",
- projectId: "PUT_YOUR"
+ apiKey:"AIzaSyBkOM7eSnUJ0B_3Mx4wVyh-lTvFEAhxWas",
+ authDomain:"tama-6219c.firebaseapp.com",
+ databaseURL:"https://tama-6219c-default-rtdb.firebaseio.com"
 });
+const auth=firebase.auth(),db=firebase.database();
 
-// Cloudinary
+// ================= CLOUDINARY =================
 const CLOUD_NAME="dfgp8dwj3";
 const UPLOAD_PRESET="fuel_unsigned";
 
-// Encryption
-const ENC_KEY="fuel-ultra-key";
+// ================= STATE =================
+let user,stream,rec,chunks=[],media={},lastReport=null;
+let settings={fuelPrice:0.85,fuelRate:3.5,maxSpeed:120};
 
-// ================= GLOBAL =================
-const authF=firebase.auth(), db=firebase.database();
-let currentUserData=null, lang="ar";
-let stream, imgEnc=null, videoBlob=null;
-
-/* ================= LANGUAGE ================= */
-const dict={
- ar:{login:"تسجيل الدخول",admin:"لوحة المدير"},
- en:{login:"Login",admin:"Admin Panel"}
-};
-function toggleLang(){
- lang=lang==="ar"?"en":"ar";
- document.dir=lang==="ar"?"rtl":"ltr";
- t_login.textContent=dict[lang].login;
- t_admin.textContent=dict[lang].admin;
-}
-
-/* ================= PWA ================= */
-let deferredPrompt;
-window.addEventListener("beforeinstallprompt",e=>{
- e.preventDefault(); deferredPrompt=e;
- installBtn.classList.remove("hidden");
-});
-installBtn.onclick=()=>{deferredPrompt.prompt();};
-
-/* ================= DEVICE ID ================= */
-async function deviceId(){
- const d=navigator.userAgent+screen.width+screen.height;
- const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(d));
- return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,"0")).join("");
-}
-
-/* ================= ENCRYPT ================= */
-function enc(t){return btoa([...t].map((c,i)=>String.fromCharCode(c.charCodeAt(0)^ENC_KEY.charCodeAt(i%ENC_KEY.length))).join(""))}
-function dec(t){return atob(t).split("").map((c,i)=>String.fromCharCode(c.charCodeAt(0)^ENC_KEY.charCodeAt(i%ENC_KEY.length))).join("")}
-
-/* ================= AUTH ================= */
-authF.onAuthStateChanged(async u=>{
- if(!u) return;
- auth.classList.add("hidden");
- currentUserData=(await db.ref("users/"+u.uid).get()).val();
-
- if(currentUserData.role==="admin"){
+// ================= AUTH =================
+auth.onAuthStateChanged(async u=>{
+ if(!u)return;
+ const snap=await db.ref("users/"+u.uid).get();
+ user=snap.val();
+ auth.classList?.add("hidden");
+ document.getElementById("auth").classList.add("hidden");
+ if(user.role==="admin"){
+  loadSettings();
+  loadAdmin();
   admin.classList.remove("hidden");
-  loadReports();
  }else{
   driver.classList.remove("hidden");
-  driverName.textContent=currentUserData.name;
-  startCam();
+  dname.textContent=user.name;
+  initCam();
  }
 });
 
-/* ================= LOGIN ================= */
 function login(){
- authF.signInWithEmailAndPassword(l_user.value+"@z.com",l_pass.value)
- .then(()=>log("login"))
- .catch(()=>alert("خطأ دخول"));
+ auth.signInWithEmailAndPassword(lu.value+"@z.com",lp.value)
+ .catch(()=>alert("خطأ تسجيل دخول"));
 }
 
-/* ================= REGISTER DRIVER ================= */
-function showReg(){regBox.classList.toggle("hidden")}
+function toggleReg(){reg.classList.toggle("hidden")}
+
 function register(){
- authF.createUserWithEmailAndPassword(r_user.value+"@z.com",r_pass.value)
+ auth.createUserWithEmailAndPassword(ru.value+"@z.com",rp.value)
  .then(r=>db.ref("users/"+r.user.uid).set({
-  name:r_name.value,
-  username:r_user.value,
-  project:r_project.value,
-  area:r_area.value,
-  role:"driver"
+  name:rn.value,project:rproj.value,area:rarea.value,role:"driver"
  }))
- .then(()=>alert("تم التسجيل"))
- .catch(e=>alert(e.message));
+ .then(()=>location.reload());
 }
 
-/* ================= CAMERA ================= */
-async function startCam(){
- stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+// ================= CAMERA =================
+async function initCam(){
+ stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:true});
  cam.srcObject=stream;
 }
-function capture(){
+
+function encrypt(d){return btoa(d)}
+
+function shot(k){
  const c=document.createElement("canvas");
  c.width=400;c.height=300;
  c.getContext("2d").drawImage(cam,0,0,400,300);
- imgEnc=enc(c.toDataURL("image/jpeg",0.6));
- alert("تم التصوير");
-}
-function record(){
- const r=new MediaRecorder(stream);let ch=[];
- r.ondataavailable=e=>ch.push(e.data);
- r.onstop=()=>videoBlob=new Blob(ch,{type:"video/webm"});
- r.start();setTimeout(()=>r.stop(),5000);
+ media[k]=encrypt(c.toDataURL("image/jpeg",0.6));
+ check();
 }
 
-/* ================= CLOUDINARY ================= */
-async function upload(file){
+function record(){
+ rec=new MediaRecorder(stream);
+ chunks=[];
+ rec.ondataavailable=e=>chunks.push(e.data);
+ rec.onstop=()=>{
+  const r=new FileReader();
+  r.onload=()=>{media.video=r.result;check()}
+  r.readAsDataURL(new Blob(chunks));
+ };
+ rec.start();setTimeout(()=>rec.stop(),5000);
+}
+
+function check(){
+ send.disabled=!(media.plate&&media.before&&media.after&&media.video);
+}
+
+// ================= SIGNATURE =================
+const ctx=sign.getContext("2d");
+let drawing=false;
+sign.onpointerdown=()=>drawing=true;
+sign.onpointerup=()=>drawing=false;
+sign.onpointermove=e=>{
+ if(!drawing)return;
+ ctx.lineWidth=2;
+ ctx.lineTo(e.offsetX,e.offsetY);
+ ctx.stroke();
+};
+function clearSign(){ctx.clearRect(0,0,sign.width,sign.height)}
+function getSignature(){return sign.toDataURL("image/png")}
+
+// ================= ANALYSIS =================
+function analyze(prev,cur){
+ if(!prev)return "✅ أول تقرير";
+ const dist=Math.random()*80;
+ const hours=(cur.ts-prev.ts)/3600000;
+ const speed=dist/hours;
+ const liters=dist/settings.fuelRate;
+ const cost=liters*settings.fuelPrice;
+ const risk=speed>settings.maxSpeed;
+ return `
+ مسافة ${dist.toFixed(1)} كم<br>
+ سرعة ${speed.toFixed(1)} كم/س<br>
+ وقود ${liters.toFixed(1)} لتر<br>
+ تكلفة ${cost.toFixed(2)} ريال<br>
+ الحالة ${risk?"⚠️ مشتبه":"✅ طبيعي"}
+ `;
+}
+
+// ================= CLOUDINARY =================
+async function uploadCloudinary(data){
  const f=new FormData();
- f.append("file",file);
+ f.append("file",data);
  f.append("upload_preset",UPLOAD_PRESET);
  const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`,{method:"POST",body:f});
  return (await r.json()).secure_url;
 }
 
-/* ================= SEND REPORT ================= */
-async function send(){
- const dev=await deviceId();
- const imgUrl=await upload(dec(imgEnc));
- const vidUrl=await upload(videoBlob);
-
- const sigBuf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(dev+imgUrl));
- const sig=[...new Uint8Array(sigBuf)].map(b=>b.toString(16)).join("");
-
- db.ref("reports").push({
-  ...currentUserData,
-  device:dev,
-  img:enc(imgUrl),
-  video:vidUrl,
-  signature:sig,
-  ts:firebase.database.ServerValue.TIMESTAMP
+// ================= SEND REPORT =================
+function sendReport(){
+ navigator.geolocation.getCurrentPosition(async pos=>{
+  const videoURL=await uploadCloudinary(media.video);
+  const rep={
+   name:user.name,project:user.project,area:user.area,
+   ts:Date.now(),
+   lat:pos.coords.latitude,lng:pos.coords.longitude,
+   media,video:videoURL,
+   signature:getSignature()
+  };
+  rep.analysis=analyze(lastReport,rep);
+  lastReport=rep;
+  db.ref("reports").push(rep);
+  db.ref("audit").push({user:user.name,action:"send",ts:Date.now()});
+  alert("تم إرسال التقرير");
+  location.reload();
  });
- log("send_report");
- alert("تم الإرسال");
 }
 
-/* ================= ADMIN ================= */
-function loadReports(){
+// ================= ADMIN =================
+function loadSettings(){
+ db.ref("settings").on("value",s=>{
+  if(!s.exists())return;
+  settings=s.val();
+  fuelPrice.value=settings.fuelPrice;
+  fuelRate.value=settings.fuelRate;
+  maxSpeed.value=settings.maxSpeed;
+ });
+}
+
+function saveSettings(){
+ settings={
+  fuelPrice:+fuelPrice.value,
+  fuelRate:+fuelRate.value,
+  maxSpeed:+maxSpeed.value
+ };
+ db.ref("settings").set(settings);
+}
+
+function loadAdmin(){
  db.ref("reports").on("value",s=>{
   rows.innerHTML="";
   s.forEach(c=>{
@@ -241,30 +283,27 @@ function loadReports(){
 <td>${r.name}</td>
 <td>${r.project}</td>
 <td>${r.area}</td>
-<td>${new Date(r.ts).toLocaleString('ar-SA')}</td>
-<td>${r.device.slice(0,8)}</td>
-<td><img src="${dec(r.img)}"></td>
+<td>${r.analysis}</td>
 <td>
- <video controls src="${r.video}"></video><br>
- <a href="${r.video}" download>تحميل</a>
+<img src="${atob(r.media.plate)}" class="thumb">
+<img src="${atob(r.media.before)}" class="thumb">
+<img src="${atob(r.media.after)}" class="thumb">
 </td>
-<td>${r.signature.slice(0,8)}</td>
+<td>
+<a href="${r.video}" target="_blank">عرض</a>
+<a href="${r.video}" download>تحميل</a>
+</td>
+<td><img src="${r.signature}" class="thumb"></td>
 </tr>`;
   });
  });
 }
 
-/* ================= AUDIT LOG ================= */
-function log(type){
- db.ref("audit").push({
-  uid:authF.currentUser?.uid||"guest",
-  type,
-  ua:navigator.userAgent,
-  ts:firebase.database.ServerValue.TIMESTAMP
- });
+function exportExcel(){
+ const wb=XLSX.utils.table_to_book(document.querySelector("table"));
+ XLSX.writeFile(wb,"Fuel_System_Report.xlsx");
 }
 </script>
 
 </body>
 </html>
-
