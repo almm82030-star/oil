@@ -3,70 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fuel System Ultra | Al Zahrani</title>
+    <title>Al Zahrani Logistics | Pro System</title>
+    
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
     <style>
         :root { --p: #3b82f6; --s: #22c55e; --d: #ef4444; --bg: #0f172a; --c: #1e293b; --t: #f8fafc; }
-        * { box-sizing: border-box; font-family: sans-serif; }
-        body { margin: 0; background: var(--bg); color: var(--t); text-align: right; }
-        .card { background: var(--c); padding: 15px; border-radius: 12px; margin: 10px; border: 1px solid #334155; }
-        input, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; border: 1px solid #444; background: #0f172a; color: white; }
-        .btn-success { background: var(--s); font-weight: bold; border: none; cursor: pointer; height: 55px; }
+        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { margin: 0; background: var(--bg); color: var(--t); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 10px; }
+        .card { background: var(--c); padding: 20px; border-radius: 15px; border: 1px solid #334155; margin-bottom: 15px; }
+        input, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: 1px solid #475569; background: #0f172a; color: white; }
+        .btn-success { background: var(--s); font-weight: 900; border: none; cursor: pointer; }
         .hidden { display: none !important; }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; font-size: 13px; }
-        th, td { border: 1px solid #334155; padding: 10px; text-align: center; }
-        .thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; margin: 2px; }
-        #statusOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th, td { padding: 12px; border: 1px solid #334155; text-align: center; }
+        .thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid var(--p); cursor: pointer; }
+        #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; }
+        .plate-badge { background: #fff; color: #000; padding: 2px 8px; border-radius: 4px; font-weight: 900; border: 2px solid #000; }
     </style>
 </head>
 <body>
 
-<div id="statusOverlay">
+<div id="overlay">
     <div style="text-align: center;">
-        <div id="loader" style="font-size: 40px;">⏳</div>
-        <h3 id="statusTxt">جاري الحفظ والرفع...</h3>
-        <p id="subStatus">يرجى الانتظار، جاري ضغط الملفات</p>
-        <button id="okBtn" class="hidden" onclick="location.reload()" style="background:var(--p); width:150px;">موافق</button>
+        <div id="loaderAnim" style="font-size: 50px;">⏳</div>
+        <h3 id="statusMsg">جاري رفع الوسائط عبر API...</h3>
+        <p id="progressTxt" style="color: var(--p);">يرجى الانتظار، لا تغلق الصفحة</p>
+        <button id="okBtn" class="hidden" onclick="location.reload()" style="width:150px; background:var(--s);">موافق</button>
     </div>
 </div>
 
 <div class="container">
     <section id="sec_auth" class="hidden">
-        <div class="card" style="max-width: 400px; margin: 50px auto;">
-            <h2 style="text-align:center;">دخول النظام</h2>
+        <div class="card" style="max-width: 400px; margin: 60px auto;">
+            <h2 style="text-align:center; color:var(--p);">تسجيل الدخول</h2>
             <input type="text" id="uInp" placeholder="اسم المستخدم">
             <input type="password" id="pInp" placeholder="كلمة المرور">
-            <button onclick="handleLogin()" style="background:var(--p);">دخول</button>
-            <button onclick="document.getElementById('regBox').classList.toggle('hidden')" style="background:none; border:none; color:var(--p);">+ تسجيل سائق جديد</button>
-            <div id="regBox" class="hidden">
-                <input type="text" id="r_n" placeholder="اسم السائق">
-                <input type="text" id="r_pl" placeholder="رقم اللوحة">
-                <input type="text" id="r_pj" placeholder="المشروع">
-                <input type="text" id="r_user" placeholder="اسم مستخدم جديد">
-                <input type="password" id="r_pass" placeholder="كلمة المرور">
-                <button onclick="handleReg()" style="background:var(--s);">تأكيد الحساب</button>
-            </div>
+            <button onclick="handleLogin()" style="background:var(--p); font-weight:bold;">دخول</button>
         </div>
     </section>
 
     <section id="sec_admin" class="hidden">
         <div class="card">
-            <h3>لوحة المدير - فلترة البيانات</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-                <input type="text" id="fPlate" placeholder="بحث باللوحة..." oninput="filter()">
+            <h3>لوحة التحكم والبحث</h3>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:10px;">
+                <input type="text" id="fPlate" placeholder="رقم اللوحة..." oninput="filter()">
                 <input type="date" id="fFrom" onchange="filter()">
                 <input type="date" id="fTo" onchange="filter()">
+                <button onclick="exportExcel()" style="background:#6366f1; margin:0;">تصدير Excel</button>
             </div>
-            <button onclick="exportExcel()" style="background:#4f46e5; margin-top:10px;">تصدير Excel</button>
         </div>
         <div class="card" style="overflow-x: auto;">
-            <table id="adminTable">
+            <table>
                 <thead>
                     <tr>
-                        <th>السائق</th><th>اللوحة</th><th>المشروع</th><th>الوقت</th><th>الصور</th><th>الفيديو</th><th>الموقع</th>
+                        <th>المندوب</th><th>اللوحة</th><th>المشروع</th><th>التاريخ</th><th>الصور</th><th>الفيديو</th><th>الموقع</th>
                     </tr>
                 </thead>
                 <tbody id="tBody"></tbody>
@@ -75,97 +70,117 @@
     </section>
 
     <section id="sec_driver" class="hidden">
-        <div class="card" style="text-align: center;">
-            <h3 id="dName">...</h3>
-            <video id="v" autoplay playsinline style="width:100%; max-width:400px; border-radius:10px; background:#000;"></video>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-top:10px;">
-                <button onclick="capture('p')">📸 اللوحة</button>
-                <button onclick="capture('b')">📸 قبل</button>
-                <button onclick="capture('a')">📸 بعد</button>
-                <button id="vBtn" onclick="toggleV()" style="background:var(--d);">🎥 فيديو 5 ثواني</button>
+        <div class="card" style="text-align:center;">
+            <h3 id="welcomeTxt" style="color:var(--p);">...</h3>
+            <video id="cam" autoplay playsinline style="width:100%; max-width:450px; border-radius:15px; border:2px solid var(--p); background:#000;"></video>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
+                <button onclick="takeSnap('p')">📸 تصوير اللوحة</button>
+                <button onclick="takeSnap('b')">📸 عداد قبل</button>
+                <button onclick="takeSnap('a')">📸 عداد بعد</button>
+                <button id="vBtn" onclick="recordVid()" style="background:var(--d);">🎥 تسجيل فيديو</button>
             </div>
-            <button id="sendBtn" class="btn-success" style="margin-top:15px;" onclick="finalUpload()" disabled>إرسال التقرير الآن</button>
+            <div id="previewArea" style="margin-top:10px; font-size:12px; color:var(--s);"></div>
+            <button id="sendBtn" class="btn-success" style="margin-top:20px; height:60px;" onclick="uploadFullReport()" disabled>إرسال التقرير (API)</button>
         </div>
     </section>
 </div>
 
 <script>
-const config = { apiKey: "AIzaSyBkOM7eSnUJ0B_3Mx4wVyh-lTvFEAhxWas", authDomain: "tama-6219c.firebaseapp.com", databaseURL: "https://tama-6219c-default-rtdb.firebaseio.com", projectId: "tama-6219c", appId: "1:285162278384:web:8264d5439564660b616135" };
-firebase.initializeApp(config);
-const auth = firebase.auth(), db = firebase.database();
-let userData = null, reports = [], media = { p:null, b:null, a:null, v:null };
+// الإعدادات
+const IMGBB_API_KEY = "b901b23e2f2bd15675225e00b62f4c82"; // الـ API الخاص بك
+const VIDEO_SERVER_URL = "http://localhost:3000/upload-video"; // رابط سيرفر الفيديو الخاص بك
 
+const fbConfig = { apiKey: "AIzaSyBkOM7eSnUJ0B_3Mx4wVyh-lTvFEAhxWas", authDomain: "tama-6219c.firebaseapp.com", databaseURL: "https://tama-6219c-default-rtdb.firebaseio.com", projectId: "tama-6219c", appId: "1:285162278384:web:8264d5439564660b616135" };
+firebase.initializeApp(fbConfig);
+const auth = firebase.auth(), db = firebase.database();
+
+let user = null, reports = [], media = { p:null, b:null, a:null, vBlob:null };
+
+// التحكم بالجلسة
 auth.onAuthStateChanged(u => {
     if(!u) show('sec_auth');
     else db.ref('users/'+u.uid).once('value', s => {
         const d = s.val();
-        if(d?.role==='admin') { show('sec_admin'); loadAdmin(); }
-        else if(d) { userData=d; show('sec_driver'); document.getElementById('dName').innerText=d.name; initCam(); }
+        if(d?.role==='admin') { show('sec_admin'); loadData(); }
+        else { user=d; show('sec_driver'); document.getElementById('welcomeTxt').innerText = d.name; initCam(); }
     });
 });
 
 function show(id) { document.querySelectorAll('section').forEach(s=>s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
-function handleLogin() { 
-    const u = document.getElementById('uInp').value; 
-    auth.signInWithEmailAndPassword(u.includes('@')?u:u+'@z.com', document.getElementById('pInp').value).catch(e=>alert("خطأ في الدخول"));
-}
+function handleLogin() { auth.signInWithEmailAndPassword(document.getElementById('uInp').value+'@z.com', document.getElementById('pInp').value).catch(e=>alert("بيانات خاطئة")); }
 
-function handleReg() {
-    const d = { n: document.getElementById('r_n').value, pl: document.getElementById('r_pl').value, pj: document.getElementById('r_pj').value, u: document.getElementById('r_user').value, p: document.getElementById('r_pass').value };
-    auth.createUserWithEmailAndPassword(d.u+'@z.com', d.p).then(r => {
-        db.ref('users/'+r.user.uid).set({name:d.n, plate:d.pl, project:d.pj, role:'driver'});
-        location.reload();
-    }).catch(e=>alert(e.message));
-}
-
+// الكاميرا والوسائط
 let stream, rec, chunks = [];
-async function initCam() { stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:true}); document.getElementById('v').srcObject = stream; }
+async function initCam() { stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:true}); document.getElementById('cam').srcObject = stream; }
 
-function capture(t) {
-    const canvas = document.createElement('canvas'); 
-    canvas.width = 400; canvas.height = 300; // تقليل الحجم لضمان الرفع
-    canvas.getContext('2d').drawImage(document.getElementById('v'), 0, 0, 400, 300);
-    media[t] = canvas.toDataURL('image/jpeg', 0.5); // ضغط 50%
-    alert("تم التقاط الصورة"); checkBtn();
+function takeSnap(t) {
+    const canvas = document.createElement('canvas');
+    const v = document.getElementById('cam');
+    canvas.width = 640; canvas.height = 480;
+    canvas.getContext('2d').drawImage(v, 0, 0, 640, 480);
+    media[t] = canvas.toDataURL('image/jpeg', 0.7).split(',')[1]; // Base64 للرفع لاحقاً
+    document.getElementById('previewArea').innerText += ` ✅ تم التقاط ${t}`;
+    checkReady();
 }
 
-function toggleV() {
+function recordVid() {
     rec = new MediaRecorder(stream); chunks = [];
     rec.ondataavailable = e => chunks.push(e.data);
-    rec.onstop = () => {
-        const reader = new FileReader();
-        reader.readAsDataURL(new Blob(chunks, {type:'video/mp4'}));
-        reader.onloadend = () => { media.v = reader.result; alert("الفيديو جاهز"); checkBtn(); };
+    rec.onstop = () => { 
+        media.vBlob = new Blob(chunks, {type:'video/mp4'}); 
+        document.getElementById('previewArea').innerText += " ✅ الفيديو جاهز";
+        checkReady();
     };
-    rec.start(); document.getElementById('vBtn').innerText="🔴 جاري التسجيل...";
-    setTimeout(()=> { rec.stop(); document.getElementById('vBtn').innerText="🎥 تسجيل فيديو"; }, 5000);
+    rec.start(); document.getElementById('vBtn').innerText="🔴 تسجيل...";
+    setTimeout(()=> { rec.stop(); document.getElementById('vBtn').innerText="🎥 تسجيل فيديو"; }, 7000);
 }
 
-function checkBtn() { if(media.p && media.b && media.a && media.v) document.getElementById('sendBtn').disabled = false; }
+function checkReady() { if(media.p && media.b && media.a && media.vBlob) document.getElementById('sendBtn').disabled = false; }
 
-async function finalUpload() {
-    document.getElementById('statusOverlay').style.display='flex';
-    navigator.geolocation.getCurrentPosition(async pos => {
-        const report = {
-            name: userData.name, plate: userData.plate, project: userData.project,
-            ts: Date.now(), lat: pos.coords.latitude, lng: pos.coords.longitude,
-            imgP: media.p, imgB: media.b, imgA: media.a, video: media.v
-        };
-        // محاولة الرفع مع معالجة الأخطاء
-        db.ref('reports').push(report)
-            .then(() => {
-                document.getElementById('statusIcon').innerText="✅";
-                document.getElementById('statusTxt').innerText="تم الإرسال بنجاح!";
-                document.getElementById('okBtn').classList.remove('hidden');
-            })
-            .catch(e => {
-                alert("فشل الرفع: ربما حجم الملف كبير جداً. حاول تقليل مدة الفيديو.");
-                document.getElementById('statusOverlay').style.display='none';
-            });
-    }, () => { alert("يجب تفعيل GPS"); document.getElementById('statusOverlay').style.display='none'; });
+// دالة الرفع الأساسية عبر API
+async function uploadToImgBB(base64) {
+    const body = new FormData();
+    body.append('image', base64);
+    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body });
+    const data = await res.json();
+    return data.data.url;
 }
 
-function loadAdmin() {
+async function uploadVideoToServer(blob) {
+    const body = new FormData();
+    body.append('video', blob, 'fuel_video.mp4');
+    const res = await fetch(VIDEO_SERVER_URL, { method: 'POST', body });
+    // إذا كان سيرفرك يرجع رابط الفيديو، استقبله هنا، وإذا لا، سنخزن "تم الرفع للسيرفر"
+    return res.ok ? "تم الرفع بنجاح للسيرفر" : "فشل رفع الفيديو";
+}
+
+async function uploadFullReport() {
+    document.getElementById('overlay').style.display = 'flex';
+    try {
+        const urlP = await uploadToImgBB(media.p);
+        const urlB = await uploadToImgBB(media.b);
+        const urlA = await uploadToImgBB(media.a);
+        const vidStatus = await uploadVideoToServer(media.vBlob);
+
+        navigator.geolocation.getCurrentPosition(async pos => {
+            const report = {
+                name: user.name, plate: user.plate, project: user.project,
+                imgP: urlP, imgB: urlB, imgA: urlA, video: vidStatus,
+                lat: pos.coords.latitude, lng: pos.coords.longitude, ts: Date.now()
+            };
+            await db.ref('reports').push(report);
+            document.getElementById('statusMsg').innerText = "✅ تم الإرسال بنجاح!";
+            document.getElementById('loaderAnim').innerText = "🏆";
+            document.getElementById('okBtn').classList.remove('hidden');
+        });
+    } catch (e) {
+        alert("خطأ في الاتصال بالسيرفر: " + e.message);
+        document.getElementById('overlay').style.display = 'none';
+    }
+}
+
+// لوحة المدير
+function loadData() {
     db.ref('reports').on('value', s => {
         reports = []; s.forEach(c => { reports.push(c.val()); });
         filter();
@@ -176,10 +191,10 @@ function filter() {
     const p = document.getElementById('fPlate').value.toLowerCase();
     const f = document.getElementById('fFrom').value, t = document.getElementById('fTo').value;
     let filtered = reports.filter(r => {
-        const mP = r.plate.toLowerCase().includes(p);
-        const rD = new Date(r.ts).toISOString().split('T')[0];
-        const mD = (!f || rD >= f) && (!t || rD <= t);
-        return mP && mD;
+        const matchP = r.plate.toLowerCase().includes(p);
+        const rDate = new Date(r.ts).toISOString().split('T')[0];
+        const matchD = (!f || rDate >= f) && (!t || rDate <= t);
+        return matchP && matchD;
     });
     render(filtered);
 }
@@ -188,17 +203,23 @@ function render(data) {
     let h = '';
     data.reverse().forEach(r => {
         h += `<tr>
-            <td>${r.name}</td><td>${r.plate}</td><td>${r.project}</td>
+            <td><b>${r.name}</b></td>
+            <td><span class="plate-badge">${r.plate}</span></td>
+            <td>${r.project}</td>
             <td>${new Date(r.ts).toLocaleString('ar-SA')}</td>
-            <td><img src="${r.imgP}" class="thumb"><img src="${r.imgB}" class="thumb"><img src="${r.imgA}" class="thumb"></td>
-            <td><a href="${r.video}" download="v.mp4">تحميل 🎥</a></td>
-            <td><a href="https://maps.google.com/?q=${r.lat},${r.lng}" target="_blank">الخريطة 📍</a></td>
+            <td>
+                <img src="${r.imgP}" class="thumb" onclick="window.open(this.src)">
+                <img src="${r.imgB}" class="thumb" onclick="window.open(this.src)">
+                <img src="${r.imgA}" class="thumb" onclick="window.open(this.src)">
+            </td>
+            <td>${r.video}</td>
+            <td><a href="https://maps.google.com/?q=${r.lat},${r.lng}" target="_blank">📍 الموقع</a></td>
         </tr>`;
     });
     document.getElementById('tBody').innerHTML = h;
 }
 
-function exportExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById('adminTable')), "Report.xlsx"); }
+function exportExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.querySelector('table')), "Fuel_System_Report.xlsx"); }
 </script>
 </body>
 </html>
