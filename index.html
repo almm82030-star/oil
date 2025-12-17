@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fuel Proof | الزهراني لوجستيك</title>
+    
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/yFCW2v98/Untitled.webp">
+    
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -13,41 +19,36 @@
     <style>
         :root { --p: #3b82f6; --s: #22c55e; --d: #ef4444; --bg: #0f172a; --c: #1e293b; --t: #f8fafc; }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { margin: 0; background: var(--bg); color: var(--t); line-height: 1.6; }
+        body { margin: 0; background: var(--bg); color: var(--t); line-height: 1.6; -webkit-tap-highlight-color: transparent; }
         
-        /* Header */
         header { background: var(--c); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--p); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .logo-area { display: flex; align-items: center; gap: 12px; }
-        .logo-area img { height: 50px; border-radius: 10px; border: 1px solid var(--p); }
+        .logo-area img { height: 45px; border-radius: 8px; border: 1px solid var(--p); }
         
         .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
-        .card { background: var(--c); padding: 25px; border-radius: 20px; border: 1px solid #334155; box-shadow: 0 15px 35px rgba(0,0,0,0.4); margin-bottom: 25px; }
+        .card { background: var(--c); padding: 25px; border-radius: 20px; border: 1px solid #334155; box-shadow: 0 15px 35px rgba(0,0,0,0.4); margin-bottom: 25px; animation: fadeIn 0.5s ease; }
         
-        /* Inputs & Buttons */
-        input, button, select { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 16px; outline: none; transition: 0.3s; }
-        button { background: var(--p); border: none; font-weight: 900; cursor: pointer; color: white; }
+        input, button { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 16px; outline: none; }
+        button { background: var(--p); border: none; font-weight: 900; cursor: pointer; transition: 0.3s; }
         button:hover { filter: brightness(1.2); transform: translateY(-2px); }
         .btn-sec { background: transparent; border: 2px solid var(--p); color: var(--p); }
         .btn-success { background: var(--s); }
 
-        /* Captcha Box */
-        .captcha-wrapper { background: #0f172a; padding: 15px; border-radius: 12px; border: 1px dashed var(--p); text-align: center; margin-bottom: 15px; }
-        #captchaDisplay { font-size: 28px; font-weight: 900; color: var(--s); letter-spacing: 12px; user-select: none; font-style: italic; }
+        /* Captcha Design */
+        .captcha-container { background: #0f172a; padding: 15px; border-radius: 12px; border: 1px dashed var(--p); text-align: center; margin-bottom: 15px; }
+        #captchaText { font-size: 32px; font-weight: 900; color: var(--s); letter-spacing: 15px; user-select: none; font-style: italic; text-shadow: 2px 2px #000; }
         
-        /* Status UI */
         .hidden { display: none !important; }
-        #video { width: 100%; max-width: 500px; border-radius: 20px; border: 4px solid var(--p); display: block; margin: 0 auto; box-shadow: 0 0 20px rgba(59,130,246,0.3); }
+        #video { width: 100%; max-width: 500px; border-radius: 20px; border: 4px solid var(--p); display: block; margin: 0 auto; }
         
-        /* Admin Table */
-        .table-res { overflow-x: auto; border-radius: 15px; background: #1e293b; border: 1px solid #334155; }
+        /* Table Style */
+        .table-res { overflow-x: auto; border-radius: 15px; background: #1e293b; }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th { background: #0f172a; padding: 15px; color: var(--p); font-size: 14px; border-bottom: 2px solid #334155; }
-        td { padding: 15px; border-bottom: 1px solid #334155; text-align: center; font-size: 13px; }
-        .badge { padding: 5px 12px; border-radius: 8px; font-weight: bold; font-size: 11px; }
-        .badge-ok { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-        .badge-warn { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-        
-        @media (max-width: 600px) { .card { padding: 15px; } .logo-area img { height: 40px; } }
+        th { background: #0f172a; padding: 15px; color: var(--p); border-bottom: 2px solid #334155; }
+        td { padding: 15px; border-bottom: 1px solid #334155; text-align: center; }
+        .badge { padding: 5px 12px; border-radius: 8px; font-weight: bold; background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -56,77 +57,64 @@
     <div class="logo-area">
         <img src="https://i.ibb.co/yFCW2v98/Untitled.webp" alt="Logo">
         <div>
-            <div style="font-weight:900; color:var(--p); font-size: 18px; line-height: 1;">FUEL PROOF</div>
-            <div style="font-size:10px; color:#94a3b8; font-weight:bold;">الزهراني لوجستيك</div>
+            <div style="font-weight:900; color:var(--p); font-size: 18px;">FUEL PROOF</div>
+            <div style="font-size:10px; color:#94a3b8;">الزهراني لوجستيك</div>
         </div>
     </div>
-    <div id="userLabel" style="font-size:12px; font-weight:bold; color:var(--s);"></div>
+    <div id="userLabel" style="font-size:12px; color:var(--s);"></div>
 </header>
 
 <div class="container">
     <section id="authPage">
         <div class="card" style="max-width:450px; margin: 40px auto;">
-            <h2 id="authTitle" style="text-align:center; color:var(--p); margin-top:0;">تسجيل الدخول</h2>
+            <h2 id="title" style="text-align:center; color:var(--p);">تسجيل الدخول</h2>
             
-            <div id="loginGroup">
-                <input type="text" id="email" placeholder="اسم المستخدم (أو الإيميل)">
-                <input type="password" id="pass" placeholder="كلمة المرور">
-                
-                <div class="captcha-wrapper">
-                    <p style="font-size:11px; margin:0 0 5px 0;">أدخل كود التحقق للأمان:</p>
-                    <div id="captchaDisplay"></div>
+            <div id="loginForm">
+                <input type="text" id="userInp" placeholder="اسم المستخدم أو الإيميل">
+                <input type="password" id="passInp" placeholder="كلمة المرور">
+                <div class="captcha-container">
+                    <div id="captchaText"></div>
+                    <p style="font-size:10px; margin:5px 0 0 0;">أدخل الكود أعلاه للتحقق</p>
                 </div>
-                <input type="text" id="captchaInput" placeholder="اكتب الأرقام هنا">
-                
-                <button onclick="handleAuthAction()">دخول النظام</button>
-                <button class="btn-sec" onclick="switchView(true)">سجل كـسائق جديد</button>
+                <input type="text" id="capInp" placeholder="كود التحقق">
+                <button onclick="performLogin()">دخول آمن</button>
+                <button class="btn-sec" onclick="toggleAuth(true)">تسجيل سائق جديد</button>
             </div>
 
-            <div id="registerGroup" class="hidden">
-                <input type="text" id="regName" placeholder="الاسم الكامل للسائق">
-                <input type="text" id="regProject" placeholder="اسم المشروع التابع له">
-                <input type="text" id="regRegion" placeholder="منطقة العمل">
-                <input type="text" id="regUser" placeholder="اختر اسم مستخدم">
-                <input type="password" id="regPass" placeholder="كلمة المرور">
-                <button class="btn-success" onclick="registerDriver()">تأكيد إنشاء الحساب</button>
-                <button class="btn-sec" onclick="switchView(false)">العودة للدخول</button>
+            <div id="regForm" class="hidden">
+                <input type="text" id="rName" placeholder="الاسم الحقيقي">
+                <input type="text" id="rProj" placeholder="المشروع">
+                <input type="text" id="rRegion" placeholder="منطقة العمل">
+                <input type="text" id="rUser" placeholder="اسم المستخدم المختار">
+                <input type="password" id="rPass" placeholder="كلمة المرور">
+                <button class="btn-success" onclick="performRegister()">تأكيد التسجيل</button>
+                <button class="btn-sec" onclick="toggleAuth(false)">العودة للدخول</button>
             </div>
-            
-            <div id="authErr" style="color:var(--d); text-align:center; margin-top:10px; font-weight:bold; font-size:14px;"></div>
+            <p id="msg" style="color:var(--d); text-align:center; font-weight:bold;"></p>
         </div>
     </section>
 
     <section id="driverSec" class="hidden">
         <div class="card">
-            <h3 style="margin:0 0 15px 0; color:var(--p);">📸 توثيق عداد الوقود</h3>
+            <h3 style="margin-top:0;">📸 توثيق العداد</h3>
             <video id="video" autoplay playsinline></video>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:20px;">
-                <div onclick="takeSnap('b')"><img id="v_b" src="" style="width:100%; border-radius:12px; height:120px; object-fit:cover; background:#000; border:1px solid var(--p);"><button style="font-size:11px; margin-top:5px;">تصوير (قبل)</button></div>
-                <div onclick="takeSnap('a')"><img id="v_a" src="" style="width:100%; border-radius:12px; height:120px; object-fit:cover; background:#000; border:1px solid var(--p);"><button style="font-size:11px; margin-top:5px;">تصوير (بعد)</button></div>
+                <div onclick="takeSnap('b')"><img id="vB" src="" style="width:100%; height:120px; border-radius:12px; background:#000; object-fit:cover;"><button style="font-size:11px;">صورة قبل</button></div>
+                <div onclick="takeSnap('a')"><img id="vA" src="" style="width:100%; height:120px; border-radius:12px; background:#000; object-fit:cover;"><button style="font-size:11px;">صورة بعد</button></div>
             </div>
-            <div id="aiInfo" style="text-align:center; padding:10px; color:var(--p); font-weight:bold;"></div>
-            <button class="btn-success" style="margin-top:10px;" onclick="uploadReport()">إرسال التقرير النهائي</button>
+            <button class="btn-success" style="margin-top:20px;" onclick="submitFinal()">إرسال التقرير للمدير</button>
         </div>
     </section>
 
     <section id="adminSec" class="hidden">
         <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3 style="margin:0;">📊 لوحة الرقابة والتحليل</h3>
-                <button onclick="location.reload()" style="width:auto; padding:5px 15px; font-size:12px; background:var(--c); border:1px solid var(--p);">تحديث</button>
-            </div>
+            <h3>📊 تقارير الرقابة الجغرافية</h3>
             <div class="table-res">
                 <table>
                     <thead>
-                        <tr>
-                            <th>السائق</th>
-                            <th>المسافة</th>
-                            <th>الموقع الجغرافي</th>
-                            <th>العدادات</th>
-                            <th>الحالة والوقت</th>
-                        </tr>
+                        <tr><th>السائق</th><th>المشروع</th><th>الموقع</th><th>العدادات</th><th>التوقيت</th></tr>
                     </thead>
-                    <tbody id="adminLogs"></tbody>
+                    <tbody id="logs"></tbody>
                 </table>
             </div>
         </div>
@@ -135,90 +123,68 @@
 
 <script>
 // Firebase Config
-const firebaseConfig = {
+const fbConfig = {
     apiKey: "AIzaSyBkOM7eSnUJ0B_3Mx4wVyh-lTvFEAhxWas",
     authDomain: "tama-6219c.firebaseapp.com",
     databaseURL: "https://tama-6219c-default-rtdb.firebaseio.com",
     projectId: "tama-6219c",
     appId: "1:285162278384:web:8264d5439564660b616135"
 };
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
+firebase.initializeApp(fbConfig);
+const fAuth = firebase.auth();
+const fDb = firebase.database();
 
-let activeCaptcha = "";
-
-// إنشاء كود التحقق
-function genCaptcha() {
-    activeCaptcha = Math.floor(1000 + Math.random() * 9000).toString();
-    document.getElementById('captchaDisplay').innerText = activeCaptcha;
+let captchaVal = "";
+function genCap() {
+    captchaVal = Math.floor(1000 + Math.random() * 9000).toString();
+    document.getElementById('captchaText').innerText = captchaVal;
 }
-genCaptcha();
+genCap();
 
-function switchView(isReg) {
-    document.getElementById('loginGroup').classList.toggle('hidden', isReg);
-    document.getElementById('registerGroup').classList.toggle('hidden', !isReg);
-    document.getElementById('authTitle').innerText = isReg ? 'إنشاء حساب سائق' : 'تسجيل دخول';
-    genCaptcha();
+function toggleAuth(reg) {
+    document.getElementById('loginForm').classList.toggle('hidden', reg);
+    document.getElementById('regForm').classList.toggle('hidden', !reg);
+    document.getElementById('title').innerText = reg ? "تسجيل سائق جديد" : "تسجيل الدخول";
 }
 
-// معالجة الدخول (مدير أو سائق)
-function handleAuthAction() {
-    const user = document.getElementById('email').value.trim();
-    const pass = document.getElementById('pass').value.trim();
-    const cap = document.getElementById('captchaInput').value.trim();
-    const err = document.getElementById('authErr');
+function performLogin() {
+    const user = document.getElementById('userInp').value;
+    const pass = document.getElementById('passInp').value;
+    const cap = document.getElementById('capInp').value;
 
-    if(cap !== activeCaptcha) {
-        err.innerText = "❌ كود التحقق غير صحيح!";
-        genCaptcha();
-        return;
-    }
+    if(cap !== captchaVal) return alert("كود التحقق خطأ!");
 
-    // تحويل اسم المستخدم لإيميل وهمي للتعامل مع Firebase
-    const email = user.includes('@') ? user : `${user}@fuelproof.com`;
-
-    auth.signInWithEmailAndPassword(email, pass).then(u => {
-        // إذا دخل ببيانات المدير التي طلبتها
+    const email = user.includes('@') ? user : `${user}@fuel.com`;
+    fAuth.signInWithEmailAndPassword(email, pass).then(u => {
         if(user === "honda@gmail.com" && pass === "212775@#") {
-            db.ref('users/' + u.user.uid).update({ role: 'admin' });
+            fDb.ref('users/' + u.user.uid).update({ role: 'admin' });
         }
         location.reload();
-    }).catch(() => {
-        err.innerText = "⚠️ خطأ في اسم المستخدم أو كلمة المرور";
-        genCaptcha();
-    });
+    }).catch(e => alert("بيانات الدخول غير صحيحة"));
 }
 
-// تسجيل سائق جديد
-function registerDriver() {
-    const user = document.getElementById('regUser').value.trim();
-    const pass = document.getElementById('regPass').value.trim();
-    const name = document.getElementById('regName').value.trim();
-    const proj = document.getElementById('regProject').value.trim();
-    const reg = document.getElementById('regRegion').value.trim();
+function performRegister() {
+    const u = document.getElementById('rUser').value;
+    const p = document.getElementById('rPass').value;
+    const n = document.getElementById('rName').value;
+    const pr = document.getElementById('rProj').value;
+    const rg = document.getElementById('rRegion').value;
 
-    if(!user || !pass || !name) return alert("الرجاء إكمال كافة البيانات");
-
-    const email = `${user}@fuelproof.com`;
-
-    auth.createUserWithEmailAndPassword(email, pass).then(u => {
-        db.ref('users/' + u.user.uid).set({
-            name, project: proj, region: reg, role: 'driver', status: 'active'
-        }).then(() => location.reload());
+    fAuth.createUserWithEmailAndPassword(`${u}@fuel.com`, p).then(res => {
+        fDb.ref('users/' + res.user.uid).set({ name: n, project: pr, region: rg, role: 'driver' });
+        location.reload();
     }).catch(e => alert(e.message));
 }
 
-// مراقبة الجلسة
-auth.onAuthStateChanged(user => {
+fAuth.onAuthStateChanged(user => {
     if(user) {
-        db.ref('users/' + user.uid).once('value').then(snap => {
-            const d = snap.val();
+        fDb.ref('users/' + user.uid).once('value', s => {
+            const d = s.val();
             document.getElementById('authPage').classList.add('hidden');
-            document.getElementById('userLabel').innerHTML = `👤 ${d.name} | <a href="#" onclick="auth.signOut();location.reload()" style="color:var(--d);text-decoration:none;">خروج</a>`;
+            document.getElementById('userLabel').innerText = `👤 ${d.name}`;
             if(d.role === 'admin') {
                 document.getElementById('adminSec').classList.remove('hidden');
-                fetchReports();
+                loadData();
             } else {
                 document.getElementById('driverSec').classList.remove('hidden');
                 initCamera();
@@ -227,55 +193,48 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-// الكاميرا
 async function initCamera() {
     const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
     document.getElementById('video').srcObject = s;
 }
 
-let bPic = null, aPic = null;
+let picB = null, picA = null;
 function takeSnap(t) {
     const v = document.getElementById('video');
     const c = document.createElement('canvas');
     c.width = v.videoWidth; c.height = v.videoHeight;
     c.getContext('2d').drawImage(v, 0, 0);
     const data = c.toDataURL('image/jpeg', 0.5);
-    if(t === 'b') { bPic = data; document.getElementById('v_b').src = data; }
-    else { aPic = data; document.getElementById('v_a').src = data; }
+    if(t === 'b') { picB = data; document.getElementById('vB').src = data; }
+    else { picA = data; document.getElementById('vA').src = data; }
 }
 
-// إرسال التقرير (GPS صامت)
-function uploadReport() {
-    if(!bPic || !aPic) return alert("الرجاء التقاط الصور");
-    navigator.geolocation.getCurrentPosition(p => {
-        const report = {
-            driver: auth.currentUser.email.split('@')[0],
-            picB: bPic, picA: aPic,
-            lat: p.coords.latitude, lng: p.coords.longitude,
-            date: new Date().toLocaleString('ar-SA')
-        };
-        db.ref('final_reports').push(report).then(() => {
-            alert("✅ تم الإرسال بنجاح");
-            location.reload();
-        });
-    }, () => alert("يجب تفعيل الموقع"), {enableHighAccuracy: true});
+function submitFinal() {
+    if(!picB || !picA) return alert("صور العداد أولاً!");
+    navigator.geolocation.getCurrentPosition(pos => {
+        fDb.ref('reports').push({
+            driver: fAuth.currentUser.email.split('@')[0],
+            picB, picA,
+            lat: pos.coords.latitude, lng: pos.coords.longitude,
+            time: new Date().toLocaleString('ar-SA')
+        }).then(() => { alert("تم الإرسال بنجاح"); location.reload(); });
+    }, () => alert("فعل الموقع الجغرافي"), { enableHighAccuracy: true });
 }
 
-// جلب التقارير للمدير
-function fetchReports() {
-    db.ref('final_reports').on('value', s => {
+function loadData() {
+    fDb.ref('reports').on('value', s => {
         let h = '';
-        s.forEach(c => {
-            const v = c.val();
+        s.forEach(child => {
+            const v = child.val();
             h += `<tr>
                 <td><b>${v.driver}</b></td>
-                <td><span style="color:var(--p)">قيد المراجعة</span></td>
-                <td><a href="https://maps.google.com/?q=${v.lat},${v.lng}" target="_blank" style="color:var(--s);text-decoration:none;">📍 فتح الموقع</a></td>
-                <td><img src="${v.picB}" width="40" style="border-radius:4px;"> <img src="${v.picA}" width="40" style="border-radius:4px;"></td>
-                <td><span class="badge badge-ok">${v.date}</span></td>
+                <td>--</td>
+                <td><a href="https://maps.google.com/?q=${v.lat},${v.lng}" target="_blank" style="color:var(--s)">📍 الموقع</a></td>
+                <td><img src="${v.picB}" width="40"> <img src="${v.picA}" width="40"></td>
+                <td><span class="badge">${v.time}</span></td>
             </tr>`;
         });
-        document.getElementById('adminLogs').innerHTML = h || '<tr><td colspan="5">لا توجد بيانات</td></tr>';
+        document.getElementById('logs').innerHTML = h;
     });
 }
 </script>
