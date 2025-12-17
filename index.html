@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>نظام مراقبة الوقود | الزهراني لوجستيك</title>
+    <title>Fuel Proof | الزهراني لوجستيك</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -12,229 +12,233 @@
     <style>
         :root { --p: #3b82f6; --s: #22c55e; --d: #ef4444; --bg: #0f172a; --c: #1e293b; --t: #f8fafc; }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { margin: 0; background: var(--bg); color: var(--t); overflow-x: hidden; }
-        header { background: var(--c); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
-        .card { background: var(--c); padding: 20px; border-radius: 15px; margin: 15px; border: 1px solid #334155; }
-        input, button, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; }
-        button { background: var(--p); border: none; font-weight: bold; cursor: pointer; }
-        .btn-sec { background: transparent; border: 1px solid var(--p); color: var(--p); }
-        .hidden { display: none; }
-        #video { width: 100%; border-radius: 10px; background: #000; }
-        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .photo-grid img { width: 100%; border-radius: 10px; background: #000; height: 100px; object-fit: cover; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th, td { padding: 10px; border-bottom: 1px solid #334155; text-align: center; }
-        .badge { padding: 4px 8px; border-radius: 5px; font-size: 10px; }
+        body { margin: 0; background: var(--bg); color: var(--t); }
+        
+        /* الهيدر والشعار */
+        header { background: var(--c); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--p); position: sticky; top: 0; z-index: 1000; }
+        .logo-area { display: flex; align-items: center; gap: 10px; }
+        .logo-area img { height: 50px; border-radius: 8px; }
+        
+        .container { max-width: 1100px; margin: 0 auto; padding: 10px; }
+        .card { background: var(--c); padding: 20px; border-radius: 15px; border: 1px solid #334155; box-shadow: 0 10px 20px rgba(0,0,0,0.3); margin-bottom: 20px; }
+        
+        input, button { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 16px; outline: none; }
+        button { background: var(--p); border: none; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        button:hover { opacity: 0.8; }
+        .btn-success { background: var(--s); }
+        
+        /* واجهة الجوال والكمبيوتر */
+        .hidden { display: none !important; }
+        #video { width: 100%; max-width: 500px; border-radius: 15px; background: #000; display: block; margin: 0 auto; border: 2px solid var(--p); }
+        
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
+        .snap-box { background: #0f172a; padding: 10px; border-radius: 10px; text-align: center; cursor: pointer; border: 1px dashed var(--p); }
+        .snap-box img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; background: #000; }
+        
+        /* الجدول */
+        .table-res { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 600px; }
+        th { background: #0f172a; padding: 15px; color: var(--p); }
+        td { padding: 12px; border-bottom: 1px solid #334155; text-align: center; }
+        .badge { padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; background: rgba(34, 197, 94, 0.2); color: #22c55e; }
         .badge-red { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+        @media (max-width: 600px) {
+            header { padding: 10px; }
+            .logo-area img { height: 40px; }
+            h2 { font-size: 18px; }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight:900;">FUEL PROOF</div>
-    <div id="userInfo" style="font-size:12px;"></div>
+    <div class="logo-area">
+        <img src="https://i.ibb.co/yFCW2v98/Untitled.webp" alt="Logo">
+        <div>
+            <div style="font-weight:900; color:var(--p); line-height:1;">FUEL PROOF</div>
+            <div style="font-size:10px; color:#94a3b8;">ZAHRANI LOGISTICS</div>
+        </div>
+    </div>
+    <div id="userLabel" style="font-size:12px; font-weight:bold;"></div>
 </header>
 
-<main>
-    <section id="authPage">
-        <div class="card" style="max-width:400px; margin: 50px auto;">
-            <h2 id="authTitle">تسجيل دخول</h2>
-            <div id="loginFields">
-                <input type="email" id="email" placeholder="البريد الإلكتروني">
-                <input type="password" id="pass" placeholder="كلمة المرور">
-                <button onclick="login()">دخول</button>
-                <button class="btn-sec" onclick="toggleAuth(true)">ليس لديك حساب؟ سجل كسائق</button>
-            </div>
-            <div id="registerFields" class="hidden">
-                <input type="text" id="regName" placeholder="الاسم الكامل">
-                <input type="text" id="regProject" placeholder="اسم المشروع (يدوي)">
-                <input type="text" id="regRegion" placeholder="المنطقة (يدوي)">
-                <input type="email" id="regEmail" placeholder="البريد الإلكتروني">
-                <input type="password" id="regPass" placeholder="كلمة المرور">
-                <button onclick="register()">إنشاء حساب وسجل</button>
-                <button class="btn-sec" onclick="toggleAuth(false)">لديك حساب؟ دخول</button>
-            </div>
+<div class="container">
+    <section id="loginSec">
+        <div class="card" style="max-width:400px; margin: 60px auto;">
+            <h2 style="text-align:center;">تسجيل الدخول</h2>
+            <input type="email" id="email" placeholder="البريد الإلكتروني">
+            <input type="password" id="pass" placeholder="كلمة المرور">
+            <button onclick="handleLogin()">دخول النظام</button>
+            <div id="err" style="color:var(--d); text-align:center; font-size:13px;"></div>
         </div>
     </section>
 
-    <section id="driverPage" class="hidden">
+    <section id="driverSec" class="hidden">
         <div class="card">
+            <h3 style="margin-top:0;">📸 توثيق عداد الوقود</h3>
             <video id="video" autoplay playsinline></video>
-            <div class="photo-grid" style="margin-top:10px;">
-                <div onclick="snap('before')"><img id="imgB" src=""><button>📸 قبل التعبئة</button></div>
-                <div onclick="snap('after')"><img id="imgA" src=""><button>📸 بعد التعبئة</button></div>
+            <div class="photo-grid">
+                <div class="snap-box" onclick="capture('before')">
+                    <img id="img_b" src="">
+                    <button style="margin:0; font-size:12px;">قراءة قبل التعبئة</button>
+                </div>
+                <div class="snap-box" onclick="capture('after')">
+                    <img id="img_a" src="">
+                    <button style="margin:0; font-size:12px;">قراءة بعد التعبئة</button>
+                </div>
             </div>
-            <div id="ocrStatus" style="text-align:center; color:var(--p); margin:10px;"></div>
-            <button id="sendBtn" style="background:var(--s); margin-top:20px;" onclick="sendReport()">إرسال التقرير النهائي</button>
+            <div id="aiStatus" style="text-align:center; margin:15px 0; color:var(--p); font-weight:bold;"></div>
+            <button class="btn-success" id="sendBtn" onclick="submitData()">إرسال التقرير النهائي</button>
         </div>
     </section>
 
-    <section id="adminPage" class="hidden">
+    <section id="adminSec" class="hidden">
         <div class="card">
-            <h3>سجل العمليات والرقابة</h3>
-            <div style="overflow-x:auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin:0;">سجل الرقابة الجغرافية</h3>
+                <button onclick="location.reload()" style="width:auto; padding:5px 15px; font-size:12px;">تحديث البيانات</button>
+            </div>
+            <div class="table-res">
                 <table>
                     <thead>
                         <tr>
                             <th>السائق</th>
-                            <th>المشروع/المنطقة</th>
-                            <th>الفرق</th>
+                            <th>المسافة</th>
                             <th>الموقع</th>
                             <th>الصور</th>
-                            <th>الحالة</th>
+                            <th>التاريخ</th>
                         </tr>
                     </thead>
-                    <tbody id="logs"></tbody>
+                    <tbody id="logBody"></tbody>
                 </table>
             </div>
         </div>
     </section>
-</main>
+</div>
 
 <script>
-// الإعدادات
-const firebaseConfig = {
+// Firebase Setup
+const config = {
     apiKey: "AIzaSyBkOM7eSnUJ0B_3Mx4wVyh-lTvFEAhxWas",
     authDomain: "tama-6219c.firebaseapp.com",
     databaseURL: "https://tama-6219c-default-rtdb.firebaseio.com",
     projectId: "tama-6219c",
     appId: "1:285162278384:web:8264d5439564660b616135"
 };
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
+firebase.initializeApp(config);
+const fAuth = firebase.auth();
+const fDb = firebase.database();
 
-let kmB = 0, kmA = 0, imgB = null, imgA = null;
+let km1 = 0, km2 = 0, pic1 = null, pic2 = null;
 
-// التبديل بين الدخول والتسجيل
-function toggleAuth(isReg) {
-    document.getElementById('loginFields').classList.toggle('hidden', isReg);
-    document.getElementById('registerFields').classList.toggle('hidden', !isReg);
-    document.getElementById('authTitle').innerText = isReg ? 'تسجيل سائق جديد' : 'تسجيل دخول';
+// وظيفة الدخول والتحقق من الصلاحيات
+function handleLogin() {
+    const e = document.getElementById('email').value.trim();
+    const p = document.getElementById('pass').value.trim();
+    const err = document.getElementById('err');
+    
+    err.innerText = "جاري التحقق...";
+    
+    fAuth.signInWithEmailAndPassword(e, p).then(async (cred) => {
+        // تحديث الصلاحية بناءً على الباسورد المدخل يدوياً
+        let role = (p === "0906212775") ? "admin" : "driver";
+        await fDb.ref('users/' + cred.user.uid).update({ role: role, lastLogin: new Date().toISOString() });
+        location.reload(); // إعادة التحميل لتفعيل الواجهة الصحيحة
+    }).catch(() => err.innerText = "خطأ في البريد أو كلمة المرور");
 }
 
-// تسجيل مدير تلقائي (هوندا)
-function checkAdmin() {
-    const email = "honda@gmail.com";
-    const pass = "0906212775";
-    auth.createUserWithEmailAndPassword(email, pass).then(u => {
-        db.ref('users/' + u.user.uid).set({ role: 'admin', name: 'هوندا', status: 'active' });
-    }).catch(() => {});
-}
-checkAdmin();
-
-// تسجيل سائق جديد
-function register() {
-    const email = document.getElementById('regEmail').value;
-    const pass = document.getElementById('regPass').value;
-    const name = document.getElementById('regName').value;
-    const project = document.getElementById('regProject').value;
-    const region = document.getElementById('regRegion').value;
-
-    if(!email || !pass || !name || !project) return alert("املا كل البيانات");
-
-    auth.createUserWithEmailAndPassword(email, pass).then(u => {
-        db.ref('users/' + u.user.uid).set({
-            role: 'driver', name, project, region, status: 'active', createdAt: new Date().toISOString()
-        });
-    }).catch(e => alert(e.message));
-}
-
-// تسجيل دخول
-function login() {
-    const email = document.getElementById('email').value;
-    const pass = document.getElementById('pass').value;
-    auth.signInWithEmailAndPassword(email, pass).catch(e => alert("خطأ في البيانات"));
-}
-
-// مراقبة الدخول
-auth.onAuthStateChanged(user => {
+// مراقبة حالة المستخدم
+fAuth.onAuthStateChanged(user => {
     if(user) {
-        db.ref('users/' + user.uid).once('value').then(s => {
-            const d = s.val();
-            document.getElementById('authPage').classList.add('hidden');
-            document.getElementById('userInfo').innerText = d.name + " (" + d.role + ")";
-            if(d.role === 'admin') {
-                document.getElementById('adminPage').classList.remove('hidden');
-                loadLogs();
+        fDb.ref('users/' + user.uid).once('value').then(snap => {
+            const data = snap.val();
+            document.getElementById('loginSec').classList.add('hidden');
+            document.getElementById('userLabel').innerHTML = `<span style="color:var(--s)">●</span> ${user.email.split('@')[0]} | <a href="#" onclick="fAuth.signOut();location.reload()" style="color:var(--d);text-decoration:none;">خروج</a>`;
+            
+            if(data.role === 'admin') {
+                document.getElementById('adminSec').classList.remove('hidden');
+                loadReports();
             } else {
-                document.getElementById('driverPage').classList.remove('hidden');
-                startCamera();
+                document.getElementById('driverSec').classList.remove('hidden');
+                initCam();
             }
         });
-    } else {
-        document.getElementById('authPage').classList.remove('hidden');
     }
 });
 
-// الكاميرا
-async function startCamera() {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-    document.getElementById('video').srcObject = stream;
+// كاميرا السائق
+async function initCam() {
+    try {
+        const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        document.getElementById('video').srcObject = s;
+    } catch(e) { alert("الكاميرا مطلوبة للعمل"); }
 }
 
-function snap(type) {
+function capture(t) {
     const v = document.getElementById('video');
     const c = document.createElement('canvas');
     c.width = v.videoWidth; c.height = v.videoHeight;
     c.getContext('2d').drawImage(v, 0, 0);
-    const data = c.toDataURL('image/jpeg', 0.5);
-    if(type === 'before') { imgB = data; document.getElementById('imgB').src = data; runAI(data, 'b'); }
-    else { imgA = data; document.getElementById('imgA').src = data; runAI(data, 'a'); }
+    const d = c.toDataURL('image/jpeg', 0.5);
+    
+    if(t === 'before') { pic1 = d; document.getElementById('img_b').src = d; analyze(d, 1); }
+    else { pic2 = d; document.getElementById('img_a').src = d; analyze(d, 2); }
 }
 
-async function runAI(img, t) {
-    document.getElementById('ocrStatus').innerText = "جاري قراءة العداد...";
+async function analyze(img, n) {
+    document.getElementById('aiStatus').innerText = "جاري قراءة العداد بالذكاء الاصطناعي...";
     try {
         const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyC0JhoFGiCh102Q9X0y0xaWgFG-NQINWUk`, {
             method: 'POST',
-            body: JSON.stringify({ contents: [{ parts: [{ text: "Extract numbers only from odometer" }, { inline_data: { mime_type: "image/jpeg", data: img.split(',')[1] } }] }] })
+            body: JSON.stringify({ contents: [{ parts: [{ text: "Extract Odometer Number Only" }, { inline_data: { mime_type: "image/jpeg", data: img.split(',')[1] } }] }] })
         });
         const j = await r.json();
         const num = parseInt(j.candidates[0].content.parts[0].text.replace(/\D/g, ''));
-        if(t === 'b') kmB = num; else kmA = num;
-        document.getElementById('ocrStatus').innerText = "تمت القراءة: " + num;
-    } catch(e) { document.getElementById('ocrStatus').innerText = "فشل في القراءة الآلية"; }
+        if(n === 1) km1 = num; else km2 = num;
+        document.getElementById('aiStatus').innerText = "القراءة الحالية: " + (num || "يرجى إعادة التصوير");
+    } catch(e) { document.getElementById('aiStatus').innerText = "خطأ في الاتصال بالسيرفر"; }
 }
 
-// إرسال التقرير مع الموقع المخفي
-function sendReport() {
-    if(!imgB || !imgA) return alert("التقط الصور أولاً");
-    document.getElementById('sendBtn').innerText = "جاري الإرسال...";
+// الإرسال مع GPS مخفي
+function submitData() {
+    if(!pic1 || !pic2) return alert("الرجاء التقاط الصور");
+    document.getElementById('sendBtn').innerText = "جاري الحفظ...";
     
-    navigator.geolocation.getCurrentPosition(p => {
+    navigator.geolocation.getCurrentPosition(pos => {
         const report = {
-            name: auth.currentUser.email,
-            kmB, kmA, diff: kmA - kmB,
-            imgB, imgA,
-            lat: p.coords.latitude, lng: p.coords.longitude,
+            driver: fAuth.currentUser.email,
+            diff: km2 - km1,
+            km1, km2, pic1, pic2,
+            lat: pos.coords.latitude, lng: pos.coords.longitude,
             time: new Date().toLocaleString('ar-SA')
         };
-        db.ref('reports').push(report).then(() => {
+        fDb.ref('final_reports').push(report).then(() => {
             alert("✅ تم الإرسال بنجاح");
             location.reload();
         });
     }, () => alert("يجب تفعيل الموقع لإتمام العملية"), { enableHighAccuracy: true });
 }
 
-// تحميل البيانات للمدير
-function loadLogs() {
-    db.ref('reports').on('value', s => {
-        let h = '';
-        s.forEach(c => {
-            const v = c.val();
-            h += `<tr>
-                <td>${v.name}</td>
-                <td>${v.diff} كم</td>
-                <td><a href="https://www.google.com/maps?q=${v.lat},${v.lng}" target="_blank">📍 عرض</a></td>
+// عرض تقارير المدير
+function loadReports() {
+    fDb.ref('final_reports').on('value', s => {
+        let rows = '';
+        s.forEach(child => {
+            const v = child.val();
+            const isSus = (v.diff <= 0 || v.diff > 200);
+            rows += `<tr>
+                <td><b>${v.driver}</b></td>
+                <td><span style="color:var(--p)">${v.diff} كم</span></td>
+                <td><a href="https://www.google.com/maps?q=${v.lat},${v.lng}" target="_blank" style="color:var(--s);text-decoration:none;">📍 الموقع</a></td>
                 <td>
-                    <img src="${v.imgB}" width="30" onclick="window.open(this.src)">
-                    <img src="${v.imgA}" width="30" onclick="window.open(this.src)">
+                    <img src="${v.pic1}" width="40" style="border-radius:4px;" onclick="window.open(this.src)">
+                    <img src="${v.pic2}" width="40" style="border-radius:4px;" onclick="window.open(this.src)">
                 </td>
-                <td><span class="badge ${v.diff > 200 || v.diff <= 0 ? 'badge-red' : ''}">${v.time}</span></td>
+                <td><span class="badge ${isSus ? 'badge-red' : ''}">${v.time}</span></td>
             </tr>`;
         });
-        document.getElementById('logs').innerHTML = h;
+        document.getElementById('logBody').innerHTML = rows;
     });
 }
 </script>
