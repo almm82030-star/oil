@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fuel Proof | الزهراني لوجستيك</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -14,45 +15,39 @@
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { margin: 0; background: var(--bg); color: var(--t); line-height: 1.6; }
         
-        /* الهيدر والشعار */
-        header { background: var(--c); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--p); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        /* Header */
+        header { background: var(--c); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--p); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .logo-area { display: flex; align-items: center; gap: 12px; }
-        .logo-area img { height: 55px; border-radius: 10px; border: 1px solid #334155; }
+        .logo-area img { height: 50px; border-radius: 10px; border: 1px solid var(--p); }
         
         .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
-        .card { background: var(--c); padding: 25px; border-radius: 18px; border: 1px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 25px; }
+        .card { background: var(--c); padding: 25px; border-radius: 20px; border: 1px solid #334155; box-shadow: 0 15px 35px rgba(0,0,0,0.4); margin-bottom: 25px; }
         
-        input, button { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 16px; outline: none; transition: 0.3s; }
-        button { background: var(--p); border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        /* Inputs & Buttons */
+        input, button, select { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 16px; outline: none; transition: 0.3s; }
+        button { background: var(--p); border: none; font-weight: 900; cursor: pointer; color: white; }
         button:hover { filter: brightness(1.2); transform: translateY(-2px); }
-        button:active { transform: translateY(0); }
+        .btn-sec { background: transparent; border: 2px solid var(--p); color: var(--p); }
         .btn-success { background: var(--s); }
-        
-        .hidden { display: none !important; }
-        #video { width: 100%; max-width: 600px; border-radius: 20px; background: #000; display: block; margin: 0 auto; border: 3px solid var(--p); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-        
-        .photo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-top: 25px; }
-        .snap-box { background: #1e293b; padding: 12px; border-radius: 15px; text-align: center; border: 2px dashed var(--p); transition: 0.3s; }
-        .snap-box:hover { border-style: solid; background: #334155; }
-        .snap-box img { width: 100%; height: 140px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; background: #000; border: 1px solid #475569; }
-        
-        /* الجداول المحسنة */
-        .table-res { overflow-x: auto; border-radius: 15px; background: #1e293b; border: 1px solid #334155; }
-        table { width: 100%; border-collapse: collapse; min-width: 700px; }
-        th { background: #0f172a; padding: 18px; color: var(--p); font-weight: 800; text-transform: uppercase; border-bottom: 2px solid #334155; }
-        td { padding: 15px; border-bottom: 1px solid #334155; text-align: center; vertical-align: middle; }
-        .badge { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-        .badge-red { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-        .map-link { color: var(--s); text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; }
 
-        /* تعديلات الجوال */
-        @media (max-width: 600px) {
-            header { padding: 10px; }
-            .logo-area img { height: 45px; }
-            .container { padding: 10px; }
-            .card { padding: 15px; }
-            button { padding: 12px; font-size: 14px; }
-        }
+        /* Captcha Box */
+        .captcha-wrapper { background: #0f172a; padding: 15px; border-radius: 12px; border: 1px dashed var(--p); text-align: center; margin-bottom: 15px; }
+        #captchaDisplay { font-size: 28px; font-weight: 900; color: var(--s); letter-spacing: 12px; user-select: none; font-style: italic; }
+        
+        /* Status UI */
+        .hidden { display: none !important; }
+        #video { width: 100%; max-width: 500px; border-radius: 20px; border: 4px solid var(--p); display: block; margin: 0 auto; box-shadow: 0 0 20px rgba(59,130,246,0.3); }
+        
+        /* Admin Table */
+        .table-res { overflow-x: auto; border-radius: 15px; background: #1e293b; border: 1px solid #334155; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: #0f172a; padding: 15px; color: var(--p); font-size: 14px; border-bottom: 2px solid #334155; }
+        td { padding: 15px; border-bottom: 1px solid #334155; text-align: center; font-size: 13px; }
+        .badge { padding: 5px 12px; border-radius: 8px; font-weight: bold; font-size: 11px; }
+        .badge-ok { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .badge-warn { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        
+        @media (max-width: 600px) { .card { padding: 15px; } .logo-area img { height: 40px; } }
     </style>
 </head>
 <body>
@@ -62,61 +57,76 @@
         <img src="https://i.ibb.co/yFCW2v98/Untitled.webp" alt="Logo">
         <div>
             <div style="font-weight:900; color:var(--p); font-size: 18px; line-height: 1;">FUEL PROOF</div>
-            <div style="font-size:11px; color:#94a3b8; font-weight: bold;">الزهراني لوجستيك</div>
+            <div style="font-size:10px; color:#94a3b8; font-weight:bold;">الزهراني لوجستيك</div>
         </div>
     </div>
-    <div id="userLabel" style="font-size:13px; font-weight:900;"></div>
+    <div id="userLabel" style="font-size:12px; font-weight:bold; color:var(--s);"></div>
 </header>
 
 <div class="container">
-    <section id="loginSec">
-        <div class="card" style="max-width:450px; margin: 50px auto;">
-            <h2 style="text-align:center; margin-top:0; color:var(--p);">تسجيل دخول النظام</h2>
-            <p style="text-align:center; font-size:12px; color:#94a3b8; margin-bottom:20px;">الرجاء إدخال بيانات الاعتماد للوصول</p>
-            <input type="email" id="email" placeholder="البريد الإلكتروني (honda@gmail.com)">
-            <input type="password" id="pass" placeholder="كلمة المرور">
-            <button onclick="handleLogin()">دخول آمن</button>
-            <div id="err" style="color:var(--d); text-align:center; font-weight:bold; font-size:14px; margin-top:10px;"></div>
+    <section id="authPage">
+        <div class="card" style="max-width:450px; margin: 40px auto;">
+            <h2 id="authTitle" style="text-align:center; color:var(--p); margin-top:0;">تسجيل الدخول</h2>
+            
+            <div id="loginGroup">
+                <input type="text" id="email" placeholder="اسم المستخدم (أو الإيميل)">
+                <input type="password" id="pass" placeholder="كلمة المرور">
+                
+                <div class="captcha-wrapper">
+                    <p style="font-size:11px; margin:0 0 5px 0;">أدخل كود التحقق للأمان:</p>
+                    <div id="captchaDisplay"></div>
+                </div>
+                <input type="text" id="captchaInput" placeholder="اكتب الأرقام هنا">
+                
+                <button onclick="handleAuthAction()">دخول النظام</button>
+                <button class="btn-sec" onclick="switchView(true)">سجل كـسائق جديد</button>
+            </div>
+
+            <div id="registerGroup" class="hidden">
+                <input type="text" id="regName" placeholder="الاسم الكامل للسائق">
+                <input type="text" id="regProject" placeholder="اسم المشروع التابع له">
+                <input type="text" id="regRegion" placeholder="منطقة العمل">
+                <input type="text" id="regUser" placeholder="اختر اسم مستخدم">
+                <input type="password" id="regPass" placeholder="كلمة المرور">
+                <button class="btn-success" onclick="registerDriver()">تأكيد إنشاء الحساب</button>
+                <button class="btn-sec" onclick="switchView(false)">العودة للدخول</button>
+            </div>
+            
+            <div id="authErr" style="color:var(--d); text-align:center; margin-top:10px; font-weight:bold; font-size:14px;"></div>
         </div>
     </section>
 
     <section id="driverSec" class="hidden">
         <div class="card">
-            <h3 style="margin-top:0; border-right: 4px solid var(--p); padding-right: 10px;">📸 توثيق عمليات الوقود</h3>
+            <h3 style="margin:0 0 15px 0; color:var(--p);">📸 توثيق عداد الوقود</h3>
             <video id="video" autoplay playsinline></video>
-            <div class="photo-grid">
-                <div class="snap-box" onclick="capture('before')">
-                    <img id="img_b" src="">
-                    <button style="margin:0; font-size:12px; padding: 10px;">التقاط (قبل التعبئة)</button>
-                </div>
-                <div class="snap-box" onclick="capture('after')">
-                    <img id="img_a" src="">
-                    <button style="margin:0; font-size:12px; padding: 10px;">التقاط (بعد التعبئة)</button>
-                </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:20px;">
+                <div onclick="takeSnap('b')"><img id="v_b" src="" style="width:100%; border-radius:12px; height:120px; object-fit:cover; background:#000; border:1px solid var(--p);"><button style="font-size:11px; margin-top:5px;">تصوير (قبل)</button></div>
+                <div onclick="takeSnap('a')"><img id="v_a" src="" style="width:100%; border-radius:12px; height:120px; object-fit:cover; background:#000; border:1px solid var(--p);"><button style="font-size:11px; margin-top:5px;">تصوير (بعد)</button></div>
             </div>
-            <div id="aiStatus" style="text-align:center; margin:20px 0; color:var(--p); font-weight:900; background: rgba(59, 130, 246, 0.1); padding: 10px; border-radius: 10px;"></div>
-            <button class="btn-success" id="sendBtn" onclick="submitData()">إرسال التقرير النهائي للمدير</button>
+            <div id="aiInfo" style="text-align:center; padding:10px; color:var(--p); font-weight:bold;"></div>
+            <button class="btn-success" style="margin-top:10px;" onclick="uploadReport()">إرسال التقرير النهائي</button>
         </div>
     </section>
 
     <section id="adminSec" class="hidden">
         <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-                <h3 style="margin:0; border-right: 4px solid var(--s); padding-right: 10px;">سجل الرقابة والمواقع الجغرافية</h3>
-                <button onclick="location.reload()" style="width:auto; padding:8px 20px; font-size:13px; background: #334155;">🔄 تحديث البيانات</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="margin:0;">📊 لوحة الرقابة والتحليل</h3>
+                <button onclick="location.reload()" style="width:auto; padding:5px 15px; font-size:12px; background:var(--c); border:1px solid var(--p);">تحديث</button>
             </div>
             <div class="table-res">
                 <table>
                     <thead>
                         <tr>
                             <th>السائق</th>
-                            <th>المسافة المحسوبة</th>
-                            <th>الموقع الفعلي</th>
-                            <th>معاينة العدادات</th>
-                            <th>التوقيت</th>
+                            <th>المسافة</th>
+                            <th>الموقع الجغرافي</th>
+                            <th>العدادات</th>
+                            <th>الحالة والوقت</th>
                         </tr>
                     </thead>
-                    <tbody id="logBody"></tbody>
+                    <tbody id="adminLogs"></tbody>
                 </table>
             </div>
         </div>
@@ -124,148 +134,148 @@
 </div>
 
 <script>
-// Firebase Setup
-const config = {
+// Firebase Config
+const firebaseConfig = {
     apiKey: "AIzaSyBkOM7eSnUJ0B_3Mx4wVyh-lTvFEAhxWas",
     authDomain: "tama-6219c.firebaseapp.com",
     databaseURL: "https://tama-6219c-default-rtdb.firebaseio.com",
     projectId: "tama-6219c",
     appId: "1:285162278384:web:8264d5439564660b616135"
 };
-firebase.initializeApp(config);
-const fAuth = firebase.auth();
-const fDb = firebase.database();
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
 
-let km1 = 0, km2 = 0, pic1 = null, pic2 = null;
+let activeCaptcha = "";
 
-// وظيفة الدخول المطورة (التحكم بالرتبة بناءً على الباسورد)
-function handleLogin() {
-    const e = document.getElementById('email').value.trim();
-    const p = document.getElementById('pass').value.trim();
-    const err = document.getElementById('err');
-    
-    if(!e || !p) { err.innerText = "الرجاء ملء كافة الحقول"; return; }
-    err.innerText = "جاري التحقق من الصلاحيات...";
-    
-    fAuth.signInWithEmailAndPassword(e, p).then(async (cred) => {
-        // إذا كان الباسورد هو الخاص بالمدير، يتم وسم الحساب كأدمن فوراً في قاعدة البيانات
-        const userRole = (p === "0906212775") ? "admin" : "driver";
-        await fDb.ref('users/' + cred.user.uid).update({ 
-            role: userRole, 
-            email: e,
-            lastAccess: new Date().toISOString() 
-        });
-        location.reload(); 
-    }).catch((error) => {
-        err.innerText = "خطأ: البريد أو كلمة المرور غير صحيحة";
-        console.error(error);
+// إنشاء كود التحقق
+function genCaptcha() {
+    activeCaptcha = Math.floor(1000 + Math.random() * 9000).toString();
+    document.getElementById('captchaDisplay').innerText = activeCaptcha;
+}
+genCaptcha();
+
+function switchView(isReg) {
+    document.getElementById('loginGroup').classList.toggle('hidden', isReg);
+    document.getElementById('registerGroup').classList.toggle('hidden', !isReg);
+    document.getElementById('authTitle').innerText = isReg ? 'إنشاء حساب سائق' : 'تسجيل دخول';
+    genCaptcha();
+}
+
+// معالجة الدخول (مدير أو سائق)
+function handleAuthAction() {
+    const user = document.getElementById('email').value.trim();
+    const pass = document.getElementById('pass').value.trim();
+    const cap = document.getElementById('captchaInput').value.trim();
+    const err = document.getElementById('authErr');
+
+    if(cap !== activeCaptcha) {
+        err.innerText = "❌ كود التحقق غير صحيح!";
+        genCaptcha();
+        return;
+    }
+
+    // تحويل اسم المستخدم لإيميل وهمي للتعامل مع Firebase
+    const email = user.includes('@') ? user : `${user}@fuelproof.com`;
+
+    auth.signInWithEmailAndPassword(email, pass).then(u => {
+        // إذا دخل ببيانات المدير التي طلبتها
+        if(user === "honda@gmail.com" && pass === "212775@#") {
+            db.ref('users/' + u.user.uid).update({ role: 'admin' });
+        }
+        location.reload();
+    }).catch(() => {
+        err.innerText = "⚠️ خطأ في اسم المستخدم أو كلمة المرور";
+        genCaptcha();
     });
 }
 
-// مراقبة الجلسة والواجهات
-fAuth.onAuthStateChanged(user => {
+// تسجيل سائق جديد
+function registerDriver() {
+    const user = document.getElementById('regUser').value.trim();
+    const pass = document.getElementById('regPass').value.trim();
+    const name = document.getElementById('regName').value.trim();
+    const proj = document.getElementById('regProject').value.trim();
+    const reg = document.getElementById('regRegion').value.trim();
+
+    if(!user || !pass || !name) return alert("الرجاء إكمال كافة البيانات");
+
+    const email = `${user}@fuelproof.com`;
+
+    auth.createUserWithEmailAndPassword(email, pass).then(u => {
+        db.ref('users/' + u.user.uid).set({
+            name, project: proj, region: reg, role: 'driver', status: 'active'
+        }).then(() => location.reload());
+    }).catch(e => alert(e.message));
+}
+
+// مراقبة الجلسة
+auth.onAuthStateChanged(user => {
     if(user) {
-        fDb.ref('users/' + user.uid).once('value').then(snap => {
-            const userData = snap.val();
-            document.getElementById('loginSec').classList.add('hidden');
-            document.getElementById('userLabel').innerHTML = `
-                <span style="color:var(--s)">●</span> ${user.email} 
-                <button onclick="fAuth.signOut().then(()=>location.reload())" style="width:auto; padding:4px 10px; margin:0 10px; font-size:11px; background:var(--d);">خروج</button>`;
-            
-            if(userData && userData.role === 'admin') {
+        db.ref('users/' + user.uid).once('value').then(snap => {
+            const d = snap.val();
+            document.getElementById('authPage').classList.add('hidden');
+            document.getElementById('userLabel').innerHTML = `👤 ${d.name} | <a href="#" onclick="auth.signOut();location.reload()" style="color:var(--d);text-decoration:none;">خروج</a>`;
+            if(d.role === 'admin') {
                 document.getElementById('adminSec').classList.remove('hidden');
-                loadReports();
+                fetchReports();
             } else {
                 document.getElementById('driverSec').classList.remove('hidden');
-                initCam();
+                initCamera();
             }
         });
     }
 });
 
-// وظائف الكاميرا
-async function initCam() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } 
-        });
-        document.getElementById('video').srcObject = stream;
-    } catch(e) { alert("تنبيه: الكاميرا مطلوبة لتوثيق العمليات."); }
+// الكاميرا
+async function initCamera() {
+    const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    document.getElementById('video').srcObject = s;
 }
 
-function capture(t) {
+let bPic = null, aPic = null;
+function takeSnap(t) {
     const v = document.getElementById('video');
     const c = document.createElement('canvas');
     c.width = v.videoWidth; c.height = v.videoHeight;
     c.getContext('2d').drawImage(v, 0, 0);
-    const data = c.toDataURL('image/jpeg', 0.6); // ضغط الصورة لسرعة الإرسال
-    
-    if(t === 'before') { pic1 = data; document.getElementById('img_b').src = data; analyze(data, 1); }
-    else { pic2 = data; document.getElementById('img_a').src = data; analyze(data, 2); }
+    const data = c.toDataURL('image/jpeg', 0.5);
+    if(t === 'b') { bPic = data; document.getElementById('v_b').src = data; }
+    else { aPic = data; document.getElementById('v_a').src = data; }
 }
 
-// الذكاء الاصطناعي لقراءة العداد
-async function analyze(img, n) {
-    document.getElementById('aiStatus').innerText = "🔍 جاري تحليل العداد بالذكاء الاصطناعي...";
-    try {
-        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyC0JhoFGiCh102Q9X0y0xaWgFG-NQINWUk`, {
-            method: 'POST',
-            body: JSON.stringify({ contents: [{ parts: [{ text: "Extract numbers from this car odometer image. Return only the digits." }, { inline_data: { mime_type: "image/jpeg", data: img.split(',')[1] } }] }] })
-        });
-        const j = await r.json();
-        const text = j.candidates[0].content.parts[0].text;
-        const num = parseInt(text.replace(/\D/g, ''));
-        if(n === 1) km1 = num; else km2 = num;
-        document.getElementById('aiStatus').innerText = `✅ القراءة المكتشفة: ${num || "غير واضحة، أعد التصوير"}`;
-    } catch(e) { document.getElementById('aiStatus').innerText = "⚠️ تعذر التحليل التلقائي، سيتم الاعتماد على الصور"; }
-}
-
-// إرسال البيانات (GPS صامت)
-function submitData() {
-    if(!pic1 || !pic2) return alert("خطأ: يجب التقاط صور (قبل) و (بعد) التعبئة");
-    const btn = document.getElementById('sendBtn');
-    btn.innerText = "⏳ جاري تشفير وإرسال التقرير...";
-    btn.disabled = true;
-    
-    navigator.geolocation.getCurrentPosition(pos => {
+// إرسال التقرير (GPS صامت)
+function uploadReport() {
+    if(!bPic || !aPic) return alert("الرجاء التقاط الصور");
+    navigator.geolocation.getCurrentPosition(p => {
         const report = {
-            driver: fAuth.currentUser.email,
-            diff: km2 - km1,
-            kmBefore: km1, kmAfter: km2,
-            imgBefore: pic1, imgAfter: pic2,
-            lat: pos.coords.latitude, lng: pos.coords.longitude,
-            timestamp: new Date().toLocaleString('ar-SA')
+            driver: auth.currentUser.email.split('@')[0],
+            picB: bPic, picA: aPic,
+            lat: p.coords.latitude, lng: p.coords.longitude,
+            date: new Date().toLocaleString('ar-SA')
         };
-        fDb.ref('final_reports').push(report).then(() => {
-            alert("✅ تم الإرسال بنجاح لمدير النظام");
+        db.ref('final_reports').push(report).then(() => {
+            alert("✅ تم الإرسال بنجاح");
             location.reload();
         });
-    }, () => {
-        alert("خطأ: يجب السماح بالوصول للموقع الجغرافي لتوثيق التعبئة");
-        btn.disabled = false;
-        btn.innerText = "إرسال التقرير النهائي";
-    }, { enableHighAccuracy: true });
+    }, () => alert("يجب تفعيل الموقع"), {enableHighAccuracy: true});
 }
 
-// عرض بيانات المدير
-function loadReports() {
-    fDb.ref('final_reports').on('value', s => {
-        let rows = '';
-        s.forEach(child => {
-            const v = child.val();
-            const isSuspicious = (v.diff <= 0 || v.diff > 250);
-            rows += `<tr>
-                <td><b style="color:var(--t)">${v.driver}</b></td>
-                <td><b style="color:var(--p); font-size:16px;">${v.diff} كم</b></td>
-                <td><a href="https://www.google.com/maps?q=${v.lat},${v.lng}" target="_blank" class="map-link">📍 فتح الخريطة</a></td>
-                <td>
-                    <img src="${v.imgBefore}" width="50" style="border-radius:6px; cursor:pointer;" onclick="window.open(this.src)">
-                    <img src="${v.imgAfter}" width="50" style="border-radius:6px; cursor:pointer;" onclick="window.open(this.src)">
-                </td>
-                <td><span class="badge ${isSuspicious ? 'badge-red' : ''}">${v.timestamp}</span></td>
+// جلب التقارير للمدير
+function fetchReports() {
+    db.ref('final_reports').on('value', s => {
+        let h = '';
+        s.forEach(c => {
+            const v = c.val();
+            h += `<tr>
+                <td><b>${v.driver}</b></td>
+                <td><span style="color:var(--p)">قيد المراجعة</span></td>
+                <td><a href="https://maps.google.com/?q=${v.lat},${v.lng}" target="_blank" style="color:var(--s);text-decoration:none;">📍 فتح الموقع</a></td>
+                <td><img src="${v.picB}" width="40" style="border-radius:4px;"> <img src="${v.picA}" width="40" style="border-radius:4px;"></td>
+                <td><span class="badge badge-ok">${v.date}</span></td>
             </tr>`;
         });
-        document.getElementById('logBody').innerHTML = rows || '<tr><td colspan="5">لا توجد تقارير مسجلة حتى الآن</td></tr>';
+        document.getElementById('adminLogs').innerHTML = h || '<tr><td colspan="5">لا توجد بيانات</td></tr>';
     });
 }
 </script>
