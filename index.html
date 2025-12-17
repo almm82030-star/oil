@@ -17,32 +17,24 @@
     <style>
         :root { --p: #3b82f6; --s: #22c55e; --d: #ef4444; --bg: #0f172a; --c: #1e293b; --t: #f8fafc; }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { margin: 0; background: var(--bg); color: var(--t); line-height: 1.6; }
-        
-        header { background: var(--c); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--p); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        body { margin: 0; background: var(--bg); color: var(--t); }
+        header { background: var(--c); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--p); position: sticky; top: 0; z-index: 1000; }
         .logo-area { display: flex; align-items: center; gap: 12px; }
         .logo-area img { height: 45px; border-radius: 8px; border: 1px solid var(--p); }
-        
         .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
         .card { background: var(--c); padding: 25px; border-radius: 20px; border: 1px solid #334155; box-shadow: 0 15px 35px rgba(0,0,0,0.4); margin-bottom: 25px; }
-        
         input, button { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 16px; outline: none; }
-        button { background: var(--p); border: none; font-weight: 900; cursor: pointer; transition: 0.3s; }
-        button:hover { filter: brightness(1.2); }
+        button { background: var(--p); border: none; font-weight: 900; cursor: pointer; }
         .btn-sec { background: transparent; border: 2px solid var(--p); color: var(--p); }
         .btn-success { background: var(--s); }
-
         .captcha-wrapper { background: #0f172a; padding: 15px; border-radius: 12px; border: 1px dashed var(--p); text-align: center; margin-bottom: 15px; }
-        #captchaDisplay { font-size: 32px; font-weight: 900; color: var(--s); letter-spacing: 15px; user-select: none; font-style: italic; text-shadow: 2px 2px #000; }
-        
+        #captchaDisplay { font-size: 32px; font-weight: 900; color: var(--s); letter-spacing: 15px; font-style: italic; }
         .hidden { display: none !important; }
         #video { width: 100%; max-width: 500px; border-radius: 20px; border: 4px solid var(--p); display: block; margin: 0 auto; }
-        
         .table-res { overflow-x: auto; border-radius: 15px; background: #1e293b; }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
         th { background: #0f172a; padding: 15px; color: var(--p); border-bottom: 2px solid #334155; }
         td { padding: 15px; border-bottom: 1px solid #334155; text-align: center; }
-        .badge { padding: 5px 12px; border-radius: 8px; font-weight: bold; background: rgba(34, 197, 94, 0.2); color: #4ade80; }
     </style>
 </head>
 <body>
@@ -64,25 +56,24 @@
             <h2 id="authTitle" style="text-align:center; color:var(--p);">تسجيل الدخول</h2>
             
             <div id="loginGroup">
-                <input type="text" id="userInp" placeholder="اسم المستخدم (honda@gmail.com)">
+                <input type="text" id="userInp" placeholder="اسم المستخدم أو الإيميل">
                 <input type="password" id="passInp" placeholder="كلمة المرور">
                 <div class="captcha-wrapper">
                     <div id="captchaDisplay"></div>
-                    <p style="font-size:10px; margin:5px 0 0 0; color: #94a3b8;">أدخل الكود أعلاه للتحقق</p>
                 </div>
-                <input type="text" id="capInp" placeholder="اكتب الأرقام هنا">
+                <input type="text" id="capInp" placeholder="أدخل كود التحقق">
                 <button onclick="processLogin()">دخول النظام</button>
                 <button class="btn-sec" onclick="showRegister(true)">سجل كـسائق جديد</button>
             </div>
 
             <div id="registerGroup" class="hidden">
-                <input type="text" id="rName" placeholder="الاسم الحقيقي للسائق">
+                <input type="text" id="rName" placeholder="الاسم الحقيقي">
                 <input type="text" id="rProj" placeholder="اسم المشروع">
                 <input type="text" id="rRegion" placeholder="المنطقة">
-                <input type="text" id="rUser" placeholder="اسم المستخدم الجديد">
+                <input type="text" id="rUser" placeholder="اسم المستخدم">
                 <input type="password" id="rPass" placeholder="كلمة المرور">
                 <button class="btn-success" onclick="processRegister()">تأكيد الحساب</button>
-                <button class="btn-sec" onclick="showRegister(false)">العودة للدخول</button>
+                <button class="btn-sec" onclick="showRegister(false)">العودة</button>
             </div>
             <p id="authMsg" style="color:var(--d); text-align:center; font-size:13px;"></p>
         </div>
@@ -90,22 +81,19 @@
 
     <section id="driverSec" class="hidden">
         <div class="card">
-            <h3 style="margin:0 0 15px 0;">📸 تصوير العداد</h3>
+            <h3 style="margin:0 0 15px 0;">📸 واجهة السائق</h3>
             <video id="video" autoplay playsinline></video>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:20px;">
-                <div onclick="snap('b')"><img id="picB" src="" style="width:100%; height:120px; border-radius:12px; background:#000; object-fit:cover; border:1px solid var(--p);"><button style="font-size:11px; margin-top:5px;">صورة قبل</button></div>
-                <div onclick="snap('a')"><img id="picA" src="" style="width:100%; height:120px; border-radius:12px; background:#000; object-fit:cover; border:1px solid var(--p);"><button style="font-size:11px; margin-top:5px;">صورة بعد</button></div>
+                <div onclick="snap('b')"><img id="picB" style="width:100%; height:120px; border-radius:12px; background:#000; object-fit:cover;"><button style="font-size:11px;">قبل</button></div>
+                <div onclick="snap('a')"><img id="picA" style="width:100%; height:120px; border-radius:12px; background:#000; object-fit:cover;"><button style="font-size:11px;">بعد</button></div>
             </div>
-            <button class="btn-success" style="margin-top:20px;" onclick="uploadData()">إرسال للمراجعة</button>
+            <button class="btn-success" style="margin-top:20px;" onclick="uploadData()">إرسال التقرير</button>
         </div>
     </section>
 
     <section id="adminSec" class="hidden">
         <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 style="margin:0;">📊 لوحة تحكم المدير</h3>
-                <button onclick="location.reload()" style="width:auto; padding:5px 15px; font-size:12px;">🔄 تحديث</button>
-            </div>
+            <h3>📊 لوحة تحكم المدير</h3>
             <div class="table-res">
                 <table>
                     <thead><tr><th>السائق</th><th>الموقع</th><th>الصور</th><th>الوقت</th></tr></thead>
@@ -133,12 +121,11 @@ function setCaptcha() {
     currentCaptcha = Math.floor(1000 + Math.random() * 9000).toString();
     document.getElementById('captchaDisplay').innerText = currentCaptcha;
 }
-setCaptcha(); // توليد الكود عند التحميل
+setCaptcha();
 
 function showRegister(val) {
     document.getElementById('loginGroup').classList.toggle('hidden', val);
     document.getElementById('registerGroup').classList.toggle('hidden', !val);
-    document.getElementById('authTitle').innerText = val ? "تسجيل سائق جديد" : "تسجيل الدخول";
 }
 
 function processLogin() {
@@ -147,21 +134,23 @@ function processLogin() {
     const c = document.getElementById('capInp').value.trim();
     const msg = document.getElementById('authMsg');
 
-    // التحقق من الكابتشا أولاً
     if(c !== currentCaptcha) {
-        msg.innerText = "❌ كود التحقق خطأ! تم توليد كود جديد.";
-        setCaptcha(); // توليد جديد فقط عند الخطأ
+        msg.innerText = "❌ كود التحقق خطأ!";
+        setCaptcha();
         return;
     }
 
+    // السماح بدخول المدير بالبيانات المحددة
     const email = u.includes('@') ? u : `${u}@fuel.com`;
+    
     fAuth.signInWithEmailAndPassword(email, p).then(res => {
+        // فحص صريح للمدير
         if(u === "honda@gmail.com" && p === "212775@#") {
-            fDb.ref('users/' + res.user.uid).update({ role: 'admin' });
+            fDb.ref('users/' + res.user.uid).update({ role: 'admin', name: 'المدير العام' });
         }
         location.reload();
-    }).catch(() => {
-        msg.innerText = "⚠️ خطأ في اسم المستخدم أو كلمة المرور";
+    }).catch(e => {
+        msg.innerText = "⚠️ خطأ: تأكد من البيانات أو الاتصال";
     });
 }
 
@@ -169,12 +158,10 @@ function processRegister() {
     const user = document.getElementById('rUser').value.trim();
     const pass = document.getElementById('rPass').value.trim();
     const name = document.getElementById('rName').value.trim();
-    const proj = document.getElementById('rProj').value.trim();
-
-    if(!user || !pass || !name) return alert("الرجاء إكمال البيانات");
+    if(!user || !pass || !name) return alert("أكمل البيانات");
 
     fAuth.createUserWithEmailAndPassword(`${user}@fuel.com`, pass).then(res => {
-        fDb.ref('users/' + res.user.uid).set({ name, project: proj, role: 'driver' });
+        fDb.ref('users/' + res.user.uid).set({ name, role: 'driver' });
         location.reload();
     }).catch(e => alert(e.message));
 }
@@ -183,6 +170,7 @@ fAuth.onAuthStateChanged(user => {
     if(user) {
         fDb.ref('users/' + user.uid).once('value', snap => {
             const d = snap.val();
+            if(!d) return;
             document.getElementById('authPage').classList.add('hidden');
             document.getElementById('userLabel').innerText = `👤 ${d.name}`;
             if(d.role === 'admin') {
@@ -197,10 +185,8 @@ fAuth.onAuthStateChanged(user => {
 });
 
 async function initCam() {
-    try {
-        const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        document.getElementById('video').srcObject = s;
-    } catch(e) { alert("يجب السماح بالكاميرا"); }
+    const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    document.getElementById('video').srcObject = s;
 }
 
 let imgB = null, imgA = null;
@@ -215,30 +201,24 @@ function snap(t) {
 }
 
 function uploadData() {
-    if(!imgB || !imgA) return alert("التقط الصور أولاً");
+    if(!imgB || !imgA) return alert("صور العداد!");
     navigator.geolocation.getCurrentPosition(pos => {
         fDb.ref('reports').push({
             driver: fAuth.currentUser.email.split('@')[0],
-            imgB, imgA,
-            lat: pos.coords.latitude, lng: pos.coords.longitude,
+            imgB, imgA, lat: pos.coords.latitude, lng: pos.coords.longitude,
             time: new Date().toLocaleString('ar-SA')
-        }).then(() => { alert("✅ تم الإرسال"); location.reload(); });
-    }, () => alert("فعل الموقع الجغرافي"), {enableHighAccuracy: true});
+        }).then(() => { alert("✅ تم"); location.reload(); });
+    }, () => alert("فعل الموقع"));
 }
 
 function loadAdminData() {
     fDb.ref('reports').on('value', snap => {
-        let html = '';
-        snap.forEach(child => {
-            const v = child.val();
-            html += `<tr>
-                <td><b>${v.driver}</b></td>
-                <td><a href="https://www.google.com/maps?q=${v.lat},${v.lng}" target="_blank" style="color:var(--s)">📍 الموقع</a></td>
-                <td><img src="${v.imgB}" width="40" style="border-radius:5px;"> <img src="${v.imgA}" width="40" style="border-radius:5px;"></td>
-                <td><span class="badge">${v.time}</span></td>
-            </tr>`;
+        let h = '';
+        snap.forEach(c => {
+            const v = c.val();
+            h += `<tr><td>${v.driver}</td><td><a href="https://www.google.com/maps?q=${v.lat},${v.lng}" target="_blank">📍 خريطة</a></td><td><img src="${v.imgB}" width="40"> <img src="${v.imgA}" width="40"></td><td>${v.time}</td></tr>`;
         });
-        document.getElementById('adminLogs').innerHTML = html || '<tr><td colspan="4">لا توجد بيانات</td></tr>';
+        document.getElementById('adminLogs').innerHTML = h;
     });
 }
 </script>
