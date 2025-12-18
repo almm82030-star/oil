@@ -8,9 +8,6 @@
     <!-- App Logo -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛽</text></svg>">
     
-    <!-- PWA Manifest -->
-    <link rel="manifest" id="app-manifest">
-    
     <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -38,15 +35,10 @@
             --dark-card-hover: #334155;
             --dark-text: #f1f5f9;
             --dark-text-secondary: #94a3b8;
-            --light-bg: #f8fafc;
-            --light-card: #ffffff;
-            --light-text: #1e293b;
-            --light-text-secondary: #64748b;
             --border-radius: 12px;
             --border-radius-lg: 16px;
             --border-radius-sm: 8px;
             --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            --box-shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             --gradient-secondary: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark));
@@ -58,7 +50,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: var(--transition);
         }
 
         body {
@@ -66,34 +57,18 @@
             background-color: var(--dark-bg);
             color: var(--dark-text);
             min-height: 100vh;
-            direction: rtl;
             line-height: 1.6;
-            overflow-x: hidden;
+            transition: var(--transition);
         }
 
-        body.ltr {
+        body[dir="rtl"] {
+            direction: rtl;
+            text-align: right;
+        }
+
+        body[dir="ltr"] {
             direction: ltr;
-        }
-
-        body.video-bg::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.7);
-            z-index: -1;
-        }
-
-        body.video-bg video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -2;
+            text-align: left;
         }
 
         .container {
@@ -115,14 +90,12 @@
             top: 0;
             z-index: 1000;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
         }
 
         .logo-container {
             display: flex;
             align-items: center;
             gap: 15px;
-            cursor: pointer;
         }
 
         .logo {
@@ -136,13 +109,6 @@
             font-size: 28px;
             color: white;
             box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-            overflow: hidden;
-        }
-
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
 
         .app-title {
@@ -171,16 +137,12 @@
             align-items: center;
             gap: 10px;
             font-weight: 500;
-            backdrop-filter: blur(10px);
+            transition: var(--transition);
         }
 
         .language-toggle:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
-        }
-
-        .language-toggle i {
-            font-size: 1.1rem;
         }
 
         /* Auth Screens */
@@ -194,135 +156,202 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Dashboard Navigation */
-        .dashboard-nav {
+        .auth-tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
             border-radius: var(--border-radius);
+            padding: 5px;
         }
 
-        .nav-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: var(--border-radius-sm);
-            background: none;
-            color: var(--dark-text-secondary);
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
             cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--dark-text-secondary);
+            font-size: 1rem;
             font-weight: 600;
+            border-radius: var(--border-radius-sm);
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
+            transition: var(--transition);
         }
 
-        .nav-btn.active {
+        .auth-tab.active {
             background: var(--gradient-primary);
             color: white;
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
 
-        .nav-btn i {
-            font-size: 1.1rem;
+        .form-group {
+            margin-bottom: 24px;
         }
 
-        /* Admin Controls Section */
-        .admin-controls-section {
-            background: var(--dark-card);
-            padding: 25px;
-            border-radius: var(--border-radius-lg);
-            margin-bottom: 35px;
-            box-shadow: var(--box-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-sm);
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--dark-text);
+            font-size: 1rem;
+            transition: var(--transition);
         }
 
-        .setting-card {
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Human Verification */
+        .human-verification {
             background: rgba(255, 255, 255, 0.03);
             border-radius: var(--border-radius);
             padding: 20px;
+            margin: 25px 0;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .upload-preview {
-            width: 100%;
-            height: 200px;
+        .verification-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            cursor: pointer;
+            padding: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--border-radius);
             background: rgba(255, 255, 255, 0.02);
+            user-select: none;
+            transition: var(--transition);
+        }
+
+        .verification-checkbox:hover {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .verification-checkbox.verified {
+            border-color: var(--secondary-color);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .checkmark {
+            width: 26px;
+            height: 26px;
+            border: 2px solid var(--dark-text-secondary);
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
-            overflow: hidden;
-            border: 2px dashed rgba(255, 255, 255, 0.1);
-            cursor: pointer;
+            font-size: 16px;
+            color: transparent;
+            background: rgba(255, 255, 255, 0.05);
+            transition: var(--transition);
         }
 
-        .upload-preview img,
-        .upload-preview video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .upload-placeholder {
-            text-align: center;
-            color: var(--dark-text-secondary);
-        }
-
-        .upload-placeholder i {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            opacity: 0.5;
-        }
-
-        /* Management Tables */
-        .management-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        .management-table th,
-        .management-table td {
-            padding: 15px;
-            text-align: right;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .management-table th {
-            background: rgba(37, 99, 235, 0.1);
+        .verification-checkbox.verified .checkmark {
+            background: var(--secondary-color);
+            border-color: var(--secondary-color);
             color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .verification-label {
+            flex: 1;
             font-weight: 600;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .action-buttons {
+        /* Buttons */
+        .btn {
+            padding: 16px 28px;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-success {
+            background: var(--gradient-secondary);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Error Messages */
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.9rem;
+            margin-top: 5px;
             display: flex;
+            align-items: center;
             gap: 8px;
+            display: none;
         }
 
-        /* System Backup Section */
-        .backup-section {
-            background: var(--dark-card);
-            padding: 25px;
-            border-radius: var(--border-radius-lg);
-            margin-top: 35px;
-            box-shadow: var(--box-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .backup-actions {
+        .error-message.show {
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
+        }
+
+        .form-control.error {
+            border-color: var(--danger-color);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
         }
 
         /* Loading Spinner */
@@ -337,7 +366,6 @@
             z-index: 3000;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(5px);
         }
 
         .loading-spinner.active {
@@ -366,6 +394,11 @@
             z-index: 4000;
         }
 
+        body[dir="ltr"] .toast-container {
+            right: auto;
+            left: 25px;
+        }
+
         .toast {
             background: var(--dark-card);
             color: var(--dark-text);
@@ -383,169 +416,54 @@
             min-width: 300px;
         }
 
+        body[dir="ltr"] .toast {
+            transform: translateX(-100%);
+            border-left: none;
+            border-right: 4px solid transparent;
+        }
+
         .toast.show {
             transform: translateX(0);
             opacity: 1;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .header {
-                padding: 15px;
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .header-controls {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .dashboard-nav {
-                flex-wrap: wrap;
-            }
-            
-            .nav-btn {
-                flex: 1;
-                min-width: 120px;
-                justify-content: center;
-            }
-            
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
+        .toast.success {
+            border-left-color: var(--secondary-color);
         }
 
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-            padding: 20px;
+        body[dir="ltr"] .toast.success {
+            border-right-color: var(--secondary-color);
         }
 
-        .modal.active {
-            display: flex;
-            animation: fadeIn 0.3s ease;
+        .toast.error {
+            border-left-color: var(--danger-color);
         }
 
-        .modal-content {
-            background: var(--dark-card);
-            border-radius: var(--border-radius-lg);
-            padding: 35px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: var(--box-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            animation: modalSlideIn 0.4s ease;
+        body[dir="ltr"] .toast.error {
+            border-right-color: var(--danger-color);
         }
 
-        /* Add these new styles for the existing sections */
+        .toast.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        body[dir="ltr"] .toast.warning {
+            border-right-color: var(--warning-color);
+        }
+
+        /* Dashboard */
         .dashboard {
             display: none;
-            animation: fadeIn 0.5s ease;
         }
 
         .dashboard.active {
             display: block;
+            animation: fadeIn 0.5s ease;
         }
 
-        .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 25px;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .section-title i {
-            color: var(--primary-light);
-        }
-
-        .btn {
-            padding: 16px 28px;
-            border: none;
-            border-radius: var(--border-radius-sm);
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary {
-            background: var(--gradient-primary);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-success {
-            background: var(--gradient-secondary);
-            color: white;
-        }
-
-        .btn-danger {
-            background: var(--gradient-danger);
-            color: white;
-        }
-
-        .btn-warning {
-            background: var(--gradient-warning);
-            color: white;
-        }
-
-        .btn-block {
-            width: 100%;
-        }
-
-        .btn-sm {
-            padding: 10px 18px;
-            font-size: 0.9rem;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--border-radius-sm);
-            background-color: rgba(255, 255, 255, 0.05);
-            color: var(--dark-text);
-            font-size: 1rem;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Role Badge */
@@ -570,18 +488,90 @@
             color: #60a5fa;
             border: 1px solid rgba(37, 99, 235, 0.3);
         }
+
+        /* Admin Navigation */
+        .dashboard-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: var(--border-radius);
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            background: none;
+            color: var(--dark-text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .nav-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 15px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .auth-container {
+                margin: 30px auto;
+                padding: 25px;
+            }
+            
+            .dashboard-nav {
+                flex-wrap: wrap;
+            }
+            
+            .nav-btn {
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+            }
+            
+            .toast {
+                min-width: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 20px;
+            }
+            
+            .btn {
+                padding: 14px 20px;
+            }
+        }
     </style>
 </head>
-<body>
-    <!-- Background Video -->
-    <video id="backgroundVideo" autoplay muted loop style="display: none;"></video>
-
+<body dir="rtl">
     <!-- Header -->
     <header class="header">
-        <div class="logo-container" id="logoContainer">
-            <div class="logo" id="appLogo">
-                <i class="fas fa-gas-pump"></i>
-            </div>
+        <div class="logo-container">
+            <div class="logo">⛽</div>
             <h1 class="app-title">Fuel System Ultra | Al Zahrani</h1>
         </div>
         <div class="header-controls">
@@ -590,7 +580,7 @@
                 <span id="languageText">English</span>
             </button>
             <div id="roleBadgeContainer"></div>
-            <button class="btn btn-secondary btn-sm" id="logoutBtn" style="display: none;">
+            <button class="btn btn-secondary" id="logoutBtn" style="display: none;">
                 <i class="fas fa-sign-out-alt"></i>
                 <span id="logoutText">تسجيل الخروج</span>
             </button>
@@ -611,10 +601,10 @@
         <div id="authScreen" class="auth-container">
             <div class="auth-tabs">
                 <button class="auth-tab active" data-tab="login">
-                    <i class="fas fa-sign-in-alt"></i> <span data-translate="login">تسجيل الدخول</span>
+                    <i class="fas fa-sign-in-alt"></i> <span data-i18n="login">تسجيل الدخول</span>
                 </button>
                 <button class="auth-tab" data-tab="register">
-                    <i class="fas fa-user-plus"></i> <span data-translate="register">حساب جديد</span>
+                    <i class="fas fa-user-plus"></i> <span data-i18n="register">حساب جديد</span>
                 </button>
             </div>
             
@@ -622,15 +612,23 @@
             <div id="loginForm" class="auth-form">
                 <div class="form-group">
                     <label for="loginUsername">
-                        <i class="fas fa-user"></i> <span data-translate="username">اسم المستخدم</span>
+                        <i class="fas fa-user"></i> <span data-i18n="username">اسم المستخدم</span>
                     </label>
                     <input type="text" id="loginUsername" class="form-control" placeholder="أدخل اسم المستخدم">
+                    <div class="error-message" id="loginUsernameError">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span data-i18n="usernameRequired">اسم المستخدم مطلوب</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="loginPassword">
-                        <i class="fas fa-lock"></i> <span data-translate="password">كلمة المرور</span>
+                        <i class="fas fa-lock"></i> <span data-i18n="password">كلمة المرور</span>
                     </label>
                     <input type="password" id="loginPassword" class="form-control" placeholder="أدخل كلمة المرور">
+                    <div class="error-message" id="loginPasswordError">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span data-i18n="passwordRequired">كلمة المرور مطلوبة</span>
+                    </div>
                 </div>
                 
                 <!-- Human Verification -->
@@ -638,7 +636,7 @@
                     <div class="verification-checkbox" id="adminVerification">
                         <div class="checkmark"><i class="fas fa-check"></i></div>
                         <div class="verification-label">
-                            <i class="fas fa-robot"></i> <span data-translate="notRobot">أنا لست روبوت</span>
+                            <i class="fas fa-robot"></i> <span data-i18n="notRobot">أنا لست روبوت</span>
                         </div>
                     </div>
                 </div>
@@ -646,7 +644,7 @@
                 <!-- Login Button -->
                 <div class="form-group">
                     <button class="btn btn-primary btn-block" id="loginBtn" disabled>
-                        <i class="fas fa-crown"></i> <span data-translate="adminLogin">دخول المدير</span>
+                        <i class="fas fa-crown"></i> <span data-i18n="adminLogin">دخول المدير</span>
                     </button>
                 </div>
             </div>
@@ -655,21 +653,33 @@
             <div id="registerForm" class="auth-form" style="display: none;">
                 <div class="form-group">
                     <label for="regName">
-                        <i class="fas fa-user"></i> <span data-translate="fullName">الاسم الكامل</span>
+                        <i class="fas fa-user"></i> <span data-i18n="fullName">الاسم الكامل</span>
                     </label>
-                    <input type="text" id="regName" class="form-control" placeholder="الاسم الكامل">
+                    <input type="text" id="regName" class="form-control" placeholder="أدخل الاسم الكامل">
+                    <div class="error-message" id="regNameError">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span data-i18n="nameRequired">الاسم الكامل مطلوب</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="regUsername">
-                        <i class="fas fa-at"></i> <span data-translate="username">اسم المستخدم</span>
+                        <i class="fas fa-at"></i> <span data-i18n="username">اسم المستخدم</span>
                     </label>
-                    <input type="text" id="regUsername" class="form-control" placeholder="اسم المستخدم">
+                    <input type="text" id="regUsername" class="form-control" placeholder="أدخل اسم المستخدم">
+                    <div class="error-message" id="regUsernameError">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span data-i18n="usernameRequired">اسم المستخدم مطلوب</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="regPassword">
-                        <i class="fas fa-key"></i> <span data-translate="password">كلمة المرور</span>
+                        <i class="fas fa-key"></i> <span data-i18n="password">كلمة المرور</span>
                     </label>
-                    <input type="password" id="regPassword" class="form-control" placeholder="كلمة المرور">
+                    <input type="password" id="regPassword" class="form-control" placeholder="أدخل كلمة المرور">
+                    <div class="error-message" id="regPasswordError">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span data-i18n="passwordRequired">كلمة المرور مطلوبة (6 أحرف على الأقل)</span>
+                    </div>
                 </div>
                 
                 <!-- Human Verification -->
@@ -677,7 +687,7 @@
                     <div class="verification-checkbox" id="driverVerification">
                         <div class="checkmark"><i class="fas fa-check"></i></div>
                         <div class="verification-label">
-                            <i class="fas fa-robot"></i> <span data-translate="notRobot">أنا لست روبوت</span>
+                            <i class="fas fa-robot"></i> <span data-i18n="notRobot">أنا لست روبوت</span>
                         </div>
                     </div>
                 </div>
@@ -685,7 +695,7 @@
                 <!-- Register Button -->
                 <div class="form-group">
                     <button class="btn btn-success btn-block" id="registerBtn" disabled>
-                        <i class="fas fa-truck"></i> <span data-translate="registerDriver">تسجيل سائق جديد</span>
+                        <i class="fas fa-truck"></i> <span data-i18n="registerDriver">تسجيل سائق جديد</span>
                     </button>
                 </div>
             </div>
@@ -693,211 +703,12 @@
 
         <!-- Driver Dashboard -->
         <div id="driverDashboard" class="dashboard">
-            <!-- Navigation -->
-            <div class="dashboard-nav">
-                <button class="nav-btn active" data-section="driverMain">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span data-translate="dashboard">لوحة التحكم</span>
-                </button>
-            </div>
-
-            <!-- Main Content -->
-            <div class="dashboard-section active" id="driverMain">
-                <!-- Driver Info and other existing content will be loaded here -->
-                <div class="driver-info">
-                    <div class="driver-info-content">
-                        <div class="driver-avatar"><i class="fas fa-user-circle"></i></div>
-                        <div class="driver-details">
-                            <div class="driver-name" id="driverName" data-translate="driver">السائق</div>
-                            <div class="driver-meta">
-                                <span id="driverProject"><i class="fas fa-project-diagram"></i> <span data-translate="project">المشروع</span>: --</span>
-                                <span id="driverArea"><i class="fas fa-map-marker-alt"></i> <span data-translate="area">المنطقة</span>: --</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- The rest of driver dashboard content... -->
-                <!-- (Same as before but with data-translate attributes) -->
-            </div>
+            <!-- Navigation will be added here -->
         </div>
 
         <!-- Admin Dashboard -->
         <div id="adminDashboard" class="dashboard">
-            <!-- Navigation -->
-            <div class="dashboard-nav">
-                <button class="nav-btn active" data-section="adminMain">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span data-translate="reports">التقارير</span>
-                </button>
-                <button class="nav-btn" data-section="adminControls">
-                    <i class="fas fa-cogs"></i>
-                    <span data-translate="controls">التحكم</span>
-                </button>
-                <button class="nav-btn" data-section="adminSettings">
-                    <i class="fas fa-sliders-h"></i>
-                    <span data-translate="settings">الإعدادات</span>
-                </button>
-            </div>
-
-            <!-- Main Reports Section -->
-            <div class="dashboard-section active" id="adminMain">
-                <!-- Admin Stats and Reports Table -->
-                <!-- (Same as before but with data-translate attributes) -->
-            </div>
-
-            <!-- Controls Section -->
-            <div class="dashboard-section" id="adminControls" style="display: none;">
-                <div class="admin-controls-section">
-                    <h3 class="section-title">
-                        <i class="fas fa-cogs"></i> <span data-translate="systemControls">تحكم النظام</span>
-                    </h3>
-                    
-                    <div class="settings-grid">
-                        <!-- Projects Management -->
-                        <div class="setting-card">
-                            <h4><i class="fas fa-project-diagram"></i> <span data-translate="projectsManagement">إدارة المشاريع</span></h4>
-                            <div class="form-group">
-                                <input type="text" id="newProjectName" class="form-control" placeholder="اسم المشروع الجديد">
-                            </div>
-                            <button class="btn btn-primary btn-block" id="addProjectBtn">
-                                <i class="fas fa-plus"></i> <span data-translate="addProject">إضافة مشروع</span>
-                            </button>
-                            
-                            <table class="management-table" id="projectsTable">
-                                <thead>
-                                    <tr>
-                                        <th data-translate="projectName">اسم المشروع</th>
-                                        <th data-translate="actions">الإجراءات</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="projectsList">
-                                    <!-- Projects will be loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Areas Management -->
-                        <div class="setting-card">
-                            <h4><i class="fas fa-map-marker-alt"></i> <span data-translate="areasManagement">إدارة المناطق</span></h4>
-                            <div class="form-group">
-                                <input type="text" id="newAreaName" class="form-control" placeholder="اسم المنطقة الجديدة">
-                            </div>
-                            <button class="btn btn-primary btn-block" id="addAreaBtn">
-                                <i class="fas fa-plus"></i> <span data-translate="addArea">إضافة منطقة</span>
-                            </button>
-                            
-                            <table class="management-table" id="areasTable">
-                                <thead>
-                                    <tr>
-                                        <th data-translate="areaName">اسم المنطقة</th>
-                                        <th data-translate="actions">الإجراءات</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="areasList">
-                                    <!-- Areas will be loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Settings Section -->
-            <div class="dashboard-section" id="adminSettings" style="display: none;">
-                <div class="admin-controls-section">
-                    <h3 class="section-title">
-                        <i class="fas fa-sliders-h"></i> <span data-translate="systemSettings">إعدادات النظام</span>
-                    </h3>
-                    
-                    <div class="settings-grid">
-                        <!-- App Icon Settings -->
-                        <div class="setting-card">
-                            <h4><i class="fas fa-image"></i> <span data-translate="appIcon">أيقونة التطبيق</span></h4>
-                            <p class="text-muted" data-translate="appIconDesc">رفع صورة جديدة لأيقونة التطبيق (يوصى بـ 512x512 بكسل)</p>
-                            
-                            <div class="upload-preview" id="iconPreview" onclick="document.getElementById('iconUpload').click()">
-                                <div class="upload-placeholder">
-                                    <i class="fas fa-upload"></i>
-                                    <div data-translate="clickToUpload">انقر للرفع</div>
-                                </div>
-                            </div>
-                            
-                            <input type="file" id="iconUpload" accept="image/*" style="display: none;" onchange="uploadAppIcon(this)">
-                            <button class="btn btn-secondary btn-block mt-2" onclick="document.getElementById('iconUpload').click()">
-                                <i class="fas fa-upload"></i> <span data-translate="uploadIcon">رفع أيقونة</span>
-                            </button>
-                        </div>
-
-                        <!-- Background Settings -->
-                        <div class="setting-card">
-                            <h4><i class="fas fa-video"></i> <span data-translate="background">خلفية النظام</span></h4>
-                            <p class="text-muted" data-translate="backgroundDesc">رفع فيديو أو صورة خلفية للنظام</p>
-                            
-                            <div class="form-group">
-                                <select id="bgType" class="form-control">
-                                    <option value="video" data-translate="video">فيديو</option>
-                                    <option value="image" data-translate="image">صورة</option>
-                                    <option value="none" data-translate="none">بدون خلفية</option>
-                                </select>
-                            </div>
-                            
-                            <div class="upload-preview" id="bgPreview" onclick="document.getElementById('bgUpload').click()">
-                                <div class="upload-placeholder">
-                                    <i class="fas fa-upload"></i>
-                                    <div data-translate="clickToUpload">انقر للرفع</div>
-                                </div>
-                            </div>
-                            
-                            <input type="file" id="bgUpload" accept="video/*,image/*" style="display: none;" onchange="uploadBackground(this)">
-                            <button class="btn btn-secondary btn-block mt-2" onclick="document.getElementById('bgUpload').click()">
-                                <i class="fas fa-upload"></i> <span data-translate="uploadBackground">رفع خلفية</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- System Backup Section -->
-                <div class="backup-section">
-                    <h3 class="section-title">
-                        <i class="fas fa-database"></i> <span data-translate="systemBackup">نسخ احتياطي للنظام</span>
-                    </h3>
-                    <p class="text-muted" data-translate="backupDesc">قم بإنشاء نسخة احتياطية من جميع بيانات النظام أو استعادة من نسخة سابقة</p>
-                    
-                    <div class="backup-actions">
-                        <button class="btn btn-success" id="backupBtn">
-                            <i class="fas fa-download"></i> <span data-translate="createBackup">إنشاء نسخة احتياطية</span>
-                        </button>
-                        <button class="btn btn-warning" id="restoreBtn">
-                            <i class="fas fa-upload"></i> <span data-translate="restoreBackup">استعادة نسخة</span>
-                        </button>
-                        <button class="btn btn-danger" id="resetBtn">
-                            <i class="fas fa-trash"></i> <span data-translate="resetSystem">إعادة ضبط النظام</span>
-                        </button>
-                    </div>
-                    
-                    <div class="form-group mt-3">
-                        <label for="backupFile" data-translate="selectBackup">اختر ملف النسخ الاحتياطي</label>
-                        <input type="file" id="backupFile" class="form-control" accept=".json">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modals -->
-    <div class="modal" id="confirmModal">
-        <div class="modal-content">
-            <h3 id="confirmTitle" data-translate="confirmation">تأكيد</h3>
-            <p id="confirmMessage"></p>
-            <div style="display: flex; gap: 15px; margin-top: 25px;">
-                <button class="btn btn-danger" id="confirmYes">
-                    <i class="fas fa-check"></i> <span data-translate="yes">نعم</span>
-                </button>
-                <button class="btn btn-secondary" id="confirmNo">
-                    <i class="fas fa-times"></i> <span data-translate="no">لا</span>
-                </button>
-            </div>
+            <!-- Navigation will be added here -->
         </div>
     </div>
 
@@ -918,17 +729,14 @@
         let isDriverVerified = false;
         let isConfirmed = false;
         let currentLocation = null;
-        let mediaRecorder = null;
-        let recordedChunks = [];
-        let recordingTimer = null;
-        let secondsRemaining = 10;
-        let systemSettings = {};
-        let systemProjects = [];
-        let systemAreas = [];
 
         // Translation System
         const translations = {
             ar: {
+                // Header
+                english: 'English',
+                logout: 'تسجيل الخروج',
+                
                 // Auth
                 login: 'تسجيل الدخول',
                 register: 'حساب جديد',
@@ -939,80 +747,31 @@
                 adminLogin: 'دخول المدير',
                 registerDriver: 'تسجيل سائق جديد',
                 
-                // Header
-                english: 'English',
-                logout: 'تسجيل الخروج',
-                
-                // Dashboard
-                dashboard: 'لوحة التحكم',
-                driver: 'السائق',
-                project: 'المشروع',
-                area: 'المنطقة',
-                
-                // Admin
-                reports: 'التقارير',
-                controls: 'التحكم',
-                settings: 'الإعدادات',
-                systemControls: 'تحكم النظام',
-                systemSettings: 'إعدادات النظام',
-                
-                // Management
-                projectsManagement: 'إدارة المشاريع',
-                areasManagement: 'إدارة المناطق',
-                addProject: 'إضافة مشروع',
-                addArea: 'إضافة منطقة',
-                projectName: 'اسم المشروع',
-                areaName: 'اسم المنطقة',
-                actions: 'الإجراءات',
-                edit: 'تعديل',
-                delete: 'حذف',
-                save: 'حفظ',
-                cancel: 'إلغاء',
-                
-                // Settings
-                appIcon: 'أيقونة التطبيق',
-                appIconDesc: 'رفع صورة جديدة لأيقونة التطبيق (يوصى بـ 512x512 بكسل)',
-                background: 'خلفية النظام',
-                backgroundDesc: 'رفع فيديو أو صورة خلفية للنظام',
-                video: 'فيديو',
-                image: 'صورة',
-                none: 'بدون خلفية',
-                clickToUpload: 'انقر للرفع',
-                uploadIcon: 'رفع أيقونة',
-                uploadBackground: 'رفع خلفية',
-                
-                // Backup
-                systemBackup: 'نسخ احتياطي للنظام',
-                backupDesc: 'قم بإنشاء نسخة احتياطية من جميع بيانات النظام أو استعادة من نسخة سابقة',
-                createBackup: 'إنشاء نسخة احتياطية',
-                restoreBackup: 'استعادة نسخة',
-                resetSystem: 'إعادة ضبط النظام',
-                selectBackup: 'اختر ملف النسخ الاحتياطي',
-                
-                // Modals
-                confirmation: 'تأكيد',
-                yes: 'نعم',
-                no: 'لا',
-                deleteConfirm: 'هل أنت متأكد من الحذف؟',
-                resetConfirm: 'هل أنت متأكد من إعادة ضبط النظام؟ سيتم حذف جميع البيانات.',
-                logoutConfirm: 'هل أنت متأكد من تسجيل الخروج؟',
+                // Validation Messages
+                usernameRequired: 'اسم المستخدم مطلوب',
+                passwordRequired: 'كلمة المرور مطلوبة',
+                nameRequired: 'الاسم الكامل مطلوب',
+                passwordLength: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
+                usernameExists: 'اسم المستخدم موجود بالفعل',
                 
                 // Toast Messages
+                loginSuccess: 'تم تسجيل الدخول بنجاح',
+                registerSuccess: 'تم التسجيل بنجاح',
+                loginError: 'بيانات الدخول غير صحيحة',
+                registerError: 'حدث خطأ أثناء التسجيل',
                 languageChanged: 'تم تغيير اللغة إلى الإنجليزية',
-                iconUploaded: 'تم رفع الأيقونة بنجاح',
-                backgroundUploaded: 'تم رفع الخلفية بنجاح',
-                projectAdded: 'تم إضافة المشروع بنجاح',
-                projectDeleted: 'تم حذف المشروع بنجاح',
-                areaAdded: 'تم إضافة المنطقة بنجاح',
-                areaDeleted: 'تم حذف المنطقة بنجاح',
-                backupCreated: 'تم إنشاء النسخة الاحتياطية بنجاح',
-                backupRestored: 'تم استعادة النسخة الاحتياطية بنجاح',
-                systemReset: 'تم إعادة ضبط النظام',
+                verificationRequired: 'الرجاء التحقق من أنك لست روبوت',
+                systemError: 'حدث خطأ في النظام',
                 
-                // Other
-                loading: 'جاري التحميل...'
+                // Admin
+                admin: 'المدير',
+                driver: 'السائق'
             },
             en: {
+                // Header
+                english: 'العربية',
+                logout: 'Logout',
+                
                 // Auth
                 login: 'Login',
                 register: 'Register',
@@ -1023,78 +782,25 @@
                 adminLogin: 'Admin Login',
                 registerDriver: 'Register New Driver',
                 
-                // Header
-                english: 'العربية',
-                logout: 'Logout',
-                
-                // Dashboard
-                dashboard: 'Dashboard',
-                driver: 'Driver',
-                project: 'Project',
-                area: 'Area',
-                
-                // Admin
-                reports: 'Reports',
-                controls: 'Controls',
-                settings: 'Settings',
-                systemControls: 'System Controls',
-                systemSettings: 'System Settings',
-                
-                // Management
-                projectsManagement: 'Projects Management',
-                areasManagement: 'Areas Management',
-                addProject: 'Add Project',
-                addArea: 'Add Area',
-                projectName: 'Project Name',
-                areaName: 'Area Name',
-                actions: 'Actions',
-                edit: 'Edit',
-                delete: 'Delete',
-                save: 'Save',
-                cancel: 'Cancel',
-                
-                // Settings
-                appIcon: 'App Icon',
-                appIconDesc: 'Upload new app icon image (recommended 512x512 pixels)',
-                background: 'System Background',
-                backgroundDesc: 'Upload video or image for system background',
-                video: 'Video',
-                image: 'Image',
-                none: 'No Background',
-                clickToUpload: 'Click to upload',
-                uploadIcon: 'Upload Icon',
-                uploadBackground: 'Upload Background',
-                
-                // Backup
-                systemBackup: 'System Backup',
-                backupDesc: 'Create backup of all system data or restore from previous backup',
-                createBackup: 'Create Backup',
-                restoreBackup: 'Restore Backup',
-                resetSystem: 'Reset System',
-                selectBackup: 'Select Backup File',
-                
-                // Modals
-                confirmation: 'Confirmation',
-                yes: 'Yes',
-                no: 'No',
-                deleteConfirm: 'Are you sure you want to delete?',
-                resetConfirm: 'Are you sure you want to reset the system? All data will be deleted.',
-                logoutConfirm: 'Are you sure you want to logout?',
+                // Validation Messages
+                usernameRequired: 'Username is required',
+                passwordRequired: 'Password is required',
+                nameRequired: 'Full name is required',
+                passwordLength: 'Password must be at least 6 characters',
+                usernameExists: 'Username already exists',
                 
                 // Toast Messages
+                loginSuccess: 'Logged in successfully',
+                registerSuccess: 'Registered successfully',
+                loginError: 'Invalid login credentials',
+                registerError: 'Registration failed',
                 languageChanged: 'Language changed to English',
-                iconUploaded: 'Icon uploaded successfully',
-                backgroundUploaded: 'Background uploaded successfully',
-                projectAdded: 'Project added successfully',
-                projectDeleted: 'Project deleted successfully',
-                areaAdded: 'Area added successfully',
-                areaDeleted: 'Area deleted successfully',
-                backupCreated: 'Backup created successfully',
-                backupRestored: 'Backup restored successfully',
-                systemReset: 'System reset successfully',
+                verificationRequired: 'Please verify you are not a robot',
+                systemError: 'System error occurred',
                 
-                // Other
-                loading: 'Loading...'
+                // Admin
+                admin: 'Admin',
+                driver: 'Driver'
             }
         };
 
@@ -1104,48 +810,533 @@
             setupEventListeners();
             setupHumanVerification();
             checkAuthState();
-            loadSystemSettings();
-            loadSystemData();
+            updateLanguageText();
         });
 
         function initializeApp() {
-            // Load language preference
-            const savedLanguage = localStorage.getItem('system_language') || 'ar';
-            setLanguage(savedLanguage);
+            // Load saved language preference
+            const savedLanguage = localStorage.getItem('system_language');
+            if (savedLanguage) {
+                currentLanguage = savedLanguage;
+                updateLanguageDirection();
+            }
             
             // Load system settings
             loadSystemSettings();
+        }
+
+        function setupEventListeners() {
+            // Language toggle
+            document.getElementById('languageToggle').addEventListener('click', toggleLanguage);
             
-            // Check if we're on mobile
-            if (!isMobile()) {
-                showToast('⚠️ التطبيق مصمم للعمل على الهواتف الذكية', 'warning');
+            // Auth tabs
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.dataset.tab;
+                    switchAuthTab(tabName);
+                });
+            });
+            
+            // Form validation
+            document.getElementById('loginUsername').addEventListener('input', validateLoginForm);
+            document.getElementById('loginPassword').addEventListener('input', validateLoginForm);
+            document.getElementById('regName').addEventListener('input', validateRegisterForm);
+            document.getElementById('regUsername').addEventListener('input', validateRegisterForm);
+            document.getElementById('regPassword').addEventListener('input', validateRegisterForm);
+            
+            // Login/Register buttons
+            document.getElementById('loginBtn').addEventListener('click', loginUser);
+            document.getElementById('registerBtn').addEventListener('click', registerUser);
+            
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+            
+            // Enter key support
+            document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && isAdminVerified) loginUser();
+            });
+            
+            document.getElementById('regPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && isDriverVerified) registerUser();
+            });
+        }
+
+        function setupHumanVerification() {
+            // Admin Verification
+            const adminVerification = document.getElementById('adminVerification');
+            if (adminVerification) {
+                adminVerification.addEventListener('click', function() {
+                    this.classList.toggle('verified');
+                    isAdminVerified = this.classList.contains('verified');
+                    validateLoginForm();
+                    
+                    if (isAdminVerified) {
+                        showToast(translations[currentLanguage].verificationRequired, 'success');
+                    }
+                });
+            }
+            
+            // Driver Verification
+            const driverVerification = document.getElementById('driverVerification');
+            if (driverVerification) {
+                driverVerification.addEventListener('click', function() {
+                    this.classList.toggle('verified');
+                    isDriverVerified = this.classList.contains('verified');
+                    validateRegisterForm();
+                    
+                    if (isDriverVerified) {
+                        showToast(translations[currentLanguage].verificationRequired, 'success');
+                    }
+                });
             }
         }
 
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            localStorage.setItem('system_language', lang);
+        function validateLoginForm() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
             
-            // Update HTML direction
-            document.body.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
-            document.body.classList.toggle('ltr', currentLanguage === 'en');
+            // Clear previous errors
+            document.getElementById('loginUsernameError').classList.remove('show');
+            document.getElementById('loginPasswordError').classList.remove('show');
+            document.getElementById('loginUsername').classList.remove('error');
+            document.getElementById('loginPassword').classList.remove('error');
             
-            // Update language button
-            const toggleBtn = document.getElementById('languageToggle');
-            toggleBtn.innerHTML = currentLanguage === 'ar' 
-                ? `<i class="fas fa-globe"></i><span>${translations.ar.english}</span>` 
-                : `<i class="fas fa-globe"></i><span>${translations.en.english}</span>`;
+            let isValid = true;
             
-            // Update all translatable elements
-            updateAllTranslations();
+            // Validate username
+            if (!username) {
+                document.getElementById('loginUsernameError').classList.add('show');
+                document.getElementById('loginUsername').classList.add('error');
+                isValid = false;
+            }
+            
+            // Validate password
+            if (!password) {
+                document.getElementById('loginPasswordError').classList.add('show');
+                document.getElementById('loginPassword').classList.add('error');
+                isValid = false;
+            }
+            
+            // Enable/disable button
+            document.getElementById('loginBtn').disabled = !(isValid && isAdminVerified);
+            
+            return isValid;
         }
 
-        function updateAllTranslations() {
+        function validateRegisterForm() {
+            const fullName = document.getElementById('regName').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            
+            // Clear previous errors
+            document.getElementById('regNameError').classList.remove('show');
+            document.getElementById('regUsernameError').classList.remove('show');
+            document.getElementById('regPasswordError').classList.remove('show');
+            document.getElementById('regName').classList.remove('error');
+            document.getElementById('regUsername').classList.remove('error');
+            document.getElementById('regPassword').classList.remove('error');
+            
+            let isValid = true;
+            
+            // Validate full name
+            if (!fullName) {
+                document.getElementById('regNameError').classList.add('show');
+                document.getElementById('regName').classList.add('error');
+                isValid = false;
+            }
+            
+            // Validate username
+            if (!username) {
+                document.getElementById('regUsernameError').classList.add('show');
+                document.getElementById('regUsername').classList.add('error');
+                isValid = false;
+            }
+            
+            // Validate password
+            if (!password) {
+                document.getElementById('regPasswordError').classList.add('show');
+                document.getElementById('regPassword').classList.add('error');
+                isValid = false;
+            } else if (password.length < 6) {
+                document.getElementById('regPasswordError').innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>${translations[currentLanguage].passwordLength}</span>
+                `;
+                document.getElementById('regPasswordError').classList.add('show');
+                document.getElementById('regPassword').classList.add('error');
+                isValid = false;
+            }
+            
+            // Enable/disable button
+            document.getElementById('registerBtn').disabled = !(isValid && isDriverVerified);
+            
+            return isValid;
+        }
+
+        function switchAuthTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === tabName);
+            });
+            
+            // Show selected form
+            document.getElementById('loginForm').style.display = tabName === 'login' ? 'block' : 'none';
+            document.getElementById('registerForm').style.display = tabName === 'register' ? 'block' : 'none';
+            
+            // Reset verification states
+            if (tabName === 'login') {
+                isDriverVerified = false;
+                document.getElementById('driverVerification')?.classList.remove('verified');
+                validateLoginForm();
+            } else {
+                isAdminVerified = false;
+                document.getElementById('adminVerification')?.classList.remove('verified');
+                validateRegisterForm();
+            }
+        }
+
+        async function loginUser() {
+            if (!validateLoginForm() || !isAdminVerified) {
+                showToast(translations[currentLanguage].verificationRequired, 'error');
+                return;
+            }
+            
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            showLoading(true);
+            
+            try {
+                // Check if it's the system admin
+                if (username === SYSTEM_ADMIN.username && password === SYSTEM_ADMIN.password) {
+                    currentUser = {
+                        id: 'system_admin',
+                        ...SYSTEM_ADMIN
+                    };
+                    userRole = 'admin';
+                    
+                    // Save session
+                    saveSession();
+                    
+                    // Show success message
+                    showToast(translations[currentLanguage].loginSuccess, 'success');
+                    
+                    // Show dashboard
+                    setTimeout(() => {
+                        showDashboard();
+                        showLoading(false);
+                    }, 1000);
+                    return;
+                }
+                
+                // Check registered drivers
+                const registeredUsers = JSON.parse(localStorage.getItem('registered_users') || '{}');
+                let userFound = null;
+                
+                for (const [id, user] of Object.entries(registeredUsers)) {
+                    if (user.username === username && user.password === password) {
+                        userFound = { id, ...user };
+                        break;
+                    }
+                }
+                
+                if (userFound) {
+                    currentUser = {
+                        id: userFound.id,
+                        name: userFound.fullName,
+                        username: userFound.username,
+                        role: 'driver',
+                        project: userFound.project || '',
+                        area: userFound.area || ''
+                    };
+                    userRole = 'driver';
+                    
+                    // Save session
+                    saveSession();
+                    
+                    // Show success message
+                    showToast(translations[currentLanguage].loginSuccess, 'success');
+                    
+                    // Show dashboard
+                    setTimeout(() => {
+                        showDashboard();
+                        showLoading(false);
+                    }, 1000);
+                } else {
+                    showToast(translations[currentLanguage].loginError, 'error');
+                    showLoading(false);
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast(translations[currentLanguage].systemError, 'error');
+                showLoading(false);
+            }
+        }
+
+        async function registerUser() {
+            if (!validateRegisterForm() || !isDriverVerified) {
+                showToast(translations[currentLanguage].verificationRequired, 'error');
+                return;
+            }
+            
+            const fullName = document.getElementById('regName').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            
+            showLoading(true);
+            
+            try {
+                // Check if username already exists
+                const registeredUsers = JSON.parse(localStorage.getItem('registered_users') || '{}');
+                
+                for (const user of Object.values(registeredUsers)) {
+                    if (user.username === username) {
+                        showToast(translations[currentLanguage].usernameExists, 'error');
+                        showLoading(false);
+                        return;
+                    }
+                }
+                
+                // Create new user
+                const userId = 'driver_' + Date.now();
+                const newUser = {
+                    fullName,
+                    username,
+                    password,
+                    role: 'driver',
+                    createdAt: new Date().toISOString(),
+                    lastLogin: null,
+                    isActive: true
+                };
+                
+                // Save user
+                registeredUsers[userId] = newUser;
+                localStorage.setItem('registered_users', JSON.stringify(registeredUsers));
+                
+                // Auto login
+                currentUser = {
+                    id: userId,
+                    name: fullName,
+                    username: username,
+                    role: 'driver',
+                    project: '',
+                    area: ''
+                };
+                userRole = 'driver';
+                
+                // Save session
+                saveSession();
+                
+                // Show success message
+                showToast(translations[currentLanguage].registerSuccess, 'success');
+                
+                // Show dashboard
+                setTimeout(() => {
+                    showDashboard();
+                    showLoading(false);
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                showToast(translations[currentLanguage].registerError, 'error');
+                showLoading(false);
+            }
+        }
+
+        function saveSession() {
+            if (currentUser) {
+                const session = {
+                    userId: currentUser.id,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('last_session', JSON.stringify(session));
+            }
+        }
+
+        function checkAuthState() {
+            try {
+                const lastSession = JSON.parse(localStorage.getItem('last_session') || '{}');
+                
+                if (lastSession.userId && lastSession.timestamp) {
+                    const sessionAge = Date.now() - new Date(lastSession.timestamp).getTime();
+                    const maxSessionAge = 24 * 60 * 60 * 1000; // 24 hours
+                    
+                    if (sessionAge < maxSessionAge) {
+                        restoreSession(lastSession);
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking auth state:', error);
+            }
+        }
+
+        function restoreSession(session) {
+            if (session.userId === 'system_admin') {
+                currentUser = {
+                    id: 'system_admin',
+                    ...SYSTEM_ADMIN
+                };
+                userRole = 'admin';
+                showDashboard();
+            } else {
+                const registeredUsers = JSON.parse(localStorage.getItem('registered_users') || '{}');
+                const user = registeredUsers[session.userId];
+                
+                if (user) {
+                    currentUser = {
+                        id: session.userId,
+                        name: user.fullName,
+                        username: user.username,
+                        role: 'driver',
+                        project: user.project || '',
+                        area: user.area || ''
+                    };
+                    userRole = 'driver';
+                    showDashboard();
+                }
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('authScreen').style.display = 'none';
+            
+            if (userRole === 'admin') {
+                document.getElementById('adminDashboard').classList.add('active');
+                document.getElementById('driverDashboard').classList.remove('active');
+                
+                // Add admin navigation
+                document.getElementById('adminDashboard').innerHTML = `
+                    <div class="dashboard-nav">
+                        <button class="nav-btn active" data-section="reports">
+                            <i class="fas fa-file-alt"></i> <span data-i18n="reports">التقارير</span>
+                        </button>
+                        <button class="nav-btn" data-section="settings">
+                            <i class="fas fa-cogs"></i> <span data-i18n="settings">الإعدادات</span>
+                        </button>
+                    </div>
+                    <div class="dashboard-section active" id="reportsSection">
+                        <h2 style="color: white; margin-bottom: 20px;">لوحة تحكم المدير</h2>
+                        <p style="color: var(--dark-text-secondary);">يمكنك إدارة التقارير والإعدادات من هنا</p>
+                    </div>
+                `;
+                
+                // Update translations
+                updateLanguageText();
+                
+            } else {
+                document.getElementById('driverDashboard').classList.add('active');
+                document.getElementById('adminDashboard').classList.remove('active');
+                
+                // Add driver content
+                document.getElementById('driverDashboard').innerHTML = `
+                    <div style="background: var(--dark-card); padding: 25px; border-radius: var(--border-radius-lg);">
+                        <h2 style="color: white; margin-bottom: 20px;">مرحباً ${currentUser.name}</h2>
+                        <p style="color: var(--dark-text-secondary);">يمكنك تقديم تقارير الوقود من هنا</p>
+                    </div>
+                `;
+            }
+            
+            // Update role badge
+            updateRoleBadge();
+            
+            // Show logout button
+            document.getElementById('logoutBtn').style.display = 'flex';
+        }
+
+        function updateRoleBadge() {
+            const roleBadgeContainer = document.getElementById('roleBadgeContainer');
+            if (userRole === 'admin') {
+                roleBadgeContainer.innerHTML = `
+                    <div class="role-badge admin">
+                        <i class="fas fa-crown"></i>
+                        <span>${translations[currentLanguage].admin}</span>
+                    </div>
+                `;
+            } else {
+                roleBadgeContainer.innerHTML = `
+                    <div class="role-badge driver">
+                        <i class="fas fa-truck"></i>
+                        <span>${translations[currentLanguage].driver}</span>
+                    </div>
+                `;
+            }
+        }
+
+        function logoutUser() {
+            // Clear current user
+            currentUser = null;
+            userRole = null;
+            
+            // Clear role badge
+            document.getElementById('roleBadgeContainer').innerHTML = '';
+            
+            // Hide logout button
+            document.getElementById('logoutBtn').style.display = 'none';
+            
+            // Hide dashboards
+            document.getElementById('adminDashboard').classList.remove('active');
+            document.getElementById('driverDashboard').classList.remove('active');
+            
+            // Show auth screen
+            document.getElementById('authScreen').style.display = 'block';
+            
+            // Reset forms
+            resetAuthForms();
+            
+            // Clear session
+            localStorage.removeItem('last_session');
+            
+            showToast('تم تسجيل الخروج بنجاح', 'success');
+        }
+
+        function resetAuthForms() {
+            // Clear form fields
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('regName').value = '';
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPassword').value = '';
+            
+            // Reset verification
+            isAdminVerified = false;
+            isDriverVerified = false;
+            document.getElementById('adminVerification').classList.remove('verified');
+            document.getElementById('driverVerification').classList.remove('verified');
+            
+            // Reset validation
+            validateLoginForm();
+            validateRegisterForm();
+            
+            // Switch to login tab
+            switchAuthTab('login');
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
+            localStorage.setItem('system_language', currentLanguage);
+            
+            updateLanguageDirection();
+            updateLanguageText();
+            
+            showToast(translations[currentLanguage].languageChanged, 'success');
+        }
+
+        function updateLanguageDirection() {
+            document.body.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+        }
+
+        function updateLanguageText() {
             const lang = translations[currentLanguage];
             
-            // Update all elements with data-translate attribute
-            document.querySelectorAll('[data-translate]').forEach(element => {
-                const key = element.getAttribute('data-translate');
+            // Update header
+            document.getElementById('languageText').textContent = lang.english;
+            document.getElementById('logoutText').textContent = lang.logout;
+            
+            // Update all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
                 if (lang[key]) {
                     element.textContent = lang[key];
                 }
@@ -1172,566 +1363,15 @@
             if (regPassword) regPassword.placeholder = lang.password;
         }
 
-        function toggleLanguage() {
-            const newLang = currentLanguage === 'ar' ? 'en' : 'ar';
-            setLanguage(newLang);
-            showToast(translations[newLang].languageChanged, 'success');
-        }
-
-        function setupEventListeners() {
-            // Language toggle
-            document.getElementById('languageToggle').addEventListener('click', toggleLanguage);
-            
-            // Navigation
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const section = this.dataset.section;
-                    switchAdminSection(section);
-                });
-            });
-            
-            // Logout
-            document.getElementById('logoutBtn').addEventListener('click', confirmLogout);
-            
-            // Project management
-            document.getElementById('addProjectBtn').addEventListener('click', addNewProject);
-            document.getElementById('addAreaBtn').addEventListener('click', addNewArea);
-            
-            // Backup system
-            document.getElementById('backupBtn').addEventListener('click', createBackup);
-            document.getElementById('restoreBtn').addEventListener('click', restoreBackup);
-            document.getElementById('resetBtn').addEventListener('click', confirmReset);
-            
-            // Background type change
-            document.getElementById('bgType').addEventListener('change', updateBackgroundType);
-            
-            // Confirm modal
-            document.getElementById('confirmNo').addEventListener('click', () => {
-                document.getElementById('confirmModal').classList.remove('active');
-            });
-            
-            // ... rest of existing event listeners
-        }
-
-        function switchAdminSection(section) {
-            // Update navigation buttons
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.section === section);
-            });
-            
-            // Show selected section
-            document.querySelectorAll('.dashboard-section').forEach(sec => {
-                sec.style.display = sec.id === section ? 'block' : 'none';
-            });
-            
-            // Load section data if needed
-            if (section === 'adminControls') {
-                loadProjectsList();
-                loadAreasList();
-            }
-        }
-
         function loadSystemSettings() {
             try {
-                // Load saved settings
-                const savedSettings = JSON.parse(localStorage.getItem('system_settings') || '{}');
-                systemSettings = savedSettings;
-                
-                // Apply settings
-                applySystemSettings();
+                const settings = JSON.parse(localStorage.getItem('system_settings') || '{}');
+                // Apply settings if needed
             } catch (error) {
                 console.error('Error loading system settings:', error);
-                systemSettings = {
-                    appIcon: null,
-                    background: {
-                        type: 'none',
-                        url: null
-                    },
-                    projects: [],
-                    areas: []
-                };
             }
         }
 
-        function saveSystemSettings() {
-            localStorage.setItem('system_settings', JSON.stringify(systemSettings));
-        }
-
-        function applySystemSettings() {
-            // Apply app icon
-            if (systemSettings.appIcon) {
-                const logoElement = document.getElementById('appLogo');
-                if (logoElement) {
-                    logoElement.innerHTML = `<img src="${systemSettings.appIcon}" alt="App Logo">`;
-                }
-            }
-            
-            // Apply background
-            applyBackgroundSettings();
-            
-            // Load projects and areas
-            loadSystemData();
-        }
-
-        function applyBackgroundSettings() {
-            const videoElement = document.getElementById('backgroundVideo');
-            const body = document.body;
-            
-            if (systemSettings.background && systemSettings.background.type !== 'none') {
-                if (systemSettings.background.type === 'video' && systemSettings.background.url) {
-                    videoElement.src = systemSettings.background.url;
-                    videoElement.style.display = 'block';
-                    body.classList.add('video-bg');
-                } else if (systemSettings.background.type === 'image' && systemSettings.background.url) {
-                    body.style.backgroundImage = `url('${systemSettings.background.url}')`;
-                    body.style.backgroundSize = 'cover';
-                    body.style.backgroundPosition = 'center';
-                    body.style.backgroundAttachment = 'fixed';
-                }
-            } else {
-                videoElement.style.display = 'none';
-                body.classList.remove('video-bg');
-                body.style.backgroundImage = 'none';
-            }
-        }
-
-        function loadSystemData() {
-            // Load projects
-            const savedProjects = JSON.parse(localStorage.getItem('system_projects') || '[]');
-            systemProjects = savedProjects;
-            
-            // Load areas
-            const savedAreas = JSON.parse(localStorage.getItem('system_areas') || '[]');
-            systemAreas = savedAreas;
-        }
-
-        function saveSystemData() {
-            localStorage.setItem('system_projects', JSON.stringify(systemProjects));
-            localStorage.setItem('system_areas', JSON.stringify(systemAreas));
-        }
-
-        // App Icon Upload
-        function uploadAppIcon(input) {
-            const file = input.files[0];
-            if (!file) return;
-            
-            if (!file.type.startsWith('image/')) {
-                showToast('❌ الرجاء رفع ملف صورة فقط', 'error');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                systemSettings.appIcon = e.target.result;
-                saveSystemSettings();
-                applySystemSettings();
-                showToast(translations[currentLanguage].iconUploaded, 'success');
-                
-                // Update preview
-                const preview = document.getElementById('iconPreview');
-                preview.innerHTML = `<img src="${e.target.result}" alt="App Icon">`;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Background Upload
-        function uploadBackground(input) {
-            const file = input.files[0];
-            if (!file) return;
-            
-            const bgType = document.getElementById('bgType').value;
-            
-            if (bgType === 'video' && !file.type.startsWith('video/')) {
-                showToast('❌ الرجاء رفع ملف فيديو فقط', 'error');
-                return;
-            }
-            
-            if (bgType === 'image' && !file.type.startsWith('image/')) {
-                showToast('❌ الرجاء رفع ملف صورة فقط', 'error');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                systemSettings.background = {
-                    type: bgType,
-                    url: e.target.result
-                };
-                saveSystemSettings();
-                applyBackgroundSettings();
-                showToast(translations[currentLanguage].backgroundUploaded, 'success');
-                
-                // Update preview
-                const preview = document.getElementById('bgPreview');
-                if (bgType === 'video') {
-                    preview.innerHTML = `<video src="${e.target.result}" autoplay muted loop></video>`;
-                } else {
-                    preview.innerHTML = `<img src="${e.target.result}" alt="Background">`;
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function updateBackgroundType() {
-            const bgType = document.getElementById('bgType').value;
-            const preview = document.getElementById('bgPreview');
-            
-            if (bgType === 'none') {
-                preview.innerHTML = `
-                    <div class="upload-placeholder">
-                        <i class="fas fa-ban"></i>
-                        <div>${translations[currentLanguage].none}</div>
-                    </div>
-                `;
-                
-                systemSettings.background = { type: 'none', url: null };
-                saveSystemSettings();
-                applyBackgroundSettings();
-            }
-        }
-
-        // Projects Management
-        function loadProjectsList() {
-            const projectsList = document.getElementById('projectsList');
-            if (!projectsList) return;
-            
-            projectsList.innerHTML = '';
-            
-            systemProjects.forEach((project, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${project}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-sm btn-warning" onclick="editProject(${index})">
-                                <i class="fas fa-edit"></i> <span data-translate="edit">تعديل</span>
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteProject(${index})">
-                                <i class="fas fa-trash"></i> <span data-translate="delete">حذف</span>
-                            </button>
-                        </div>
-                    </td>
-                `;
-                projectsList.appendChild(row);
-            });
-        }
-
-        function addNewProject() {
-            const projectName = document.getElementById('newProjectName').value.trim();
-            if (!projectName) {
-                showToast('❌ الرجاء إدخال اسم المشروع', 'error');
-                return;
-            }
-            
-            if (systemProjects.includes(projectName)) {
-                showToast('❌ هذا المشروع موجود مسبقاً', 'error');
-                return;
-            }
-            
-            systemProjects.push(projectName);
-            saveSystemData();
-            loadProjectsList();
-            document.getElementById('newProjectName').value = '';
-            showToast(translations[currentLanguage].projectAdded, 'success');
-        }
-
-        function editProject(index) {
-            const newName = prompt('أدخل الاسم الجديد للمشروع:', systemProjects[index]);
-            if (newName && newName.trim()) {
-                systemProjects[index] = newName.trim();
-                saveSystemData();
-                loadProjectsList();
-                showToast('✅ تم تعديل المشروع بنجاح', 'success');
-            }
-        }
-
-        function deleteProject(index) {
-            showConfirm(translations[currentLanguage].deleteConfirm, () => {
-                systemProjects.splice(index, 1);
-                saveSystemData();
-                loadProjectsList();
-                showToast(translations[currentLanguage].projectDeleted, 'success');
-            });
-        }
-
-        // Areas Management
-        function loadAreasList() {
-            const areasList = document.getElementById('areasList');
-            if (!areasList) return;
-            
-            areasList.innerHTML = '';
-            
-            systemAreas.forEach((area, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${area}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-sm btn-warning" onclick="editArea(${index})">
-                                <i class="fas fa-edit"></i> <span data-translate="edit">تعديل</span>
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteArea(${index})">
-                                <i class="fas fa-trash"></i> <span data-translate="delete">حذف</span>
-                            </button>
-                        </div>
-                    </td>
-                `;
-                areasList.appendChild(row);
-            });
-        }
-
-        function addNewArea() {
-            const areaName = document.getElementById('newAreaName').value.trim();
-            if (!areaName) {
-                showToast('❌ الرجاء إدخال اسم المنطقة', 'error');
-                return;
-            }
-            
-            if (systemAreas.includes(areaName)) {
-                showToast('❌ هذه المنطقة موجودة مسبقاً', 'error');
-                return;
-            }
-            
-            systemAreas.push(areaName);
-            saveSystemData();
-            loadAreasList();
-            document.getElementById('newAreaName').value = '';
-            showToast(translations[currentLanguage].areaAdded, 'success');
-        }
-
-        function editArea(index) {
-            const newName = prompt('أدخل الاسم الجديد للمنطقة:', systemAreas[index]);
-            if (newName && newName.trim()) {
-                systemAreas[index] = newName.trim();
-                saveSystemData();
-                loadAreasList();
-                showToast('✅ تم تعديل المنطقة بنجاح', 'success');
-            }
-        }
-
-        function deleteArea(index) {
-            showConfirm(translations[currentLanguage].deleteConfirm, () => {
-                systemAreas.splice(index, 1);
-                saveSystemData();
-                loadAreasList();
-                showToast(translations[currentLanguage].areaDeleted, 'success');
-            });
-        }
-
-        // Backup System
-        function createBackup() {
-            try {
-                const backupData = {
-                    timestamp: new Date().toISOString(),
-                    version: '1.0',
-                    data: {
-                        users: JSON.parse(localStorage.getItem('registered_users') || '{}'),
-                        reports: JSON.parse(localStorage.getItem('fuel_reports') || '{}'),
-                        settings: systemSettings,
-                        projects: systemProjects,
-                        areas: systemAreas
-                    }
-                };
-                
-                const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `fuel_system_backup_${new Date().toISOString().split('T')[0]}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                showToast(translations[currentLanguage].backupCreated, 'success');
-            } catch (error) {
-                console.error('Error creating backup:', error);
-                showToast('❌ فشل في إنشاء النسخة الاحتياطية', 'error');
-            }
-        }
-
-        function restoreBackup() {
-            const fileInput = document.getElementById('backupFile');
-            const file = fileInput.files[0];
-            
-            if (!file) {
-                showToast('❌ الرجاء اختيار ملف النسخة الاحتياطية', 'error');
-                return;
-            }
-            
-            showConfirm('هل أنت متأكد من استعادة النسخة الاحتياطية؟ سيتم استبدال جميع البيانات الحالية.', () => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const backupData = JSON.parse(e.target.result);
-                        
-                        // Restore data
-                        if (backupData.data.users) {
-                            localStorage.setItem('registered_users', JSON.stringify(backupData.data.users));
-                        }
-                        
-                        if (backupData.data.reports) {
-                            localStorage.setItem('fuel_reports', JSON.stringify(backupData.data.reports));
-                        }
-                        
-                        if (backupData.data.settings) {
-                            systemSettings = backupData.data.settings;
-                            saveSystemSettings();
-                            applySystemSettings();
-                        }
-                        
-                        if (backupData.data.projects) {
-                            systemProjects = backupData.data.projects;
-                            saveSystemData();
-                        }
-                        
-                        if (backupData.data.areas) {
-                            systemAreas = backupData.data.areas;
-                            saveSystemData();
-                        }
-                        
-                        showToast(translations[currentLanguage].backupRestored, 'success');
-                        location.reload();
-                    } catch (error) {
-                        console.error('Error restoring backup:', error);
-                        showToast('❌ فشل في استعادة النسخة الاحتياطية', 'error');
-                    }
-                };
-                reader.readAsText(file);
-            });
-        }
-
-        function confirmReset() {
-            showConfirm(translations[currentLanguage].resetConfirm, resetSystem);
-        }
-
-        function resetSystem() {
-            try {
-                // Clear all data
-                localStorage.clear();
-                
-                // Reset system settings
-                systemSettings = {
-                    appIcon: null,
-                    background: {
-                        type: 'none',
-                        url: null
-                    },
-                    projects: [],
-                    areas: []
-                };
-                
-                // Reset system data
-                systemProjects = [];
-                systemAreas = [];
-                
-                // Save reset state
-                saveSystemSettings();
-                saveSystemData();
-                
-                // Reload the application
-                showToast(translations[currentLanguage].systemReset, 'success');
-                setTimeout(() => {
-                    location.reload();
-                }, 1500);
-            } catch (error) {
-                console.error('Error resetting system:', error);
-                showToast('❌ فشل في إعادة ضبط النظام', 'error');
-            }
-        }
-
-        // Confirm Dialog
-        function showConfirm(message, callback) {
-            document.getElementById('confirmMessage').textContent = message;
-            const modal = document.getElementById('confirmModal');
-            
-            const yesBtn = document.getElementById('confirmYes');
-            yesBtn.onclick = function() {
-                modal.classList.remove('active');
-                if (callback) callback();
-            };
-            
-            modal.classList.add('active');
-        }
-
-        // Logout Functionality
-        function confirmLogout() {
-            showConfirm(translations[currentLanguage].logoutConfirm, logoutUser);
-        }
-
-        function logoutUser() {
-            currentUser = null;
-            userRole = null;
-            
-            // Clear role badge
-            const roleBadgeContainer = document.getElementById('roleBadgeContainer');
-            roleBadgeContainer.innerHTML = '';
-            
-            // Hide logout button
-            document.getElementById('logoutBtn').style.display = 'none';
-            
-            // Show auth screen
-            document.getElementById('authScreen').style.display = 'block';
-            document.getElementById('adminDashboard').classList.remove('active');
-            document.getElementById('driverDashboard').classList.remove('active');
-            
-            // Reset verification states
-            isAdminVerified = false;
-            isDriverVerified = false;
-            document.getElementById('adminVerification')?.classList.remove('verified');
-            document.getElementById('driverVerification')?.classList.remove('verified');
-            
-            // Clear session
-            localStorage.removeItem('last_session');
-            
-            showToast('✅ تم تسجيل الخروج بنجاح', 'success');
-        }
-
-        // Update showDashboard function to include role badge and logout button
-        function showDashboard() {
-            document.getElementById('authScreen').style.display = 'none';
-            
-            if (userRole === 'admin') {
-                document.getElementById('adminDashboard').classList.add('active');
-                document.getElementById('driverDashboard').classList.remove('active');
-                
-                // Add admin badge
-                const roleBadgeContainer = document.getElementById('roleBadgeContainer');
-                roleBadgeContainer.innerHTML = `
-                    <div class="role-badge admin">
-                        <i class="fas fa-crown"></i>
-                        <span data-translate="admin">المدير</span>
-                    </div>
-                `;
-                
-                // Show logout button
-                document.getElementById('logoutBtn').style.display = 'flex';
-                
-                // Update translations
-                updateAllTranslations();
-                
-            } else {
-                document.getElementById('driverDashboard').classList.add('active');
-                document.getElementById('adminDashboard').classList.remove('active');
-                
-                // Add driver badge
-                const roleBadgeContainer = document.getElementById('roleBadgeContainer');
-                roleBadgeContainer.innerHTML = `
-                    <div class="role-badge driver">
-                        <i class="fas fa-truck"></i>
-                        <span data-translate="driver">السائق</span>
-                    </div>
-                `;
-                
-                // Show logout button
-                document.getElementById('logoutBtn').style.display = 'flex';
-                
-                // Update translations
-                updateAllTranslations();
-            }
-        }
-
-        // Utility Functions
         function showToast(message, type = 'info') {
             const toastContainer = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -1767,45 +1407,10 @@
             document.getElementById('loadingSpinner').classList.toggle('active', show);
         }
 
+        // Utility function
         function isMobile() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
-
-        // Make functions available globally
-        window.uploadAppIcon = uploadAppIcon;
-        window.uploadBackground = uploadBackground;
-        window.editProject = editProject;
-        window.deleteProject = deleteProject;
-        window.editArea = editArea;
-        window.deleteArea = deleteArea;
-        
-        // Keep existing functions from previous code
-        // ... (all the existing functions from your previous code should be included here)
-        // Due to character limit, I've included the most important parts
-        // Make sure to merge with your existing functions
-
-        // Initialize system projects and areas with default values if empty
-        if (systemProjects.length === 0) {
-            systemProjects = [
-                'مشروع النقل العام',
-                'مشروع التوصيل',
-                'مشروع البناء',
-                'مشروع الصيانة'
-            ];
-        }
-
-        if (systemAreas.length === 0) {
-            systemAreas = [
-                'الرياض',
-                'جدة',
-                'الدمام',
-                'مكة المكرمة',
-                'المدينة المنورة'
-            ];
-        }
-
-        // Save initial data
-        saveSystemData();
     </script>
 </body>
 </html>
