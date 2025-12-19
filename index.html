@@ -1137,7 +1137,7 @@
                 
                 <div class="capture-instructions">
                     <i class="fas fa-info-circle"></i>
-                    <strong>يجب التقاط 3 صور مباشرة من الكاميرا:</strong> لوحة المركبة، قبل التعبئة، بعد التعبئة
+                    <strong>يجب التقاط 3 صور مباشرة من الكاميرا الأمامية:</strong> لوحة المركبة، قبل التعبئة، بعد التعبئة
                 </div>
                 
                 <div class="capture-grid">
@@ -1153,7 +1153,7 @@
                 
                 <div class="capture-instructions">
                     <i class="fas fa-info-circle"></i>
-                    <strong>تسجيل الفيديو:</strong> تسجيل 10 ثواني أثناء التعبئة في المحطة
+                    <strong>تسجيل الفيديو من الكاميرا الأمامية:</strong> تسجيل 10 ثواني أثناء التعبئة في المحطة
                 </div>
                 
                 <div class="capture-card">
@@ -1466,6 +1466,7 @@
         let registeredDrivers = {};
         let fuelReports = {};
         let capturedPhotos = {};
+        let recordedVideo = null;
 
         // Initialize Application
         document.addEventListener('DOMContentLoaded', () => {
@@ -1535,6 +1536,12 @@
             } else {
                 fuelReports = {};
             }
+            
+            console.log('Loaded data:', { 
+                projects: systemProjects, 
+                areas: systemAreas,
+                drivers: Object.keys(registeredDrivers).length
+            });
         }
 
         function applySystemSettings() {
@@ -1666,6 +1673,8 @@
             document.getElementById('driverProjectSelect')?.addEventListener('change', updateDriverProject);
             document.getElementById('driverAreaSelect')?.addEventListener('change', updateDriverArea);
             document.getElementById('submitReportBtn')?.addEventListener('click', submitDriverReport);
+            document.getElementById('startRecordingBtn')?.addEventListener('click', startRecording);
+            document.getElementById('stopRecordingBtn')?.addEventListener('click', stopRecording);
             
             // Refresh button
             document.getElementById('refreshReportsBtn')?.addEventListener('click', loadReportsData);
@@ -1751,7 +1760,10 @@
                     );
                     
                     if (driver) {
-                        const driverId = Object.keys(registeredDrivers).find(key => registeredDrivers[key] === driver);
+                        const driverId = Object.keys(registeredDrivers).find(key => 
+                            registeredDrivers[key].username === username && 
+                            registeredDrivers[key].password === password
+                        );
                         currentUser = {
                             id: driverId,
                             ...driver
@@ -1910,7 +1922,6 @@
         function setupDriverDashboard() {
             updateProjectAndAreaSelects();
             setupPhotoCapture();
-            setupVideoRecording();
         }
 
         function updateProjectAndAreaSelects() {
@@ -1924,6 +1935,8 @@
                 if (currentUser?.project) {
                     projectSelect.value = currentUser.project;
                 }
+                
+                console.log('Projects loaded:', systemProjects);
             }
             
             if (areaSelect) {
@@ -1933,6 +1946,8 @@
                 if (currentUser?.area) {
                     areaSelect.value = currentUser.area;
                 }
+                
+                console.log('Areas loaded:', systemAreas);
             }
         }
 
@@ -1995,7 +2010,14 @@
                 return;
             }
             
-            navigator.mediaDevices.getUserMedia({ video: true })
+            // Always use front camera (user-facing)
+            const constraints = { 
+                video: { 
+                    facingMode: 'user' // هذا يختار الكاميرا الأمامية دائماً
+                } 
+            };
+            
+            navigator.mediaDevices.getUserMedia(constraints)
                 .then(stream => {
                     const video = document.createElement('video');
                     video.srcObject = stream;
@@ -2008,7 +2030,7 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(video, 0, 0);
                         
-                        const photoData = canvas.toDataURL('image/jpeg');
+                        const photoData = canvas.toDataURL('image/jpeg', 0.8);
                         
                         // Stop stream
                         stream.getTracks().forEach(track => track.stop());
@@ -2025,25 +2047,13 @@
                 })
                 .catch(error => {
                     console.error('Camera error:', error);
-                    showToast('فشل في الوصول للكاميرا', 'error');
+                    showToast('فشل في الوصول للكاميرا الأمامية', 'error');
                 });
-        }
-
-        function setupVideoRecording() {
-            const startBtn = document.getElementById('startRecordingBtn');
-            const stopBtn = document.getElementById('stopRecordingBtn');
-            
-            if (startBtn) {
-                startBtn.addEventListener('click', startRecording);
-            }
-            
-            if (stopBtn) {
-                stopBtn.addEventListener('click', stopRecording);
-            }
         }
 
         let mediaRecorder;
         let recordedChunks = [];
+        let recordingStream;
 
         function startRecording() {
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -2051,8 +2061,17 @@
                 return;
             }
             
-            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+            // Always use front camera for video recording too
+            const constraints = { 
+                video: { 
+                    facingMode: 'user' // الكاميرا الأمامية
+                }, 
+                audio: false 
+            };
+            
+            navigator.mediaDevices.getUserMedia(constraints)
                 .then(stream => {
+                    recordingStream = stream;
                     mediaRecorder = new MediaRecorder(stream);
                     recordedChunks = [];
                     
@@ -2064,17 +2083,14 @@
                     
                     mediaRecorder.onstop = () => {
                         const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                        const videoURL = URL.createObjectURL(blob);
+                        recordedVideo = URL.createObjectURL(blob);
                         
                         const preview = document.getElementById('videoPreview');
                         preview.innerHTML = `
                             <video controls autoplay style="width: 100%; height: 100%;">
-                                <source src="${videoURL}" type="video/webm">
+                                <source src="${recordedVideo}" type="video/webm">
                             </video>
                         `;
-                        
-                        // Stop all tracks
-                        stream.getTracks().forEach(track => track.stop());
                     };
                     
                     mediaRecorder.start();
@@ -2083,17 +2099,29 @@
                     document.getElementById('startRecordingBtn').style.display = 'none';
                     document.getElementById('stopRecordingBtn').style.display = 'inline-block';
                     
-                    showToast('بدأ التسجيل', 'success');
+                    // Auto stop after 10 seconds
+                    setTimeout(() => {
+                        if (mediaRecorder && mediaRecorder.state === 'recording') {
+                            stopRecording();
+                        }
+                    }, 10000);
+                    
+                    showToast('بدأ التسجيل (10 ثواني)', 'success');
                 })
                 .catch(error => {
                     console.error('Recording error:', error);
-                    showToast('فشل في بدء التسجيل', 'error');
+                    showToast('فشل في بدء التسجيل من الكاميرا الأمامية', 'error');
                 });
         }
 
         function stopRecording() {
             if (mediaRecorder && mediaRecorder.state === 'recording') {
                 mediaRecorder.stop();
+                
+                // Stop all tracks
+                if (recordingStream) {
+                    recordingStream.getTracks().forEach(track => track.stop());
+                }
                 
                 // Update UI
                 document.getElementById('startRecordingBtn').style.display = 'inline-block';
@@ -2131,6 +2159,7 @@
                     fuelAmount: Math.floor(Math.random() * 100) + 50,
                     distance: Math.floor(Math.random() * 300) + 100,
                     photos: { ...capturedPhotos },
+                    videoUrl: recordedVideo,
                     timestamp: new Date().toISOString(),
                     status: 'pending'
                 };
@@ -2138,8 +2167,9 @@
                 fuelReports[reportId] = report;
                 localStorage.setItem('fuel_reports', JSON.stringify(fuelReports));
                 
-                // Reset captured photos
+                // Reset captured data
                 capturedPhotos = {};
+                recordedVideo = null;
                 
                 // Reset UI
                 setupPhotoCapture();
@@ -2243,9 +2273,9 @@
             // Load drivers
             const driversList = document.getElementById('driversList');
             if (driversList) {
-                driversList.innerHTML = Object.values(registeredDrivers).map(driver => `
+                driversList.innerHTML = Object.entries(registeredDrivers).map(([id, driver]) => `
                     <tr>
-                        <td>${driver.fullName}</td>
+                        <td>${driver.fullName} (${driver.username})</td>
                         <td>${driver.project || '--'}</td>
                         <td>
                             <span class="status-badge ${driver.status === 'active' ? 'status-normal' : 'status-suspicious'}">
@@ -2253,7 +2283,7 @@
                             </span>
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-warning">
+                            <button class="btn btn-sm btn-warning" onclick="editDriver('${id}')">
                                 <i class="fas fa-edit"></i>
                             </button>
                         </td>
@@ -2367,6 +2397,20 @@
                 updateProjectAndAreaSelects();
                 showToast('تم حذف المنطقة', 'success');
             });
+        }
+
+        function editDriver(driverId) {
+            const driver = registeredDrivers[driverId];
+            if (!driver) return;
+            
+            const newProject = prompt('أدخل المشروع الجديد للسائق:', driver.project || '');
+            if (newProject !== null) {
+                driver.project = newProject.trim();
+                registeredDrivers[driverId] = driver;
+                localStorage.setItem('registered_users', JSON.stringify(registeredDrivers));
+                loadManagementData();
+                showToast('تم تحديث بيانات السائق', 'success');
+            }
         }
 
         function uploadAppIcon(event) {
@@ -2572,8 +2616,16 @@
             if (report.photos) {
                 photosHtml = '<br><strong>الصور المرفوعة:</strong><br>';
                 for (const [key, photo] of Object.entries(report.photos)) {
-                    photosHtml += `<img src="${photo}" style="width: 100px; height: 100px; margin: 5px;" alt="${key}">`;
+                    photosHtml += `<img src="${photo}" style="width: 100px; height: 100px; margin: 5px; border: 1px solid #ccc;" alt="${key}">`;
                 }
+            }
+            
+            let videoHtml = '';
+            if (report.videoUrl) {
+                videoHtml = '<br><strong>الفيديو المرفوع:</strong><br>' +
+                           `<video controls style="width: 100%; max-height: 200px; margin-top: 10px;">
+                                <source src="${report.videoUrl}" type="video/webm">
+                            </video>`;
             }
             
             message.innerHTML = `
@@ -2586,6 +2638,7 @@
                 التاريخ: ${dateStr}<br>
                 الحالة: ${report.status === 'approved' ? 'مقبول' : report.status === 'pending' ? 'قيد المراجعة' : 'مرفوض'}
                 ${photosHtml}
+                ${videoHtml}
             `;
             
             document.getElementById('confirmYes').style.display = 'none';
@@ -2671,6 +2724,7 @@
         window.deleteProject = deleteProject;
         window.editArea = editArea;
         window.deleteArea = deleteArea;
+        window.editDriver = editDriver;
         window.viewReport = viewReport;
     </script>
 </body>
