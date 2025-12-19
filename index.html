@@ -70,6 +70,46 @@
             direction: ltr;
         }
 
+        body.background-image {
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+
+        body.background-image::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            z-index: -1;
+        }
+
+        body.background-video video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.3;
+        }
+
+        body.background-video::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            z-index: -1;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -928,6 +968,9 @@
     </style>
 </head>
 <body dir="rtl">
+    <!-- Background Video -->
+    <video id="backgroundVideo" autoplay muted loop></video>
+
     <!-- Header -->
     <header class="header">
         <div class="logo-container" id="logoContainer">
@@ -1422,30 +1465,34 @@
         let systemAreas = [];
         let registeredDrivers = {};
         let fuelReports = {};
+        let capturedPhotos = {};
 
         // Initialize Application
         document.addEventListener('DOMContentLoaded', () => {
             initializeApp();
             setupEventListeners();
             loadSystemData();
+            checkAuthState();
         });
 
         function initializeApp() {
             // Load language preference
             const savedLanguage = localStorage.getItem('system_language') || 'ar';
             setLanguage(savedLanguage);
-            
-            // Load system data
-            loadSystemData();
-            
-            // Check for saved session
-            checkAuthState();
         }
 
         function loadSystemData() {
             // Load system settings
             try {
-                systemSettings = JSON.parse(localStorage.getItem('system_settings') || '{}');
+                const savedSettings = localStorage.getItem('system_settings');
+                if (savedSettings) {
+                    systemSettings = JSON.parse(savedSettings);
+                } else {
+                    systemSettings = {
+                        appIcon: null,
+                        background: { type: 'none', url: null }
+                    };
+                }
                 applySystemSettings();
             } catch (error) {
                 console.error('Error loading settings:', error);
@@ -1456,27 +1503,38 @@
             }
             
             // Load projects
-            systemProjects = JSON.parse(localStorage.getItem('system_projects') || '[]');
-            if (systemProjects.length === 0) {
+            const savedProjects = localStorage.getItem('system_projects');
+            if (savedProjects) {
+                systemProjects = JSON.parse(savedProjects);
+            } else {
                 systemProjects = ['مشروع النقل العام', 'مشروع التوصيل', 'مشروع البناء', 'مشروع الصيانة'];
                 localStorage.setItem('system_projects', JSON.stringify(systemProjects));
             }
             
             // Load areas
-            systemAreas = JSON.parse(localStorage.getItem('system_areas') || '[]');
-            if (systemAreas.length === 0) {
+            const savedAreas = localStorage.getItem('system_areas');
+            if (savedAreas) {
+                systemAreas = JSON.parse(savedAreas);
+            } else {
                 systemAreas = ['الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'المدينة المنورة'];
                 localStorage.setItem('system_areas', JSON.stringify(systemAreas));
             }
             
             // Load drivers
-            registeredDrivers = JSON.parse(localStorage.getItem('registered_users') || '{}');
+            const savedDrivers = localStorage.getItem('registered_users');
+            if (savedDrivers) {
+                registeredDrivers = JSON.parse(savedDrivers);
+            } else {
+                registeredDrivers = {};
+            }
             
             // Load reports
-            fuelReports = JSON.parse(localStorage.getItem('fuel_reports') || '{}');
-            
-            // Update selects if needed
-            updateProjectAndAreaSelects();
+            const savedReports = localStorage.getItem('fuel_reports');
+            if (savedReports) {
+                fuelReports = JSON.parse(savedReports);
+            } else {
+                fuelReports = {};
+            }
         }
 
         function applySystemSettings() {
@@ -1494,6 +1552,20 @@
 
         function applyBackgroundSettings() {
             const bg = systemSettings.background;
+            const body = document.body;
+            
+            // Remove existing background classes
+            body.classList.remove('background-image', 'background-video');
+            
+            // Remove existing video
+            const existingVideo = document.getElementById('backgroundVideo');
+            if (existingVideo) {
+                existingVideo.remove();
+            }
+            
+            // Clear background image
+            body.style.backgroundImage = '';
+            
             if (bg && bg.type !== 'none' && bg.url) {
                 if (bg.type === 'video') {
                     // Add video background
@@ -1510,16 +1582,18 @@
                         width: 100%;
                         height: 100%;
                         object-fit: cover;
-                        z-index: -1;
+                        z-index: -2;
                         opacity: 0.3;
                     `;
                     document.body.appendChild(video);
+                    body.classList.add('background-video');
                 } else if (bg.type === 'image') {
                     // Add image background
-                    document.body.style.backgroundImage = `url('${bg.url}')`;
-                    document.body.style.backgroundSize = 'cover';
-                    document.body.style.backgroundPosition = 'center';
-                    document.body.style.backgroundAttachment = 'fixed';
+                    body.style.backgroundImage = `url('${bg.url}')`;
+                    body.style.backgroundSize = 'cover';
+                    body.style.backgroundPosition = 'center';
+                    body.style.backgroundAttachment = 'fixed';
+                    body.classList.add('background-image');
                 }
             }
         }
@@ -1592,6 +1666,12 @@
             document.getElementById('driverProjectSelect')?.addEventListener('change', updateDriverProject);
             document.getElementById('driverAreaSelect')?.addEventListener('change', updateDriverArea);
             document.getElementById('submitReportBtn')?.addEventListener('click', submitDriverReport);
+            
+            // Refresh button
+            document.getElementById('refreshReportsBtn')?.addEventListener('click', loadReportsData);
+            
+            // Export button
+            document.getElementById('exportExcelBtn')?.addEventListener('click', exportToExcel);
         }
 
         function setLanguage(lang) {
@@ -1671,8 +1751,9 @@
                     );
                     
                     if (driver) {
+                        const driverId = Object.keys(registeredDrivers).find(key => registeredDrivers[key] === driver);
                         currentUser = {
-                            id: Object.keys(registeredDrivers).find(key => registeredDrivers[key] === driver),
+                            id: driverId,
                             ...driver
                         };
                         userRole = 'driver';
@@ -1742,19 +1823,29 @@
         }
 
         function checkAuthState() {
-            const lastSession = JSON.parse(localStorage.getItem('last_session') || 'null');
-            if (lastSession && lastSession.userId && lastSession.timestamp) {
-                const sessionAge = Date.now() - new Date(lastSession.timestamp).getTime();
-                if (sessionAge < 24 * 60 * 60 * 1000) { // 24 hours
-                    if (lastSession.userId === 'admin') {
-                        currentUser = { ...SYSTEM_ADMIN, id: 'admin' };
-                        userRole = 'admin';
-                        showDashboard();
-                    } else if (registeredDrivers[lastSession.userId]) {
-                        currentUser = { id: lastSession.userId, ...registeredDrivers[lastSession.userId] };
-                        userRole = 'driver';
-                        showDashboard();
+            const lastSession = localStorage.getItem('last_session');
+            if (lastSession) {
+                try {
+                    const session = JSON.parse(lastSession);
+                    if (session.userId && session.timestamp) {
+                        const sessionAge = Date.now() - new Date(session.timestamp).getTime();
+                        if (sessionAge < 24 * 60 * 60 * 1000) { // 24 hours
+                            if (session.userId === 'admin') {
+                                currentUser = { ...SYSTEM_ADMIN, id: 'admin' };
+                                userRole = 'admin';
+                                showDashboard();
+                            } else if (registeredDrivers[session.userId]) {
+                                currentUser = { 
+                                    id: session.userId, 
+                                    ...registeredDrivers[session.userId] 
+                                };
+                                userRole = 'driver';
+                                showDashboard();
+                            }
+                        }
                     }
+                } catch (error) {
+                    console.error('Error restoring session:', error);
                 }
             }
         }
@@ -1819,6 +1910,7 @@
         function setupDriverDashboard() {
             updateProjectAndAreaSelects();
             setupPhotoCapture();
+            setupVideoRecording();
         }
 
         function updateProjectAndAreaSelects() {
@@ -1879,7 +1971,7 @@
                     <div class="capture-header">
                         <i class="fas ${photo.icon}"></i> ${photo.name}
                     </div>
-                    <div class="capture-preview" onclick="capturePhoto('${photo.id}')">
+                    <div class="capture-preview" onclick="capturePhoto('${photo.id}')" id="${photo.id}Preview">
                         <div class="capture-placeholder">
                             <div class="icon"><i class="fas fa-camera"></i></div>
                             <div>اضغط للتقاط</div>
@@ -1887,6 +1979,14 @@
                     </div>
                 </div>
             `).join('');
+            
+            // Load existing photos if any
+            photos.forEach(photo => {
+                if (capturedPhotos[photo.id]) {
+                    const preview = document.getElementById(`${photo.id}Preview`);
+                    preview.innerHTML = `<img src="${capturedPhotos[photo.id]}" alt="${photo.name}">`;
+                }
+            });
         }
 
         function capturePhoto(type) {
@@ -1913,8 +2013,11 @@
                         // Stop stream
                         stream.getTracks().forEach(track => track.stop());
                         
+                        // Save photo
+                        capturedPhotos[type] = photoData;
+                        
                         // Update preview
-                        const preview = document.querySelector(`[onclick="capturePhoto('${type}')"]`);
+                        const preview = document.getElementById(`${type}Preview`);
                         preview.innerHTML = `<img src="${photoData}" alt="${type}">`;
                         
                         showToast('تم التقاط الصورة بنجاح', 'success');
@@ -1926,9 +2029,92 @@
                 });
         }
 
+        function setupVideoRecording() {
+            const startBtn = document.getElementById('startRecordingBtn');
+            const stopBtn = document.getElementById('stopRecordingBtn');
+            
+            if (startBtn) {
+                startBtn.addEventListener('click', startRecording);
+            }
+            
+            if (stopBtn) {
+                stopBtn.addEventListener('click', stopRecording);
+            }
+        }
+
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        function startRecording() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showToast('الكاميرا غير متوفرة على هذا الجهاز', 'error');
+                return;
+            }
+            
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    recordedChunks = [];
+                    
+                    mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            recordedChunks.push(event.data);
+                        }
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                        const videoURL = URL.createObjectURL(blob);
+                        
+                        const preview = document.getElementById('videoPreview');
+                        preview.innerHTML = `
+                            <video controls autoplay style="width: 100%; height: 100%;">
+                                <source src="${videoURL}" type="video/webm">
+                            </video>
+                        `;
+                        
+                        // Stop all tracks
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+                    
+                    mediaRecorder.start();
+                    
+                    // Update UI
+                    document.getElementById('startRecordingBtn').style.display = 'none';
+                    document.getElementById('stopRecordingBtn').style.display = 'inline-block';
+                    
+                    showToast('بدأ التسجيل', 'success');
+                })
+                .catch(error => {
+                    console.error('Recording error:', error);
+                    showToast('فشل في بدء التسجيل', 'error');
+                });
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                
+                // Update UI
+                document.getElementById('startRecordingBtn').style.display = 'inline-block';
+                document.getElementById('stopRecordingBtn').style.display = 'none';
+                
+                showToast('تم إيقاف التسجيل', 'success');
+            }
+        }
+
         function submitDriverReport() {
             if (!currentUser.project || !currentUser.area) {
                 showToast('الرجاء تحديد المشروع والمنطقة أولاً', 'error');
+                return;
+            }
+            
+            // Check if all photos are captured
+            const requiredPhotos = ['plate', 'before', 'after'];
+            const missingPhotos = requiredPhotos.filter(photo => !capturedPhotos[photo]);
+            
+            if (missingPhotos.length > 0) {
+                showToast('الرجاء التقاط جميع الصور المطلوبة', 'error');
                 return;
             }
             
@@ -1944,6 +2130,7 @@
                     area: currentUser.area,
                     fuelAmount: Math.floor(Math.random() * 100) + 50,
                     distance: Math.floor(Math.random() * 300) + 100,
+                    photos: { ...capturedPhotos },
                     timestamp: new Date().toISOString(),
                     status: 'pending'
                 };
@@ -1951,11 +2138,21 @@
                 fuelReports[reportId] = report;
                 localStorage.setItem('fuel_reports', JSON.stringify(fuelReports));
                 
+                // Reset captured photos
+                capturedPhotos = {};
+                
+                // Reset UI
+                setupPhotoCapture();
+                const videoPreview = document.getElementById('videoPreview');
+                videoPreview.innerHTML = `
+                    <div class="capture-placeholder">
+                        <div class="icon"><i class="fas fa-video"></i></div>
+                        <div>اضغط للبدء بالتسجيل</div>
+                    </div>
+                `;
+                
                 showToast('تم إرسال التقرير بنجاح', 'success');
                 showLoading(false);
-                
-                // Reset form
-                setupPhotoCapture();
             }, 1500);
         }
 
@@ -1963,7 +2160,7 @@
             // Update stats
             const totalReports = Object.keys(fuelReports).length;
             const totalFuel = Object.values(fuelReports).reduce((sum, r) => sum + r.fuelAmount, 0);
-            const totalDrivers = Object.keys(registeredDrivers).length;
+            const totalDrivers = Object.keys(registeredDrivers).filter(id => registeredDrivers[id].status === 'active').length;
             const today = new Date().toISOString().split('T')[0];
             const todayReports = Object.values(fuelReports).filter(r => 
                 r.timestamp.split('T')[0] === today
@@ -2250,11 +2447,7 @@
                     </div>
                 `;
                 
-                // Remove existing background
-                const video = document.getElementById('backgroundVideo');
-                if (video) video.remove();
-                document.body.style.backgroundImage = '';
-                
+                applyBackgroundSettings();
                 showToast('تم إزالة الخلفية', 'success');
             }
         }
@@ -2339,6 +2532,32 @@
             reader.readAsText(file);
         }
 
+        function exportToExcel() {
+            try {
+                const reports = Object.values(fuelReports).map(report => ({
+                    'التاريخ': new Date(report.timestamp).toLocaleDateString('ar-SA'),
+                    'السائق': report.driverName,
+                    'المشروع': report.project,
+                    'المنطقة': report.area,
+                    'كمية الوقود (لتر)': report.fuelAmount,
+                    'المسافة (كم)': report.distance,
+                    'الحالة': report.status === 'approved' ? 'مقبول' : report.status === 'pending' ? 'قيد المراجعة' : 'مرفوض'
+                }));
+                
+                const ws = XLSX.utils.json_to_sheet(reports);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'تقارير الوقود');
+                
+                const fileName = `تقارير_الوقود_${new Date().toISOString().split('T')[0]}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+                
+                showToast('تم تصدير البيانات إلى Excel', 'success');
+            } catch (error) {
+                console.error('Export error:', error);
+                showToast('فشل في تصدير البيانات', 'error');
+            }
+        }
+
         function viewReport(reportId) {
             const report = fuelReports[reportId];
             if (!report) return;
@@ -2349,6 +2568,14 @@
             const date = new Date(report.timestamp);
             const dateStr = date.toLocaleDateString('ar-SA') + ' ' + date.toLocaleTimeString('ar-SA');
             
+            let photosHtml = '';
+            if (report.photos) {
+                photosHtml = '<br><strong>الصور المرفوعة:</strong><br>';
+                for (const [key, photo] of Object.entries(report.photos)) {
+                    photosHtml += `<img src="${photo}" style="width: 100px; height: 100px; margin: 5px;" alt="${key}">`;
+                }
+            }
+            
             message.innerHTML = `
                 <strong>تفاصيل التقرير:</strong><br>
                 السائق: ${report.driverName}<br>
@@ -2358,6 +2585,7 @@
                 المسافة: ${report.distance} كم<br>
                 التاريخ: ${dateStr}<br>
                 الحالة: ${report.status === 'approved' ? 'مقبول' : report.status === 'pending' ? 'قيد المراجعة' : 'مرفوض'}
+                ${photosHtml}
             `;
             
             document.getElementById('confirmYes').style.display = 'none';
