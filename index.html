@@ -39,6 +39,7 @@
             --border-radius-lg: 16px;
             --border-radius-sm: 8px;
             --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --box-shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             --gradient-secondary: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark));
@@ -50,6 +51,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            transition: var(--transition);
         }
 
         body {
@@ -58,17 +60,14 @@
             color: var(--dark-text);
             min-height: 100vh;
             line-height: 1.6;
-            transition: var(--transition);
         }
 
         body[dir="rtl"] {
             direction: rtl;
-            text-align: right;
         }
 
         body[dir="ltr"] {
             direction: ltr;
-            text-align: left;
         }
 
         .container {
@@ -109,6 +108,13 @@
             font-size: 28px;
             color: white;
             box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            overflow: hidden;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .app-title {
@@ -137,7 +143,6 @@
             align-items: center;
             gap: 10px;
             font-weight: 500;
-            transition: var(--transition);
         }
 
         .language-toggle:hover {
@@ -179,7 +184,6 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            transition: var(--transition);
         }
 
         .auth-tab.active {
@@ -210,7 +214,6 @@
             background-color: rgba(255, 255, 255, 0.05);
             color: var(--dark-text);
             font-size: 1rem;
-            transition: var(--transition);
         }
 
         .form-control:focus {
@@ -239,7 +242,6 @@
             border-radius: var(--border-radius);
             background: rgba(255, 255, 255, 0.02);
             user-select: none;
-            transition: var(--transition);
         }
 
         .verification-checkbox:hover {
@@ -263,7 +265,6 @@
             font-size: 16px;
             color: transparent;
             background: rgba(255, 255, 255, 0.05);
-            transition: var(--transition);
         }
 
         .verification-checkbox.verified .checkmark {
@@ -271,15 +272,6 @@
             border-color: var(--secondary-color);
             color: white;
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        .verification-label {
-            flex: 1;
-            font-weight: 600;
-            color: var(--dark-text);
-            display: flex;
-            align-items: center;
-            gap: 12px;
         }
 
         /* Buttons */
@@ -294,7 +286,6 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
-            transition: var(--transition);
         }
 
         .btn-primary {
@@ -307,24 +298,34 @@
             box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
         }
 
-        .btn-success {
-            background: var(--gradient-secondary);
-            color: white;
-        }
-
-        .btn-success:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
-        }
-
         .btn-secondary {
             background: rgba(255, 255, 255, 0.1);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        .btn-success {
+            background: var(--gradient-secondary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--gradient-danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--gradient-warning);
+            color: white;
+        }
+
         .btn-block {
             width: 100%;
+        }
+
+        .btn-sm {
+            padding: 10px 18px;
+            font-size: 0.9rem;
         }
 
         .btn:disabled {
@@ -334,24 +335,254 @@
             box-shadow: none !important;
         }
 
-        /* Error Messages */
-        .error-message {
-            color: var(--danger-color);
-            font-size: 0.9rem;
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        /* Dashboard */
+        .dashboard {
             display: none;
         }
 
-        .error-message.show {
-            display: flex;
+        .dashboard.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
         }
 
-        .form-control.error {
-            border-color: var(--danger-color);
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Navigation */
+        .dashboard-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: var(--border-radius);
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            background: none;
+            color: var(--dark-text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 150px;
+            justify-content: center;
+        }
+
+        .nav-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Section Content */
+        .dashboard-section {
+            display: none;
+        }
+
+        .dashboard-section.active {
+            display: block;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: var(--dark-card);
+            padding: 30px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        }
+
+        .stat-info h3 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            color: white;
+            font-weight: 700;
+        }
+
+        .stat-info p {
+            color: var(--dark-text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Reports Table */
+        .reports-table-container {
+            background: var(--dark-card);
+            padding: 30px;
+            border-radius: var(--border-radius-lg);
+            margin-bottom: 35px;
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .reports-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .reports-table th,
+        .reports-table td {
+            padding: 18px;
+            text-align: right;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        body[dir="ltr"] .reports-table th,
+        body[dir="ltr"] .reports-table td {
+            text-align: left;
+        }
+
+        .reports-table th {
+            background: rgba(37, 99, 235, 0.1);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .reports-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .status-badge {
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-normal {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-suspicious {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* Settings Section */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .setting-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .upload-preview {
+            width: 100%;
+            height: 200px;
+            border-radius: var(--border-radius);
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+
+        .upload-preview img,
+        .upload-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-placeholder {
+            text-align: center;
+            color: var(--dark-text-secondary);
+        }
+
+        .upload-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        /* Management Tables */
+        .management-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .management-table th,
+        .management-table td {
+            padding: 15px;
+            text-align: right;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .management-table th {
+            background: rgba(37, 99, 235, 0.1);
+            color: white;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
         }
 
         /* Loading Spinner */
@@ -443,29 +674,6 @@
             border-right-color: var(--danger-color);
         }
 
-        .toast.warning {
-            border-left-color: var(--warning-color);
-        }
-
-        body[dir="ltr"] .toast.warning {
-            border-right-color: var(--warning-color);
-        }
-
-        /* Dashboard */
-        .dashboard {
-            display: none;
-        }
-
-        .dashboard.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         /* Role Badge */
         .role-badge {
             display: inline-flex;
@@ -489,34 +697,169 @@
             border: 1px solid rgba(37, 99, 235, 0.3);
         }
 
-        /* Admin Navigation */
-        .dashboard-nav {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            border-radius: var(--border-radius);
+        /* Driver Dashboard */
+        .driver-info {
+            background: var(--dark-card);
+            padding: 25px;
+            border-radius: var(--border-radius-lg);
+            margin-bottom: 35px;
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .nav-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: var(--border-radius-sm);
-            background: none;
-            color: var(--dark-text-secondary);
-            cursor: pointer;
-            font-weight: 600;
+        .driver-info-content {
             display: flex;
             align-items: center;
-            gap: 10px;
-            transition: var(--transition);
+            gap: 25px;
+            flex-wrap: wrap;
         }
 
-        .nav-btn.active {
+        .driver-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
             background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
             color: white;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        }
+
+        .driver-details {
+            flex: 1;
+        }
+
+        .driver-name {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            color: white;
+            font-weight: 700;
+        }
+
+        .driver-meta {
+            display: flex;
+            gap: 25px;
+            color: var(--dark-text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Capture Sections */
+        .capture-section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .capture-instructions {
+            background: rgba(37, 99, 235, 0.1);
+            padding: 18px;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .capture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .capture-card {
+            background: var(--dark-card);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .capture-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .capture-header {
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .capture-preview {
+            height: 220px;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .capture-preview img,
+        .capture-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .capture-placeholder {
+            text-align: center;
+            color: var(--dark-text-secondary);
+        }
+
+        .capture-placeholder .icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--dark-card);
+            border-radius: var(--border-radius-lg);
+            padding: 35px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         /* Responsive Design */
@@ -542,27 +885,44 @@
             }
             
             .dashboard-nav {
-                flex-wrap: wrap;
+                flex-direction: column;
             }
             
             .nav-btn {
-                flex: 1;
-                min-width: 120px;
-                justify-content: center;
+                min-width: 100%;
             }
             
-            .toast {
-                min-width: 250px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .auth-container {
-                padding: 20px;
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
             
-            .btn {
-                padding: 14px 20px;
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .capture-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .driver-info-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .table-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .reports-table {
+                display: block;
+                overflow-x: auto;
             }
         }
     </style>
@@ -570,9 +930,11 @@
 <body dir="rtl">
     <!-- Header -->
     <header class="header">
-        <div class="logo-container">
-            <div class="logo">⛽</div>
-            <h1 class="app-title">Fuel System Ultra | Al Zahrani</h1>
+        <div class="logo-container" id="logoContainer">
+            <div class="logo" id="appLogo">
+                <i class="fas fa-gas-pump"></i>
+            </div>
+            <h1 class="app-title" id="appTitle">Fuel System Ultra | Al Zahrani</h1>
         </div>
         <div class="header-controls">
             <button class="language-toggle" id="languageToggle">
@@ -601,10 +963,10 @@
         <div id="authScreen" class="auth-container">
             <div class="auth-tabs">
                 <button class="auth-tab active" data-tab="login">
-                    <i class="fas fa-sign-in-alt"></i> <span data-i18n="login">تسجيل الدخول</span>
+                    <i class="fas fa-sign-in-alt"></i> <span data-translate="login">تسجيل الدخول</span>
                 </button>
                 <button class="auth-tab" data-tab="register">
-                    <i class="fas fa-user-plus"></i> <span data-i18n="register">حساب جديد</span>
+                    <i class="fas fa-user-plus"></i> <span data-translate="register">حساب جديد</span>
                 </button>
             </div>
             
@@ -612,23 +974,15 @@
             <div id="loginForm" class="auth-form">
                 <div class="form-group">
                     <label for="loginUsername">
-                        <i class="fas fa-user"></i> <span data-i18n="username">اسم المستخدم</span>
+                        <i class="fas fa-user"></i> <span data-translate="username">اسم المستخدم</span>
                     </label>
                     <input type="text" id="loginUsername" class="form-control" placeholder="أدخل اسم المستخدم">
-                    <div class="error-message" id="loginUsernameError">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span data-i18n="usernameRequired">اسم المستخدم مطلوب</span>
-                    </div>
                 </div>
                 <div class="form-group">
                     <label for="loginPassword">
-                        <i class="fas fa-lock"></i> <span data-i18n="password">كلمة المرور</span>
+                        <i class="fas fa-lock"></i> <span data-translate="password">كلمة المرور</span>
                     </label>
                     <input type="password" id="loginPassword" class="form-control" placeholder="أدخل كلمة المرور">
-                    <div class="error-message" id="loginPasswordError">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span data-i18n="passwordRequired">كلمة المرور مطلوبة</span>
-                    </div>
                 </div>
                 
                 <!-- Human Verification -->
@@ -636,7 +990,7 @@
                     <div class="verification-checkbox" id="adminVerification">
                         <div class="checkmark"><i class="fas fa-check"></i></div>
                         <div class="verification-label">
-                            <i class="fas fa-robot"></i> <span data-i18n="notRobot">أنا لست روبوت</span>
+                            <i class="fas fa-robot"></i> <span data-translate="notRobot">أنا لست روبوت</span>
                         </div>
                     </div>
                 </div>
@@ -644,7 +998,7 @@
                 <!-- Login Button -->
                 <div class="form-group">
                     <button class="btn btn-primary btn-block" id="loginBtn" disabled>
-                        <i class="fas fa-crown"></i> <span data-i18n="adminLogin">دخول المدير</span>
+                        <i class="fas fa-crown"></i> <span data-translate="adminLogin">دخول المدير</span>
                     </button>
                 </div>
             </div>
@@ -653,33 +1007,21 @@
             <div id="registerForm" class="auth-form" style="display: none;">
                 <div class="form-group">
                     <label for="regName">
-                        <i class="fas fa-user"></i> <span data-i18n="fullName">الاسم الكامل</span>
+                        <i class="fas fa-user"></i> <span data-translate="fullName">الاسم الكامل</span>
                     </label>
                     <input type="text" id="regName" class="form-control" placeholder="أدخل الاسم الكامل">
-                    <div class="error-message" id="regNameError">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span data-i18n="nameRequired">الاسم الكامل مطلوب</span>
-                    </div>
                 </div>
                 <div class="form-group">
                     <label for="regUsername">
-                        <i class="fas fa-at"></i> <span data-i18n="username">اسم المستخدم</span>
+                        <i class="fas fa-at"></i> <span data-translate="username">اسم المستخدم</span>
                     </label>
                     <input type="text" id="regUsername" class="form-control" placeholder="أدخل اسم المستخدم">
-                    <div class="error-message" id="regUsernameError">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span data-i18n="usernameRequired">اسم المستخدم مطلوب</span>
-                    </div>
                 </div>
                 <div class="form-group">
                     <label for="regPassword">
-                        <i class="fas fa-key"></i> <span data-i18n="password">كلمة المرور</span>
+                        <i class="fas fa-key"></i> <span data-translate="password">كلمة المرور</span>
                     </label>
                     <input type="password" id="regPassword" class="form-control" placeholder="أدخل كلمة المرور">
-                    <div class="error-message" id="regPasswordError">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span data-i18n="passwordRequired">كلمة المرور مطلوبة (6 أحرف على الأقل)</span>
-                    </div>
                 </div>
                 
                 <!-- Human Verification -->
@@ -687,7 +1029,7 @@
                     <div class="verification-checkbox" id="driverVerification">
                         <div class="checkmark"><i class="fas fa-check"></i></div>
                         <div class="verification-label">
-                            <i class="fas fa-robot"></i> <span data-i18n="notRobot">أنا لست روبوت</span>
+                            <i class="fas fa-robot"></i> <span data-translate="notRobot">أنا لست روبوت</span>
                         </div>
                     </div>
                 </div>
@@ -695,7 +1037,7 @@
                 <!-- Register Button -->
                 <div class="form-group">
                     <button class="btn btn-success btn-block" id="registerBtn" disabled>
-                        <i class="fas fa-truck"></i> <span data-i18n="registerDriver">تسجيل سائق جديد</span>
+                        <i class="fas fa-truck"></i> <span data-translate="registerDriver">تسجيل سائق جديد</span>
                     </button>
                 </div>
             </div>
@@ -703,12 +1045,362 @@
 
         <!-- Driver Dashboard -->
         <div id="driverDashboard" class="dashboard">
-            <!-- Navigation will be added here -->
+            <!-- Driver Info -->
+            <div class="driver-info">
+                <div class="driver-info-content">
+                    <div class="driver-avatar"><i class="fas fa-user-circle"></i></div>
+                    <div class="driver-details">
+                        <div class="driver-name" id="driverName">السائق</div>
+                        <div class="driver-meta">
+                            <span id="driverProject"><i class="fas fa-project-diagram"></i> المشروع: --</span>
+                            <span id="driverArea"><i class="fas fa-map-marker-alt"></i> المنطقة: --</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project & Area Selection -->
+            <div class="selection-section" style="background: var(--dark-card); padding: 25px; border-radius: var(--border-radius-lg); margin-bottom: 35px;">
+                <h3 class="section-title">
+                    <i class="fas fa-building"></i> تحديد المشروع والمنطقة
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px;">
+                    <div class="form-group">
+                        <label for="driverProjectSelect">
+                            <i class="fas fa-list-alt"></i> المشروع
+                        </label>
+                        <select id="driverProjectSelect" class="form-control">
+                            <option value="">اختر المشروع</option>
+                            <!-- Projects will be loaded dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="driverAreaSelect">
+                            <i class="fas fa-map-pin"></i> المنطقة
+                        </label>
+                        <select id="driverAreaSelect" class="form-control">
+                            <option value="">اختر المنطقة</option>
+                            <!-- Areas will be loaded dynamically -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Photo Capture Section -->
+            <div class="capture-section">
+                <h3 class="section-title">
+                    <i class="fas fa-camera"></i> التقاط الصور المطلوبة
+                </h3>
+                
+                <div class="capture-instructions">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>يجب التقاط 3 صور مباشرة من الكاميرا:</strong> لوحة المركبة، قبل التعبئة، بعد التعبئة
+                </div>
+                
+                <div class="capture-grid">
+                    <!-- Photo cards will be loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Video Recording Section -->
+            <div class="capture-section">
+                <h3 class="section-title">
+                    <i class="fas fa-video"></i> تسجيل الفيديو
+                </h3>
+                
+                <div class="capture-instructions">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>تسجيل الفيديو:</strong> تسجيل 10 ثواني أثناء التعبئة في المحطة
+                </div>
+                
+                <div class="capture-card">
+                    <div class="capture-header">
+                        <i class="fas fa-clock"></i> فيديو التعبئة (10 ثواني)
+                    </div>
+                    <div class="capture-preview" id="videoPreview">
+                        <div class="capture-placeholder">
+                            <div class="icon"><i class="fas fa-video"></i></div>
+                            <div>اضغط للبدء بالتسجيل</div>
+                        </div>
+                    </div>
+                    <div style="padding: 18px; background: rgba(255, 255, 255, 0.03); display: flex; gap: 12px;">
+                        <button class="btn btn-warning" id="startRecordingBtn">
+                            <i class="fas fa-record-vinyl"></i> بدء التسجيل
+                        </button>
+                        <button class="btn btn-danger" id="stopRecordingBtn" style="display: none;">
+                            <i class="fas fa-stop"></i> إيقاف
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Report Button -->
+            <div style="text-align: center; margin: 40px 0;">
+                <button class="btn btn-success" style="padding: 18px 40px; font-size: 1.2rem;" id="submitReportBtn">
+                    <i class="fas fa-paper-plane"></i> إرسال التقرير
+                </button>
+            </div>
         </div>
 
         <!-- Admin Dashboard -->
         <div id="adminDashboard" class="dashboard">
-            <!-- Navigation will be added here -->
+            <!-- Navigation -->
+            <div class="dashboard-nav">
+                <button class="nav-btn active" data-section="reports">
+                    <i class="fas fa-chart-bar"></i> <span data-translate="reports">التقارير</span>
+                </button>
+                <button class="nav-btn" data-section="management">
+                    <i class="fas fa-cogs"></i> <span data-translate="management">الإدارة</span>
+                </button>
+                <button class="nav-btn" data-section="settings">
+                    <i class="fas fa-sliders-h"></i> <span data-translate="settings">الإعدادات</span>
+                </button>
+            </div>
+
+            <!-- Reports Section -->
+            <div class="dashboard-section active" id="reportsSection">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="stat-info">
+                            <h3 id="totalReports">0</h3>
+                            <p>إجمالي التقارير</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-gas-pump"></i></div>
+                        <div class="stat-info">
+                            <h3 id="totalFuel">0</h3>
+                            <p>لتر وقود</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-info">
+                            <h3 id="totalDrivers">0</h3>
+                            <p>سائق نشط</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-calendar"></i></div>
+                        <div class="stat-info">
+                            <h3 id="todayReports">0</h3>
+                            <p>تقارير اليوم</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Table -->
+                <div class="reports-table-container">
+                    <div class="table-header">
+                        <h3 style="color: white;"><i class="fas fa-list"></i> تقارير الوقود</h3>
+                        <div class="table-actions">
+                            <button class="btn btn-success" id="exportExcelBtn">
+                                <i class="fas fa-file-excel"></i> تصدير Excel
+                            </button>
+                            <button class="btn btn-primary" id="refreshReportsBtn">
+                                <i class="fas fa-sync"></i> تحديث
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="overflow-x: auto;">
+                        <table class="reports-table">
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>السائق</th>
+                                    <th>المشروع</th>
+                                    <th>الوقود</th>
+                                    <th>المسافة</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportsTableBody">
+                                <!-- Reports will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Management Section -->
+            <div class="dashboard-section" id="managementSection">
+                <div class="reports-table-container">
+                    <h3 style="color: white; margin-bottom: 25px;"><i class="fas fa-cogs"></i> إدارة النظام</h3>
+                    
+                    <div class="settings-grid">
+                        <!-- Projects Management -->
+                        <div class="setting-card">
+                            <h4 style="color: var(--primary-light); margin-bottom: 15px;">
+                                <i class="fas fa-project-diagram"></i> إدارة المشاريع
+                            </h4>
+                            <div class="form-group">
+                                <input type="text" id="newProjectName" class="form-control" placeholder="اسم المشروع الجديد">
+                            </div>
+                            <button class="btn btn-primary btn-block" id="addProjectBtn">
+                                <i class="fas fa-plus"></i> إضافة مشروع
+                            </button>
+                            
+                            <table class="management-table">
+                                <thead>
+                                    <tr>
+                                        <th>اسم المشروع</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="projectsList">
+                                    <!-- Projects will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Areas Management -->
+                        <div class="setting-card">
+                            <h4 style="color: var(--primary-light); margin-bottom: 15px;">
+                                <i class="fas fa-map-marker-alt"></i> إدارة المناطق
+                            </h4>
+                            <div class="form-group">
+                                <input type="text" id="newAreaName" class="form-control" placeholder="اسم المنطقة الجديدة">
+                            </div>
+                            <button class="btn btn-primary btn-block" id="addAreaBtn">
+                                <i class="fas fa-plus"></i> إضافة منطقة
+                            </button>
+                            
+                            <table class="management-table">
+                                <thead>
+                                    <tr>
+                                        <th>اسم المنطقة</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="areasList">
+                                    <!-- Areas will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Drivers Management -->
+                        <div class="setting-card">
+                            <h4 style="color: var(--primary-light); margin-bottom: 15px;">
+                                <i class="fas fa-users"></i> إدارة السائقين
+                            </h4>
+                            <table class="management-table">
+                                <thead>
+                                    <tr>
+                                        <th>اسم السائق</th>
+                                        <th>المشروع</th>
+                                        <th>الحالة</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="driversList">
+                                    <!-- Drivers will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="dashboard-section" id="settingsSection">
+                <div class="reports-table-container">
+                    <h3 style="color: white; margin-bottom: 25px;"><i class="fas fa-sliders-h"></i> إعدادات النظام</h3>
+                    
+                    <div class="settings-grid">
+                        <!-- App Icon Settings -->
+                        <div class="setting-card">
+                            <h4 style="color: var(--primary-light); margin-bottom: 15px;">
+                                <i class="fas fa-image"></i> أيقونة التطبيق
+                            </h4>
+                            <p style="color: var(--dark-text-secondary); margin-bottom: 15px;">
+                                رفع صورة جديدة لأيقونة التطبيق (يوصى بـ 512x512 بكسل)
+                            </p>
+                            
+                            <div class="upload-preview" id="iconPreview">
+                                <div class="upload-placeholder">
+                                    <i class="fas fa-upload"></i>
+                                    <div>انقر للرفع</div>
+                                </div>
+                            </div>
+                            
+                            <input type="file" id="iconUpload" accept="image/*" style="display: none;">
+                            <button class="btn btn-secondary btn-block" id="uploadIconBtn" style="margin-top: 15px;">
+                                <i class="fas fa-upload"></i> رفع أيقونة
+                            </button>
+                        </div>
+
+                        <!-- Background Settings -->
+                        <div class="setting-card">
+                            <h4 style="color: var(--primary-light); margin-bottom: 15px;">
+                                <i class="fas fa-video"></i> خلفية النظام
+                            </h4>
+                            <p style="color: var(--dark-text-secondary); margin-bottom: 15px;">
+                                رفع فيديو أو صورة خلفية للنظام
+                            </p>
+                            
+                            <div class="form-group">
+                                <select id="bgType" class="form-control">
+                                    <option value="none">بدون خلفية</option>
+                                    <option value="image">صورة</option>
+                                    <option value="video">فيديو</option>
+                                </select>
+                            </div>
+                            
+                            <div class="upload-preview" id="bgPreview">
+                                <div class="upload-placeholder">
+                                    <i class="fas fa-upload"></i>
+                                    <div>انقر للرفع</div>
+                                </div>
+                            </div>
+                            
+                            <input type="file" id="bgUpload" accept="video/*,image/*" style="display: none;">
+                            <button class="btn btn-secondary btn-block" id="uploadBgBtn" style="margin-top: 15px;">
+                                <i class="fas fa-upload"></i> رفع خلفية
+                            </button>
+                        </div>
+
+                        <!-- Backup Section -->
+                        <div class="setting-card" style="grid-column: span 2;">
+                            <h4 style="color: var(--primary-light); margin-bottom: 15px;">
+                                <i class="fas fa-database"></i> النسخ الاحتياطي
+                            </h4>
+                            <p style="color: var(--dark-text-secondary); margin-bottom: 15px;">
+                                قم بإنشاء نسخة احتياطية من جميع بيانات النظام أو استعادة من نسخة سابقة
+                            </p>
+                            
+                            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                                <button class="btn btn-success" id="backupBtn">
+                                    <i class="fas fa-download"></i> إنشاء نسخة احتياطية
+                                </button>
+                                <button class="btn btn-warning" id="restoreBtn">
+                                    <i class="fas fa-upload"></i> استعادة نسخة
+                                </button>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 20px;">
+                                <label>رفع ملف النسخ الاحتياطي</label>
+                                <input type="file" id="backupFile" class="form-control" accept=".json">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <h3 style="color: white; margin-bottom: 20px;">تأكيد العملية</h3>
+            <p id="confirmMessage" style="color: var(--dark-text-secondary); margin-bottom: 30px;"></p>
+            <div style="display: flex; gap: 15px;">
+                <button class="btn btn-danger" id="confirmYes">نعم</button>
+                <button class="btn btn-secondary" id="confirmNo">إلغاء</button>
+            </div>
         </div>
     </div>
 
@@ -725,104 +1417,111 @@
         let currentUser = null;
         let userRole = null;
         let currentLanguage = 'ar';
-        let isAdminVerified = false;
-        let isDriverVerified = false;
-        let isConfirmed = false;
-        let currentLocation = null;
-
-        // Translation System
-        const translations = {
-            ar: {
-                // Header
-                english: 'English',
-                logout: 'تسجيل الخروج',
-                
-                // Auth
-                login: 'تسجيل الدخول',
-                register: 'حساب جديد',
-                username: 'اسم المستخدم',
-                password: 'كلمة المرور',
-                fullName: 'الاسم الكامل',
-                notRobot: 'أنا لست روبوت',
-                adminLogin: 'دخول المدير',
-                registerDriver: 'تسجيل سائق جديد',
-                
-                // Validation Messages
-                usernameRequired: 'اسم المستخدم مطلوب',
-                passwordRequired: 'كلمة المرور مطلوبة',
-                nameRequired: 'الاسم الكامل مطلوب',
-                passwordLength: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
-                usernameExists: 'اسم المستخدم موجود بالفعل',
-                
-                // Toast Messages
-                loginSuccess: 'تم تسجيل الدخول بنجاح',
-                registerSuccess: 'تم التسجيل بنجاح',
-                loginError: 'بيانات الدخول غير صحيحة',
-                registerError: 'حدث خطأ أثناء التسجيل',
-                languageChanged: 'تم تغيير اللغة إلى الإنجليزية',
-                verificationRequired: 'الرجاء التحقق من أنك لست روبوت',
-                systemError: 'حدث خطأ في النظام',
-                
-                // Admin
-                admin: 'المدير',
-                driver: 'السائق'
-            },
-            en: {
-                // Header
-                english: 'العربية',
-                logout: 'Logout',
-                
-                // Auth
-                login: 'Login',
-                register: 'Register',
-                username: 'Username',
-                password: 'Password',
-                fullName: 'Full Name',
-                notRobot: 'I am not a robot',
-                adminLogin: 'Admin Login',
-                registerDriver: 'Register New Driver',
-                
-                // Validation Messages
-                usernameRequired: 'Username is required',
-                passwordRequired: 'Password is required',
-                nameRequired: 'Full name is required',
-                passwordLength: 'Password must be at least 6 characters',
-                usernameExists: 'Username already exists',
-                
-                // Toast Messages
-                loginSuccess: 'Logged in successfully',
-                registerSuccess: 'Registered successfully',
-                loginError: 'Invalid login credentials',
-                registerError: 'Registration failed',
-                languageChanged: 'Language changed to English',
-                verificationRequired: 'Please verify you are not a robot',
-                systemError: 'System error occurred',
-                
-                // Admin
-                admin: 'Admin',
-                driver: 'Driver'
-            }
-        };
+        let systemSettings = {};
+        let systemProjects = [];
+        let systemAreas = [];
+        let registeredDrivers = {};
+        let fuelReports = {};
 
         // Initialize Application
         document.addEventListener('DOMContentLoaded', () => {
             initializeApp();
             setupEventListeners();
-            setupHumanVerification();
-            checkAuthState();
-            updateLanguageText();
+            loadSystemData();
         });
 
         function initializeApp() {
-            // Load saved language preference
-            const savedLanguage = localStorage.getItem('system_language');
-            if (savedLanguage) {
-                currentLanguage = savedLanguage;
-                updateLanguageDirection();
+            // Load language preference
+            const savedLanguage = localStorage.getItem('system_language') || 'ar';
+            setLanguage(savedLanguage);
+            
+            // Load system data
+            loadSystemData();
+            
+            // Check for saved session
+            checkAuthState();
+        }
+
+        function loadSystemData() {
+            // Load system settings
+            try {
+                systemSettings = JSON.parse(localStorage.getItem('system_settings') || '{}');
+                applySystemSettings();
+            } catch (error) {
+                console.error('Error loading settings:', error);
+                systemSettings = {
+                    appIcon: null,
+                    background: { type: 'none', url: null }
+                };
             }
             
-            // Load system settings
-            loadSystemSettings();
+            // Load projects
+            systemProjects = JSON.parse(localStorage.getItem('system_projects') || '[]');
+            if (systemProjects.length === 0) {
+                systemProjects = ['مشروع النقل العام', 'مشروع التوصيل', 'مشروع البناء', 'مشروع الصيانة'];
+                localStorage.setItem('system_projects', JSON.stringify(systemProjects));
+            }
+            
+            // Load areas
+            systemAreas = JSON.parse(localStorage.getItem('system_areas') || '[]');
+            if (systemAreas.length === 0) {
+                systemAreas = ['الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'المدينة المنورة'];
+                localStorage.setItem('system_areas', JSON.stringify(systemAreas));
+            }
+            
+            // Load drivers
+            registeredDrivers = JSON.parse(localStorage.getItem('registered_users') || '{}');
+            
+            // Load reports
+            fuelReports = JSON.parse(localStorage.getItem('fuel_reports') || '{}');
+            
+            // Update selects if needed
+            updateProjectAndAreaSelects();
+        }
+
+        function applySystemSettings() {
+            // Apply app icon
+            if (systemSettings.appIcon) {
+                const logo = document.getElementById('appLogo');
+                if (logo) {
+                    logo.innerHTML = `<img src="${systemSettings.appIcon}" alt="App Logo">`;
+                }
+            }
+            
+            // Apply background
+            applyBackgroundSettings();
+        }
+
+        function applyBackgroundSettings() {
+            const bg = systemSettings.background;
+            if (bg && bg.type !== 'none' && bg.url) {
+                if (bg.type === 'video') {
+                    // Add video background
+                    const video = document.createElement('video');
+                    video.id = 'backgroundVideo';
+                    video.src = bg.url;
+                    video.autoplay = true;
+                    video.muted = true;
+                    video.loop = true;
+                    video.style.cssText = `
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        z-index: -1;
+                        opacity: 0.3;
+                    `;
+                    document.body.appendChild(video);
+                } else if (bg.type === 'image') {
+                    // Add image background
+                    document.body.style.backgroundImage = `url('${bg.url}')`;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundPosition = 'center';
+                    document.body.style.backgroundAttachment = 'fixed';
+                }
+            }
         }
 
         function setupEventListeners() {
@@ -837,310 +1536,226 @@
                 });
             });
             
-            // Form validation
-            document.getElementById('loginUsername').addEventListener('input', validateLoginForm);
-            document.getElementById('loginPassword').addEventListener('input', validateLoginForm);
-            document.getElementById('regName').addEventListener('input', validateRegisterForm);
-            document.getElementById('regUsername').addEventListener('input', validateRegisterForm);
-            document.getElementById('regPassword').addEventListener('input', validateRegisterForm);
+            // Human verification
+            document.getElementById('adminVerification').addEventListener('click', function() {
+                this.classList.toggle('verified');
+                document.getElementById('loginBtn').disabled = !this.classList.contains('verified');
+            });
             
-            // Login/Register buttons
+            document.getElementById('driverVerification').addEventListener('click', function() {
+                this.classList.toggle('verified');
+                document.getElementById('registerBtn').disabled = !this.classList.contains('verified');
+            });
+            
+            // Login/Register
             document.getElementById('loginBtn').addEventListener('click', loginUser);
             document.getElementById('registerBtn').addEventListener('click', registerUser);
             
             // Logout
             document.getElementById('logoutBtn').addEventListener('click', logoutUser);
             
-            // Enter key support
-            document.getElementById('loginPassword').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && isAdminVerified) loginUser();
+            // Navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const section = this.dataset.section;
+                    switchAdminSection(section);
+                });
             });
             
-            document.getElementById('regPassword').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && isDriverVerified) registerUser();
+            // Project and area management
+            document.getElementById('addProjectBtn').addEventListener('click', addProject);
+            document.getElementById('addAreaBtn').addEventListener('click', addArea);
+            
+            // Settings
+            document.getElementById('uploadIconBtn').addEventListener('click', () => {
+                document.getElementById('iconUpload').click();
             });
+            
+            document.getElementById('uploadBgBtn').addEventListener('click', () => {
+                document.getElementById('bgUpload').click();
+            });
+            
+            document.getElementById('iconUpload').addEventListener('change', uploadAppIcon);
+            document.getElementById('bgUpload').addEventListener('change', uploadBackground);
+            document.getElementById('bgType').addEventListener('change', changeBackgroundType);
+            
+            // Backup
+            document.getElementById('backupBtn').addEventListener('click', createBackup);
+            document.getElementById('restoreBtn').addEventListener('click', restoreBackup);
+            
+            // Confirm modal
+            document.getElementById('confirmNo').addEventListener('click', () => {
+                document.getElementById('confirmModal').classList.remove('active');
+            });
+            
+            // Driver actions
+            document.getElementById('driverProjectSelect')?.addEventListener('change', updateDriverProject);
+            document.getElementById('driverAreaSelect')?.addEventListener('change', updateDriverArea);
+            document.getElementById('submitReportBtn')?.addEventListener('click', submitDriverReport);
         }
 
-        function setupHumanVerification() {
-            // Admin Verification
-            const adminVerification = document.getElementById('adminVerification');
-            if (adminVerification) {
-                adminVerification.addEventListener('click', function() {
-                    this.classList.toggle('verified');
-                    isAdminVerified = this.classList.contains('verified');
-                    validateLoginForm();
-                    
-                    if (isAdminVerified) {
-                        showToast(translations[currentLanguage].verificationRequired, 'success');
-                    }
-                });
-            }
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('system_language', lang);
             
-            // Driver Verification
-            const driverVerification = document.getElementById('driverVerification');
-            if (driverVerification) {
-                driverVerification.addEventListener('click', function() {
-                    this.classList.toggle('verified');
-                    isDriverVerified = this.classList.contains('verified');
-                    validateRegisterForm();
-                    
-                    if (isDriverVerified) {
-                        showToast(translations[currentLanguage].verificationRequired, 'success');
-                    }
-                });
-            }
+            // Update direction
+            document.body.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+            
+            // Update button text
+            document.getElementById('languageText').textContent = 
+                currentLanguage === 'ar' ? 'English' : 'العربية';
         }
 
-        function validateLoginForm() {
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            
-            // Clear previous errors
-            document.getElementById('loginUsernameError').classList.remove('show');
-            document.getElementById('loginPasswordError').classList.remove('show');
-            document.getElementById('loginUsername').classList.remove('error');
-            document.getElementById('loginPassword').classList.remove('error');
-            
-            let isValid = true;
-            
-            // Validate username
-            if (!username) {
-                document.getElementById('loginUsernameError').classList.add('show');
-                document.getElementById('loginUsername').classList.add('error');
-                isValid = false;
-            }
-            
-            // Validate password
-            if (!password) {
-                document.getElementById('loginPasswordError').classList.add('show');
-                document.getElementById('loginPassword').classList.add('error');
-                isValid = false;
-            }
-            
-            // Enable/disable button
-            document.getElementById('loginBtn').disabled = !(isValid && isAdminVerified);
-            
-            return isValid;
-        }
-
-        function validateRegisterForm() {
-            const fullName = document.getElementById('regName').value.trim();
-            const username = document.getElementById('regUsername').value.trim();
-            const password = document.getElementById('regPassword').value;
-            
-            // Clear previous errors
-            document.getElementById('regNameError').classList.remove('show');
-            document.getElementById('regUsernameError').classList.remove('show');
-            document.getElementById('regPasswordError').classList.remove('show');
-            document.getElementById('regName').classList.remove('error');
-            document.getElementById('regUsername').classList.remove('error');
-            document.getElementById('regPassword').classList.remove('error');
-            
-            let isValid = true;
-            
-            // Validate full name
-            if (!fullName) {
-                document.getElementById('regNameError').classList.add('show');
-                document.getElementById('regName').classList.add('error');
-                isValid = false;
-            }
-            
-            // Validate username
-            if (!username) {
-                document.getElementById('regUsernameError').classList.add('show');
-                document.getElementById('regUsername').classList.add('error');
-                isValid = false;
-            }
-            
-            // Validate password
-            if (!password) {
-                document.getElementById('regPasswordError').classList.add('show');
-                document.getElementById('regPassword').classList.add('error');
-                isValid = false;
-            } else if (password.length < 6) {
-                document.getElementById('regPasswordError').innerHTML = `
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span>${translations[currentLanguage].passwordLength}</span>
-                `;
-                document.getElementById('regPasswordError').classList.add('show');
-                document.getElementById('regPassword').classList.add('error');
-                isValid = false;
-            }
-            
-            // Enable/disable button
-            document.getElementById('registerBtn').disabled = !(isValid && isDriverVerified);
-            
-            return isValid;
+        function toggleLanguage() {
+            setLanguage(currentLanguage === 'ar' ? 'en' : 'ar');
+            showToast('تم تغيير اللغة', 'success');
         }
 
         function switchAuthTab(tabName) {
-            // Update tab buttons
             document.querySelectorAll('.auth-tab').forEach(tab => {
                 tab.classList.toggle('active', tab.dataset.tab === tabName);
             });
             
-            // Show selected form
             document.getElementById('loginForm').style.display = tabName === 'login' ? 'block' : 'none';
             document.getElementById('registerForm').style.display = tabName === 'register' ? 'block' : 'none';
+        }
+
+        function switchAdminSection(section) {
+            // Update buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.section === section);
+            });
             
-            // Reset verification states
-            if (tabName === 'login') {
-                isDriverVerified = false;
-                document.getElementById('driverVerification')?.classList.remove('verified');
-                validateLoginForm();
-            } else {
-                isAdminVerified = false;
-                document.getElementById('adminVerification')?.classList.remove('verified');
-                validateRegisterForm();
+            // Show section
+            const sections = ['reports', 'management', 'settings'];
+            sections.forEach(sec => {
+                const element = document.getElementById(sec + 'Section');
+                if (element) {
+                    element.style.display = sec === section ? 'block' : 'none';
+                }
+            });
+            
+            // Load section data
+            if (section === 'reports') {
+                loadReportsData();
+            } else if (section === 'management') {
+                loadManagementData();
+            } else if (section === 'settings') {
+                loadSettingsData();
             }
         }
 
-        async function loginUser() {
-            if (!validateLoginForm() || !isAdminVerified) {
-                showToast(translations[currentLanguage].verificationRequired, 'error');
-                return;
-            }
-            
-            const username = document.getElementById('loginUsername').value.trim();
+        function loginUser() {
+            const username = document.getElementById('loginUsername').value;
             const password = document.getElementById('loginPassword').value;
             
-            showLoading(true);
-            
-            try {
-                // Check if it's the system admin
-                if (username === SYSTEM_ADMIN.username && password === SYSTEM_ADMIN.password) {
-                    currentUser = {
-                        id: 'system_admin',
-                        ...SYSTEM_ADMIN
-                    };
-                    userRole = 'admin';
-                    
-                    // Save session
-                    saveSession();
-                    
-                    // Show success message
-                    showToast(translations[currentLanguage].loginSuccess, 'success');
-                    
-                    // Show dashboard
-                    setTimeout(() => {
-                        showDashboard();
-                        showLoading(false);
-                    }, 1000);
-                    return;
-                }
-                
-                // Check registered drivers
-                const registeredUsers = JSON.parse(localStorage.getItem('registered_users') || '{}');
-                let userFound = null;
-                
-                for (const [id, user] of Object.entries(registeredUsers)) {
-                    if (user.username === username && user.password === password) {
-                        userFound = { id, ...user };
-                        break;
-                    }
-                }
-                
-                if (userFound) {
-                    currentUser = {
-                        id: userFound.id,
-                        name: userFound.fullName,
-                        username: userFound.username,
-                        role: 'driver',
-                        project: userFound.project || '',
-                        area: userFound.area || ''
-                    };
-                    userRole = 'driver';
-                    
-                    // Save session
-                    saveSession();
-                    
-                    // Show success message
-                    showToast(translations[currentLanguage].loginSuccess, 'success');
-                    
-                    // Show dashboard
-                    setTimeout(() => {
-                        showDashboard();
-                        showLoading(false);
-                    }, 1000);
-                } else {
-                    showToast(translations[currentLanguage].loginError, 'error');
-                    showLoading(false);
-                }
-                
-            } catch (error) {
-                console.error('Login error:', error);
-                showToast(translations[currentLanguage].systemError, 'error');
-                showLoading(false);
-            }
-        }
-
-        async function registerUser() {
-            if (!validateRegisterForm() || !isDriverVerified) {
-                showToast(translations[currentLanguage].verificationRequired, 'error');
+            if (!document.getElementById('adminVerification').classList.contains('verified')) {
+                showToast('الرجاء التحقق من أنك لست روبوت', 'error');
                 return;
             }
             
-            const fullName = document.getElementById('regName').value.trim();
-            const username = document.getElementById('regUsername').value.trim();
-            const password = document.getElementById('regPassword').value;
-            
             showLoading(true);
             
-            try {
-                // Check if username already exists
-                const registeredUsers = JSON.parse(localStorage.getItem('registered_users') || '{}');
-                
-                for (const user of Object.values(registeredUsers)) {
-                    if (user.username === username) {
-                        showToast(translations[currentLanguage].usernameExists, 'error');
-                        showLoading(false);
-                        return;
+            setTimeout(() => {
+                // Check admin login
+                if (username === SYSTEM_ADMIN.username && password === SYSTEM_ADMIN.password) {
+                    currentUser = { ...SYSTEM_ADMIN, id: 'admin' };
+                    userRole = 'admin';
+                    showDashboard();
+                    showToast('مرحباً أيها المدير', 'success');
+                } 
+                // Check driver login
+                else {
+                    const driver = Object.values(registeredDrivers).find(d => 
+                        d.username === username && d.password === password
+                    );
+                    
+                    if (driver) {
+                        currentUser = {
+                            id: Object.keys(registeredDrivers).find(key => registeredDrivers[key] === driver),
+                            ...driver
+                        };
+                        userRole = 'driver';
+                        showDashboard();
+                        showToast('مرحباً ' + driver.fullName, 'success');
+                    } else {
+                        showToast('بيانات الدخول غير صحيحة', 'error');
                     }
                 }
                 
-                // Create new user
-                const userId = 'driver_' + Date.now();
-                const newUser = {
+                showLoading(false);
+            }, 1000);
+        }
+
+        function registerUser() {
+            const fullName = document.getElementById('regName').value;
+            const username = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+            
+            if (!document.getElementById('driverVerification').classList.contains('verified')) {
+                showToast('الرجاء التحقق من أنك لست روبوت', 'error');
+                return;
+            }
+            
+            if (!fullName || !username || !password) {
+                showToast('الرجاء ملء جميع الحقول', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showToast('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                return;
+            }
+            
+            // Check if username exists
+            const existingUser = Object.values(registeredDrivers).find(d => d.username === username);
+            if (existingUser) {
+                showToast('اسم المستخدم موجود بالفعل', 'error');
+                return;
+            }
+            
+            showLoading(true);
+            
+            setTimeout(() => {
+                const driverId = 'driver_' + Date.now();
+                const newDriver = {
                     fullName,
                     username,
                     password,
                     role: 'driver',
                     createdAt: new Date().toISOString(),
-                    lastLogin: null,
-                    isActive: true
-                };
-                
-                // Save user
-                registeredUsers[userId] = newUser;
-                localStorage.setItem('registered_users', JSON.stringify(registeredUsers));
-                
-                // Auto login
-                currentUser = {
-                    id: userId,
-                    name: fullName,
-                    username: username,
-                    role: 'driver',
                     project: '',
-                    area: ''
+                    area: '',
+                    status: 'active'
                 };
+                
+                registeredDrivers[driverId] = newDriver;
+                localStorage.setItem('registered_users', JSON.stringify(registeredDrivers));
+                
+                currentUser = { id: driverId, ...newDriver };
                 userRole = 'driver';
                 
-                // Save session
-                saveSession();
-                
-                // Show success message
-                showToast(translations[currentLanguage].registerSuccess, 'success');
-                
-                // Show dashboard
-                setTimeout(() => {
-                    showDashboard();
-                    showLoading(false);
-                }, 1000);
-                
-            } catch (error) {
-                console.error('Registration error:', error);
-                showToast(translations[currentLanguage].registerError, 'error');
+                showDashboard();
+                showToast('تم إنشاء الحساب بنجاح', 'success');
                 showLoading(false);
+            }, 1000);
+        }
+
+        function checkAuthState() {
+            const lastSession = JSON.parse(localStorage.getItem('last_session') || 'null');
+            if (lastSession && lastSession.userId && lastSession.timestamp) {
+                const sessionAge = Date.now() - new Date(lastSession.timestamp).getTime();
+                if (sessionAge < 24 * 60 * 60 * 1000) { // 24 hours
+                    if (lastSession.userId === 'admin') {
+                        currentUser = { ...SYSTEM_ADMIN, id: 'admin' };
+                        userRole = 'admin';
+                        showDashboard();
+                    } else if (registeredDrivers[lastSession.userId]) {
+                        currentUser = { id: lastSession.userId, ...registeredDrivers[lastSession.userId] };
+                        userRole = 'driver';
+                        showDashboard();
+                    }
+                }
             }
         }
 
@@ -1154,222 +1769,641 @@
             }
         }
 
-        function checkAuthState() {
-            try {
-                const lastSession = JSON.parse(localStorage.getItem('last_session') || '{}');
-                
-                if (lastSession.userId && lastSession.timestamp) {
-                    const sessionAge = Date.now() - new Date(lastSession.timestamp).getTime();
-                    const maxSessionAge = 24 * 60 * 60 * 1000; // 24 hours
-                    
-                    if (sessionAge < maxSessionAge) {
-                        restoreSession(lastSession);
-                        return;
-                    }
-                }
-            } catch (error) {
-                console.error('Error checking auth state:', error);
-            }
-        }
-
-        function restoreSession(session) {
-            if (session.userId === 'system_admin') {
-                currentUser = {
-                    id: 'system_admin',
-                    ...SYSTEM_ADMIN
-                };
-                userRole = 'admin';
-                showDashboard();
-            } else {
-                const registeredUsers = JSON.parse(localStorage.getItem('registered_users') || '{}');
-                const user = registeredUsers[session.userId];
-                
-                if (user) {
-                    currentUser = {
-                        id: session.userId,
-                        name: user.fullName,
-                        username: user.username,
-                        role: 'driver',
-                        project: user.project || '',
-                        area: user.area || ''
-                    };
-                    userRole = 'driver';
-                    showDashboard();
-                }
-            }
-        }
-
         function showDashboard() {
+            saveSession();
             document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'flex';
             
+            // Update role badge
+            const badgeContainer = document.getElementById('roleBadgeContainer');
             if (userRole === 'admin') {
                 document.getElementById('adminDashboard').classList.add('active');
                 document.getElementById('driverDashboard').classList.remove('active');
                 
-                // Add admin navigation
-                document.getElementById('adminDashboard').innerHTML = `
-                    <div class="dashboard-nav">
-                        <button class="nav-btn active" data-section="reports">
-                            <i class="fas fa-file-alt"></i> <span data-i18n="reports">التقارير</span>
-                        </button>
-                        <button class="nav-btn" data-section="settings">
-                            <i class="fas fa-cogs"></i> <span data-i18n="settings">الإعدادات</span>
-                        </button>
-                    </div>
-                    <div class="dashboard-section active" id="reportsSection">
-                        <h2 style="color: white; margin-bottom: 20px;">لوحة تحكم المدير</h2>
-                        <p style="color: var(--dark-text-secondary);">يمكنك إدارة التقارير والإعدادات من هنا</p>
+                badgeContainer.innerHTML = `
+                    <div class="role-badge admin">
+                        <i class="fas fa-crown"></i>
+                        <span>المدير</span>
                     </div>
                 `;
                 
-                // Update translations
-                updateLanguageText();
-                
+                // Load admin data
+                loadReportsData();
             } else {
                 document.getElementById('driverDashboard').classList.add('active');
                 document.getElementById('adminDashboard').classList.remove('active');
                 
-                // Add driver content
-                document.getElementById('driverDashboard').innerHTML = `
-                    <div style="background: var(--dark-card); padding: 25px; border-radius: var(--border-radius-lg);">
-                        <h2 style="color: white; margin-bottom: 20px;">مرحباً ${currentUser.name}</h2>
-                        <p style="color: var(--dark-text-secondary);">يمكنك تقديم تقارير الوقود من هنا</p>
-                    </div>
-                `;
-            }
-            
-            // Update role badge
-            updateRoleBadge();
-            
-            // Show logout button
-            document.getElementById('logoutBtn').style.display = 'flex';
-        }
-
-        function updateRoleBadge() {
-            const roleBadgeContainer = document.getElementById('roleBadgeContainer');
-            if (userRole === 'admin') {
-                roleBadgeContainer.innerHTML = `
-                    <div class="role-badge admin">
-                        <i class="fas fa-crown"></i>
-                        <span>${translations[currentLanguage].admin}</span>
-                    </div>
-                `;
-            } else {
-                roleBadgeContainer.innerHTML = `
+                badgeContainer.innerHTML = `
                     <div class="role-badge driver">
                         <i class="fas fa-truck"></i>
-                        <span>${translations[currentLanguage].driver}</span>
+                        <span>السائق</span>
                     </div>
                 `;
+                
+                // Update driver info
+                updateDriverInfo();
+                setupDriverDashboard();
             }
+        }
+
+        function updateDriverInfo() {
+            if (currentUser) {
+                document.getElementById('driverName').textContent = currentUser.fullName;
+                document.getElementById('driverProject').innerHTML = 
+                    `<i class="fas fa-project-diagram"></i> المشروع: ${currentUser.project || 'لم يتم التحديد'}`;
+                document.getElementById('driverArea').innerHTML = 
+                    `<i class="fas fa-map-marker-alt"></i> المنطقة: ${currentUser.area || 'لم يتم التحديد'}`;
+            }
+        }
+
+        function setupDriverDashboard() {
+            updateProjectAndAreaSelects();
+            setupPhotoCapture();
+        }
+
+        function updateProjectAndAreaSelects() {
+            const projectSelect = document.getElementById('driverProjectSelect');
+            const areaSelect = document.getElementById('driverAreaSelect');
+            
+            if (projectSelect) {
+                projectSelect.innerHTML = '<option value="">اختر المشروع</option>' +
+                    systemProjects.map(p => `<option value="${p}">${p}</option>`).join('');
+                
+                if (currentUser?.project) {
+                    projectSelect.value = currentUser.project;
+                }
+            }
+            
+            if (areaSelect) {
+                areaSelect.innerHTML = '<option value="">اختر المنطقة</option>' +
+                    systemAreas.map(a => `<option value="${a}">${a}</option>`).join('');
+                
+                if (currentUser?.area) {
+                    areaSelect.value = currentUser.area;
+                }
+            }
+        }
+
+        function updateDriverProject() {
+            const select = document.getElementById('driverProjectSelect');
+            if (currentUser && select) {
+                currentUser.project = select.value;
+                registeredDrivers[currentUser.id].project = select.value;
+                localStorage.setItem('registered_users', JSON.stringify(registeredDrivers));
+                updateDriverInfo();
+            }
+        }
+
+        function updateDriverArea() {
+            const select = document.getElementById('driverAreaSelect');
+            if (currentUser && select) {
+                currentUser.area = select.value;
+                registeredDrivers[currentUser.id].area = select.value;
+                localStorage.setItem('registered_users', JSON.stringify(registeredDrivers));
+                updateDriverInfo();
+            }
+        }
+
+        function setupPhotoCapture() {
+            const captureGrid = document.querySelector('.capture-grid');
+            if (!captureGrid) return;
+            
+            const photos = [
+                { id: 'plate', name: 'لوحة المركبة', icon: 'fa-car' },
+                { id: 'before', name: 'قبل التعبئة', icon: 'fa-gas-pump' },
+                { id: 'after', name: 'بعد التعبئة', icon: 'fa-check-circle' }
+            ];
+            
+            captureGrid.innerHTML = photos.map(photo => `
+                <div class="capture-card">
+                    <div class="capture-header">
+                        <i class="fas ${photo.icon}"></i> ${photo.name}
+                    </div>
+                    <div class="capture-preview" onclick="capturePhoto('${photo.id}')">
+                        <div class="capture-placeholder">
+                            <div class="icon"><i class="fas fa-camera"></i></div>
+                            <div>اضغط للتقاط</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function capturePhoto(type) {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showToast('الكاميرا غير متوفرة على هذا الجهاز', 'error');
+                return;
+            }
+            
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    const video = document.createElement('video');
+                    video.srcObject = stream;
+                    video.play();
+                    
+                    setTimeout(() => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(video, 0, 0);
+                        
+                        const photoData = canvas.toDataURL('image/jpeg');
+                        
+                        // Stop stream
+                        stream.getTracks().forEach(track => track.stop());
+                        
+                        // Update preview
+                        const preview = document.querySelector(`[onclick="capturePhoto('${type}')"]`);
+                        preview.innerHTML = `<img src="${photoData}" alt="${type}">`;
+                        
+                        showToast('تم التقاط الصورة بنجاح', 'success');
+                    }, 1000);
+                })
+                .catch(error => {
+                    console.error('Camera error:', error);
+                    showToast('فشل في الوصول للكاميرا', 'error');
+                });
+        }
+
+        function submitDriverReport() {
+            if (!currentUser.project || !currentUser.area) {
+                showToast('الرجاء تحديد المشروع والمنطقة أولاً', 'error');
+                return;
+            }
+            
+            showLoading(true);
+            
+            setTimeout(() => {
+                const reportId = 'report_' + Date.now();
+                const report = {
+                    id: reportId,
+                    driverId: currentUser.id,
+                    driverName: currentUser.fullName,
+                    project: currentUser.project,
+                    area: currentUser.area,
+                    fuelAmount: Math.floor(Math.random() * 100) + 50,
+                    distance: Math.floor(Math.random() * 300) + 100,
+                    timestamp: new Date().toISOString(),
+                    status: 'pending'
+                };
+                
+                fuelReports[reportId] = report;
+                localStorage.setItem('fuel_reports', JSON.stringify(fuelReports));
+                
+                showToast('تم إرسال التقرير بنجاح', 'success');
+                showLoading(false);
+                
+                // Reset form
+                setupPhotoCapture();
+            }, 1500);
+        }
+
+        function loadReportsData() {
+            // Update stats
+            const totalReports = Object.keys(fuelReports).length;
+            const totalFuel = Object.values(fuelReports).reduce((sum, r) => sum + r.fuelAmount, 0);
+            const totalDrivers = Object.keys(registeredDrivers).length;
+            const today = new Date().toISOString().split('T')[0];
+            const todayReports = Object.values(fuelReports).filter(r => 
+                r.timestamp.split('T')[0] === today
+            ).length;
+            
+            document.getElementById('totalReports').textContent = totalReports;
+            document.getElementById('totalFuel').textContent = totalFuel;
+            document.getElementById('totalDrivers').textContent = totalDrivers;
+            document.getElementById('todayReports').textContent = todayReports;
+            
+            // Update table
+            const tbody = document.getElementById('reportsTableBody');
+            tbody.innerHTML = '';
+            
+            Object.values(fuelReports).sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            ).forEach(report => {
+                const row = document.createElement('tr');
+                const date = new Date(report.timestamp);
+                const dateStr = date.toLocaleDateString('ar-SA');
+                
+                row.innerHTML = `
+                    <td>${dateStr}</td>
+                    <td>${report.driverName}</td>
+                    <td>${report.project}</td>
+                    <td>${report.fuelAmount} لتر</td>
+                    <td>${report.distance} كم</td>
+                    <td>
+                        <span class="status-badge ${report.status === 'approved' ? 'status-normal' : 'status-suspicious'}">
+                            ${report.status === 'approved' ? 'مقبول' : report.status === 'pending' ? 'قيد المراجعة' : 'مرفوض'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="viewReport('${report.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function loadManagementData() {
+            // Load projects
+            const projectsList = document.getElementById('projectsList');
+            if (projectsList) {
+                projectsList.innerHTML = systemProjects.map((project, index) => `
+                    <tr>
+                        <td>${project}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning" onclick="editProject(${index})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteProject(${index})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            // Load areas
+            const areasList = document.getElementById('areasList');
+            if (areasList) {
+                areasList.innerHTML = systemAreas.map((area, index) => `
+                    <tr>
+                        <td>${area}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning" onclick="editArea(${index})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteArea(${index})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            // Load drivers
+            const driversList = document.getElementById('driversList');
+            if (driversList) {
+                driversList.innerHTML = Object.values(registeredDrivers).map(driver => `
+                    <tr>
+                        <td>${driver.fullName}</td>
+                        <td>${driver.project || '--'}</td>
+                        <td>
+                            <span class="status-badge ${driver.status === 'active' ? 'status-normal' : 'status-suspicious'}">
+                                ${driver.status === 'active' ? 'نشط' : 'غير نشط'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function loadSettingsData() {
+            // Load current settings
+            if (systemSettings.appIcon) {
+                document.getElementById('iconPreview').innerHTML = 
+                    `<img src="${systemSettings.appIcon}" alt="App Icon">`;
+            }
+            
+            if (systemSettings.background?.url) {
+                const bgType = systemSettings.background.type;
+                document.getElementById('bgType').value = bgType;
+                
+                if (bgType === 'video') {
+                    document.getElementById('bgPreview').innerHTML = 
+                        `<video src="${systemSettings.background.url}" autoplay muted loop></video>`;
+                } else if (bgType === 'image') {
+                    document.getElementById('bgPreview').innerHTML = 
+                        `<img src="${systemSettings.background.url}" alt="Background">`;
+                }
+            }
+        }
+
+        function addProject() {
+            const input = document.getElementById('newProjectName');
+            const name = input.value.trim();
+            
+            if (!name) {
+                showToast('الرجاء إدخال اسم المشروع', 'error');
+                return;
+            }
+            
+            if (systemProjects.includes(name)) {
+                showToast('هذا المشروع موجود بالفعل', 'error');
+                return;
+            }
+            
+            systemProjects.push(name);
+            localStorage.setItem('system_projects', JSON.stringify(systemProjects));
+            input.value = '';
+            loadManagementData();
+            updateProjectAndAreaSelects();
+            showToast('تم إضافة المشروع بنجاح', 'success');
+        }
+
+        function addArea() {
+            const input = document.getElementById('newAreaName');
+            const name = input.value.trim();
+            
+            if (!name) {
+                showToast('الرجاء إدخال اسم المنطقة', 'error');
+                return;
+            }
+            
+            if (systemAreas.includes(name)) {
+                showToast('هذه المنطقة موجودة بالفعل', 'error');
+                return;
+            }
+            
+            systemAreas.push(name);
+            localStorage.setItem('system_areas', JSON.stringify(systemAreas));
+            input.value = '';
+            loadManagementData();
+            updateProjectAndAreaSelects();
+            showToast('تم إضافة المنطقة بنجاح', 'success');
+        }
+
+        function editProject(index) {
+            const newName = prompt('أدخل الاسم الجديد:', systemProjects[index]);
+            if (newName && newName.trim()) {
+                systemProjects[index] = newName.trim();
+                localStorage.setItem('system_projects', JSON.stringify(systemProjects));
+                loadManagementData();
+                updateProjectAndAreaSelects();
+                showToast('تم تعديل المشروع', 'success');
+            }
+        }
+
+        function deleteProject(index) {
+            showConfirm('هل تريد حذف هذا المشروع؟', () => {
+                systemProjects.splice(index, 1);
+                localStorage.setItem('system_projects', JSON.stringify(systemProjects));
+                loadManagementData();
+                updateProjectAndAreaSelects();
+                showToast('تم حذف المشروع', 'success');
+            });
+        }
+
+        function editArea(index) {
+            const newName = prompt('أدخل الاسم الجديد:', systemAreas[index]);
+            if (newName && newName.trim()) {
+                systemAreas[index] = newName.trim();
+                localStorage.setItem('system_areas', JSON.stringify(systemAreas));
+                loadManagementData();
+                updateProjectAndAreaSelects();
+                showToast('تم تعديل المنطقة', 'success');
+            }
+        }
+
+        function deleteArea(index) {
+            showConfirm('هل تريد حذف هذه المنطقة؟', () => {
+                systemAreas.splice(index, 1);
+                localStorage.setItem('system_areas', JSON.stringify(systemAreas));
+                loadManagementData();
+                updateProjectAndAreaSelects();
+                showToast('تم حذف المنطقة', 'success');
+            });
+        }
+
+        function uploadAppIcon(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                showToast('الرجاء اختيار ملف صورة', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                systemSettings.appIcon = e.target.result;
+                localStorage.setItem('system_settings', JSON.stringify(systemSettings));
+                
+                document.getElementById('iconPreview').innerHTML = 
+                    `<img src="${e.target.result}" alt="App Icon">`;
+                
+                // Update logo
+                document.getElementById('appLogo').innerHTML = 
+                    `<img src="${e.target.result}" alt="App Logo">`;
+                
+                showToast('تم تحديث أيقونة التطبيق', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function uploadBackground(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const bgType = document.getElementById('bgType').value;
+            
+            if (bgType === 'video' && !file.type.startsWith('video/')) {
+                showToast('الرجاء اختيار ملف فيديو', 'error');
+                return;
+            }
+            
+            if (bgType === 'image' && !file.type.startsWith('image/')) {
+                showToast('الرجاء اختيار ملف صورة', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                systemSettings.background = {
+                    type: bgType,
+                    url: e.target.result
+                };
+                localStorage.setItem('system_settings', JSON.stringify(systemSettings));
+                
+                if (bgType === 'video') {
+                    document.getElementById('bgPreview').innerHTML = 
+                        `<video src="${e.target.result}" autoplay muted loop></video>`;
+                } else {
+                    document.getElementById('bgPreview').innerHTML = 
+                        `<img src="${e.target.result}" alt="Background">`;
+                }
+                
+                applyBackgroundSettings();
+                showToast('تم تحديث الخلفية', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function changeBackgroundType() {
+            const bgType = document.getElementById('bgType').value;
+            
+            if (bgType === 'none') {
+                systemSettings.background = { type: 'none', url: null };
+                localStorage.setItem('system_settings', JSON.stringify(systemSettings));
+                
+                document.getElementById('bgPreview').innerHTML = `
+                    <div class="upload-placeholder">
+                        <i class="fas fa-upload"></i>
+                        <div>انقر للرفع</div>
+                    </div>
+                `;
+                
+                // Remove existing background
+                const video = document.getElementById('backgroundVideo');
+                if (video) video.remove();
+                document.body.style.backgroundImage = '';
+                
+                showToast('تم إزالة الخلفية', 'success');
+            }
+        }
+
+        function createBackup() {
+            const backupData = {
+                timestamp: new Date().toISOString(),
+                version: '1.0',
+                data: {
+                    settings: systemSettings,
+                    projects: systemProjects,
+                    areas: systemAreas,
+                    drivers: registeredDrivers,
+                    reports: fuelReports
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `fuel_system_backup_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('تم إنشاء النسخة الاحتياطية', 'success');
+        }
+
+        function restoreBackup() {
+            const fileInput = document.getElementById('backupFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showToast('الرجاء اختيار ملف النسخة الاحتياطية', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const backupData = JSON.parse(e.target.result);
+                    
+                    // Restore data
+                    if (backupData.data.settings) {
+                        systemSettings = backupData.data.settings;
+                        localStorage.setItem('system_settings', JSON.stringify(systemSettings));
+                    }
+                    
+                    if (backupData.data.projects) {
+                        systemProjects = backupData.data.projects;
+                        localStorage.setItem('system_projects', JSON.stringify(systemProjects));
+                    }
+                    
+                    if (backupData.data.areas) {
+                        systemAreas = backupData.data.areas;
+                        localStorage.setItem('system_areas', JSON.stringify(systemAreas));
+                    }
+                    
+                    if (backupData.data.drivers) {
+                        registeredDrivers = backupData.data.drivers;
+                        localStorage.setItem('registered_users', JSON.stringify(registeredDrivers));
+                    }
+                    
+                    if (backupData.data.reports) {
+                        fuelReports = backupData.data.reports;
+                        localStorage.setItem('fuel_reports', JSON.stringify(fuelReports));
+                    }
+                    
+                    // Reload data
+                    loadSystemData();
+                    showToast('تم استعادة النسخة الاحتياطية', 'success');
+                    
+                    // Reload page after 1 second
+                    setTimeout(() => location.reload(), 1000);
+                } catch (error) {
+                    console.error('Restore error:', error);
+                    showToast('خطأ في ملف النسخة الاحتياطية', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function viewReport(reportId) {
+            const report = fuelReports[reportId];
+            if (!report) return;
+            
+            const modal = document.getElementById('confirmModal');
+            const message = document.getElementById('confirmMessage');
+            
+            const date = new Date(report.timestamp);
+            const dateStr = date.toLocaleDateString('ar-SA') + ' ' + date.toLocaleTimeString('ar-SA');
+            
+            message.innerHTML = `
+                <strong>تفاصيل التقرير:</strong><br>
+                السائق: ${report.driverName}<br>
+                المشروع: ${report.project}<br>
+                المنطقة: ${report.area}<br>
+                كمية الوقود: ${report.fuelAmount} لتر<br>
+                المسافة: ${report.distance} كم<br>
+                التاريخ: ${dateStr}<br>
+                الحالة: ${report.status === 'approved' ? 'مقبول' : report.status === 'pending' ? 'قيد المراجعة' : 'مرفوض'}
+            `;
+            
+            document.getElementById('confirmYes').style.display = 'none';
+            document.getElementById('confirmNo').textContent = 'إغلاق';
+            
+            modal.classList.add('active');
+        }
+
+        function showConfirm(message, callback) {
+            const modal = document.getElementById('confirmModal');
+            const confirmMessage = document.getElementById('confirmMessage');
+            const yesBtn = document.getElementById('confirmYes');
+            const noBtn = document.getElementById('confirmNo');
+            
+            confirmMessage.textContent = message;
+            yesBtn.style.display = 'inline-block';
+            noBtn.textContent = 'إلغاء';
+            
+            yesBtn.onclick = function() {
+                modal.classList.remove('active');
+                if (callback) callback();
+            };
+            
+            noBtn.onclick = function() {
+                modal.classList.remove('active');
+            };
+            
+            modal.classList.add('active');
         }
 
         function logoutUser() {
-            // Clear current user
-            currentUser = null;
-            userRole = null;
-            
-            // Clear role badge
-            document.getElementById('roleBadgeContainer').innerHTML = '';
-            
-            // Hide logout button
-            document.getElementById('logoutBtn').style.display = 'none';
-            
-            // Hide dashboards
-            document.getElementById('adminDashboard').classList.remove('active');
-            document.getElementById('driverDashboard').classList.remove('active');
-            
-            // Show auth screen
-            document.getElementById('authScreen').style.display = 'block';
-            
-            // Reset forms
-            resetAuthForms();
-            
-            // Clear session
-            localStorage.removeItem('last_session');
-            
-            showToast('تم تسجيل الخروج بنجاح', 'success');
-        }
-
-        function resetAuthForms() {
-            // Clear form fields
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-            document.getElementById('regName').value = '';
-            document.getElementById('regUsername').value = '';
-            document.getElementById('regPassword').value = '';
-            
-            // Reset verification
-            isAdminVerified = false;
-            isDriverVerified = false;
-            document.getElementById('adminVerification').classList.remove('verified');
-            document.getElementById('driverVerification').classList.remove('verified');
-            
-            // Reset validation
-            validateLoginForm();
-            validateRegisterForm();
-            
-            // Switch to login tab
-            switchAuthTab('login');
-        }
-
-        function toggleLanguage() {
-            currentLanguage = currentLanguage === 'ar' ? 'en' : 'ar';
-            localStorage.setItem('system_language', currentLanguage);
-            
-            updateLanguageDirection();
-            updateLanguageText();
-            
-            showToast(translations[currentLanguage].languageChanged, 'success');
-        }
-
-        function updateLanguageDirection() {
-            document.body.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
-        }
-
-        function updateLanguageText() {
-            const lang = translations[currentLanguage];
-            
-            // Update header
-            document.getElementById('languageText').textContent = lang.english;
-            document.getElementById('logoutText').textContent = lang.logout;
-            
-            // Update all elements with data-i18n attribute
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                if (lang[key]) {
-                    element.textContent = lang[key];
-                }
+            showConfirm('هل تريد تسجيل الخروج؟', () => {
+                currentUser = null;
+                userRole = null;
+                
+                document.getElementById('roleBadgeContainer').innerHTML = '';
+                document.getElementById('logoutBtn').style.display = 'none';
+                document.getElementById('adminDashboard').classList.remove('active');
+                document.getElementById('driverDashboard').classList.remove('active');
+                document.getElementById('authScreen').style.display = 'block';
+                
+                // Clear session
+                localStorage.removeItem('last_session');
+                
+                showToast('تم تسجيل الخروج', 'success');
             });
-            
-            // Update placeholders
-            updatePlaceholders();
-        }
-
-        function updatePlaceholders() {
-            const lang = translations[currentLanguage];
-            
-            // Update form placeholders
-            const loginUsername = document.getElementById('loginUsername');
-            const loginPassword = document.getElementById('loginPassword');
-            const regName = document.getElementById('regName');
-            const regUsername = document.getElementById('regUsername');
-            const regPassword = document.getElementById('regPassword');
-            
-            if (loginUsername) loginUsername.placeholder = lang.username;
-            if (loginPassword) loginPassword.placeholder = lang.password;
-            if (regName) regName.placeholder = lang.fullName;
-            if (regUsername) regUsername.placeholder = lang.username;
-            if (regPassword) regPassword.placeholder = lang.password;
-        }
-
-        function loadSystemSettings() {
-            try {
-                const settings = JSON.parse(localStorage.getItem('system_settings') || '{}');
-                // Apply settings if needed
-            } catch (error) {
-                console.error('Error loading system settings:', error);
-            }
         }
 
         function showToast(message, type = 'info') {
@@ -1395,22 +2429,21 @@
             
             setTimeout(() => {
                 toast.classList.remove('show');
-                setTimeout(() => {
-                    if (toast.parentNode) {
-                        toast.parentNode.removeChild(toast);
-                    }
-                }, 300);
-            }, 5000);
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         function showLoading(show) {
             document.getElementById('loadingSpinner').classList.toggle('active', show);
         }
 
-        // Utility function
-        function isMobile() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        }
+        // Export functions to window
+        window.capturePhoto = capturePhoto;
+        window.editProject = editProject;
+        window.deleteProject = deleteProject;
+        window.editArea = editArea;
+        window.deleteArea = deleteArea;
+        window.viewReport = viewReport;
     </script>
 </body>
 </html>
