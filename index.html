@@ -3,2729 +3,1648 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fuel System Ultra | Al Zahrani</title>
-    
-    <!-- App Logo -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛽</text></svg>">
-    
-    <!-- External Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <!-- Font Awesome -->
+    <title>نظام فحص لوحات المركبات</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        /* Global Styles */
         :root {
-            --primary-color: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-light: #60a5fa;
-            --secondary-color: #10b981;
-            --secondary-dark: #059669;
-            --danger-color: #ef4444;
-            --danger-dark: #dc2626;
-            --warning-color: #f59e0b;
-            --warning-dark: #d97706;
-            --info-color: #3b82f6;
-            --dark-bg: #0f172a;
-            --dark-card: #1e293b;
-            --dark-card-hover: #334155;
-            --dark-text: #f1f5f9;
-            --dark-text-secondary: #94a3b8;
-            --border-radius: 12px;
-            --border-radius-lg: 16px;
-            --border-radius-sm: 8px;
-            --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            --box-shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            --gradient-secondary: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark));
-            --gradient-danger: linear-gradient(135deg, var(--danger-color), var(--danger-dark));
-            --gradient-warning: linear-gradient(135deg, var(--warning-color), var(--warning-dark));
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: var(--transition);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--dark-bg);
-            color: var(--dark-text);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
-            line-height: 1.6;
+            padding: 20px;
+            transition: all 0.3s ease;
         }
-
-        body[dir="rtl"] {
-            direction: rtl;
-        }
-
-        body[dir="ltr"] {
+        
+        body.ltr {
             direction: ltr;
+            text-align: left;
         }
-
-        body.background-image {
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
+        
+        body.ltr .header-title,
+        body.ltr .section-title,
+        body.ltr .plate-card,
+        body.ltr input,
+        body.ltr button {
+            text-align: left;
         }
-
-        body.background-image::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.8);
-            z-index: -1;
-        }
-
-        body.background-video video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -2;
-            opacity: 0.3;
-        }
-
-        body.background-video::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.7);
-            z-index: -1;
-        }
-
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
         }
-
-        /* Header & Navigation */
+        
+        /* Header */
         .header {
-            background: linear-gradient(135deg, var(--dark-card), #0f172a);
-            color: white;
-            padding: 18px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: var(--box-shadow);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .logo {
-            width: 50px;
-            height: 50px;
-            border-radius: var(--border-radius);
-            background: var(--gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: white;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-            overflow: hidden;
-        }
-
-        .logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .app-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            background: linear-gradient(90deg, var(--primary-light), white);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .language-toggle {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 10px 18px;
-            border-radius: var(--border-radius-sm);
-            cursor: pointer;
+        
+        .header-title {
+            color: var(--primary);
+            font-size: 24px;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-weight: 500;
         }
-
-        .language-toggle:hover {
-            background: rgba(255, 255, 255, 0.2);
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .admin-btn, .lang-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-btn {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .admin-btn:hover {
+            background: #2980b9;
             transform: translateY(-2px);
         }
-
-        /* Auth Screens */
-        .auth-container {
-            max-width: 450px;
-            margin: 60px auto;
-            padding: 40px;
-            background-color: var(--dark-card);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--box-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        
+        .lang-btn {
+            background: var(--light);
+            color: var(--dark);
         }
-
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 30px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: var(--border-radius);
-            padding: 5px;
+        
+        .lang-btn:hover {
+            background: #d5dbdb;
         }
-
-        .auth-tab {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            background: none;
-            border: none;
-            color: var(--dark-text-secondary);
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: var(--border-radius-sm);
+        
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        
+        @media (min-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        /* User Section */
+        .user-section, .admin-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 10px;
         }
-
-        .auth-tab.active {
-            background: var(--gradient-primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        
+        /* Plate Input */
+        .plate-input-container {
+            margin-bottom: 25px;
         }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-group label {
+        
+        .input-label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            color: var(--dark);
             font-weight: 600;
-            color: var(--dark-text);
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
-
-        .form-control {
+        
+        .plate-input {
             width: 100%;
             padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--border-radius-sm);
-            background-color: rgba(255, 255, 255, 0.05);
-            color: var(--dark-text);
-            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 18px;
+            text-align: center;
+            transition: border 0.3s ease;
         }
-
-        .form-control:focus {
+        
+        .plate-input:focus {
+            border-color: var(--secondary);
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-            background-color: rgba(255, 255, 255, 0.08);
         }
-
-        /* Human Verification */
-        .human-verification {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin: 25px 0;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        
+        /* Status Options */
+        .status-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
         }
-
-        .verification-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            cursor: pointer;
-            padding: 18px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--border-radius);
-            background: rgba(255, 255, 255, 0.02);
-            user-select: none;
-        }
-
-        .verification-checkbox:hover {
-            border-color: var(--primary-color);
-            background: rgba(37, 99, 235, 0.05);
-        }
-
-        .verification-checkbox.verified {
-            border-color: var(--secondary-color);
-            background: rgba(16, 185, 129, 0.1);
-        }
-
-        .checkmark {
-            width: 26px;
-            height: 26px;
-            border: 2px solid var(--dark-text-secondary);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            color: transparent;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .verification-checkbox.verified .checkmark {
-            background: var(--secondary-color);
-            border-color: var(--secondary-color);
-            color: white;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 16px 28px;
+        
+        .status-btn {
+            padding: 15px;
             border: none;
-            border-radius: var(--border-radius-sm);
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
+            transition: all 0.3s ease;
         }
-
-        .btn-primary {
-            background: var(--gradient-primary);
-            color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
+        
+        .status-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
         }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
+        
+        .status-btn.active {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .status-btn.healthy {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .status-btn.damaged {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .status-btn.healthy.active {
+            background: var(--success);
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-
-        .btn-success {
-            background: var(--gradient-secondary);
+        
+        .status-btn.damaged.active {
+            background: var(--danger);
             color: white;
         }
-
-        .btn-danger {
-            background: var(--gradient-danger);
-            color: white;
-        }
-
-        .btn-warning {
-            background: var(--gradient-warning);
-            color: white;
-        }
-
-        .btn-block {
+        
+        /* Submit Button */
+        .submit-btn {
             width: 100%;
+            padding: 16px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
         }
-
-        .btn-sm {
-            padding: 10px 18px;
-            font-size: 0.9rem;
+        
+        .submit-btn:hover {
+            background: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(41, 128, 185, 0.4);
         }
-
-        .btn:disabled {
-            opacity: 0.5;
+        
+        .submit-btn:disabled {
+            background: #95a5a6;
             cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none !important;
+            transform: none;
+            box-shadow: none;
         }
-
-        /* Dashboard */
-        .dashboard {
+        
+        /* Result Section */
+        .result-container {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
             display: none;
         }
-
-        .dashboard.active {
+        
+        .result-container.show {
             display: block;
             animation: fadeIn 0.5s ease;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        .result-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: var(--dark);
         }
-
-        /* Navigation */
-        .dashboard-nav {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            border-radius: var(--border-radius);
-            flex-wrap: wrap;
-        }
-
-        .nav-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: var(--border-radius-sm);
-            background: none;
-            color: var(--dark-text-secondary);
-            cursor: pointer;
-            font-weight: 600;
+        
+        .result-status {
             display: flex;
             align-items: center;
             gap: 10px;
-            flex: 1;
-            min-width: 150px;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .status-exists {
+            color: var(--success);
+        }
+        
+        .status-not-exists {
+            color: var(--danger);
+        }
+        
+        .result-details {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        /* Admin Login */
+        .admin-login {
+            background: rgba(0, 0, 0, 0.7);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
             justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
-
-        .nav-btn.active {
-            background: var(--gradient-primary);
+        
+        .admin-login.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .login-title {
+            color: var(--primary);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .login-input:focus {
+            border-color: var(--secondary);
+            outline: none;
+        }
+        
+        .login-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .login-btn, .cancel-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn {
+            background: var(--success);
             color: white;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
-
-        /* Section Content */
-        .dashboard-section {
+        
+        .login-btn:hover {
+            background: #219653;
+        }
+        
+        .cancel-btn {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .cancel-btn:hover {
+            background: #c0392b;
+        }
+        
+        /* Admin Dashboard */
+        .admin-dashboard {
             display: none;
         }
-
-        .dashboard-section.active {
+        
+        .admin-dashboard.show {
             display: block;
         }
-
-        /* Stats Grid */
-        .stats-grid {
+        
+        /* Stats */
+        .stats-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 35px;
-        }
-
-        .stat-card {
-            background: var(--dark-card);
-            padding: 30px;
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--box-shadow);
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-        }
-
-        .stat-icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            background: var(--gradient-primary);
-            color: white;
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
-        }
-
-        .stat-info h3 {
-            font-size: 2.2rem;
-            margin-bottom: 8px;
-            color: white;
-            font-weight: 700;
-        }
-
-        .stat-info p {
-            color: var(--dark-text-secondary);
-            font-size: 1rem;
-        }
-
-        /* Reports Table */
-        .reports-table-container {
-            background: var(--dark-card);
-            padding: 30px;
-            border-radius: var(--border-radius-lg);
-            margin-bottom: 35px;
-            box-shadow: var(--box-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .table-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .reports-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .reports-table th,
-        .reports-table td {
-            padding: 18px;
-            text-align: right;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        body[dir="ltr"] .reports-table th,
-        body[dir="ltr"] .reports-table td {
-            text-align: left;
-        }
-
-        .reports-table th {
-            background: rgba(37, 99, 235, 0.1);
-            color: white;
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .reports-table tr:hover {
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .status-badge {
-            padding: 8px 18px;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .status-normal {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-
-        .status-suspicious {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-
-        /* Settings Section */
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
-        }
-
-        .setting-card {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .upload-preview {
-            width: 100%;
-            height: 200px;
-            border-radius: var(--border-radius);
-            background: rgba(255, 255, 255, 0.02);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-            overflow: hidden;
-            border: 2px dashed rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-        }
-
-        .upload-preview img,
-        .upload-preview video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .upload-placeholder {
-            text-align: center;
-            color: var(--dark-text-secondary);
-        }
-
-        .upload-placeholder i {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            opacity: 0.5;
-        }
-
-        /* Management Tables */
-        .management-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        .management-table th,
-        .management-table td {
-            padding: 15px;
-            text-align: right;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .management-table th {
-            background: rgba(37, 99, 235, 0.1);
-            color: white;
-            font-weight: 600;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        /* Loading Spinner */
-        .loading-spinner {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            z-index: 3000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .loading-spinner.active {
-            display: flex;
-        }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top: 4px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Toast Notifications */
-        .toast-container {
-            position: fixed;
-            top: 25px;
-            right: 25px;
-            z-index: 4000;
-        }
-
-        body[dir="ltr"] .toast-container {
-            right: auto;
-            left: 25px;
-        }
-
-        .toast {
-            background: var(--dark-card);
-            color: var(--dark-text);
-            padding: 18px 25px;
-            border-radius: var(--border-radius);
-            margin-bottom: 15px;
-            box-shadow: var(--box-shadow);
-            display: flex;
-            align-items: center;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
-            transform: translateX(100%);
-            opacity: 0;
-            transition: var(--transition);
-            border-left: 4px solid transparent;
-            min-width: 300px;
+            margin-bottom: 25px;
         }
-
-        body[dir="ltr"] .toast {
-            transform: translateX(-100%);
-            border-left: none;
-            border-right: 4px solid transparent;
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid var(--secondary);
         }
-
-        .toast.show {
-            transform: translateX(0);
-            opacity: 1;
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary);
         }
-
-        .toast.success {
-            border-left-color: var(--secondary-color);
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 5px;
         }
-
-        body[dir="ltr"] .toast.success {
-            border-right-color: var(--secondary-color);
-        }
-
-        .toast.error {
-            border-left-color: var(--danger-color);
-        }
-
-        body[dir="ltr"] .toast.error {
-            border-right-color: var(--danger-color);
-        }
-
-        /* Role Badge */
-        .role-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .role-badge.admin {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-
-        .role-badge.driver {
-            background: rgba(37, 99, 235, 0.2);
-            color: #60a5fa;
-            border: 1px solid rgba(37, 99, 235, 0.3);
-        }
-
-        /* Driver Dashboard */
-        .driver-info {
-            background: var(--dark-card);
-            padding: 25px;
-            border-radius: var(--border-radius-lg);
-            margin-bottom: 35px;
-            box-shadow: var(--box-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .driver-info-content {
+        
+        /* Admin Actions */
+        .admin-actions {
             display: flex;
-            align-items: center;
-            gap: 25px;
+            gap: 10px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
-
-        .driver-avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background: var(--gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            color: white;
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
-        }
-
-        .driver-details {
-            flex: 1;
-        }
-
-        .driver-name {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-            color: white;
-            font-weight: 700;
-        }
-
-        .driver-meta {
-            display: flex;
-            gap: 25px;
-            color: var(--dark-text-secondary);
-            font-size: 1rem;
-        }
-
-        /* Capture Sections */
-        .capture-section {
-            margin-bottom: 35px;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 25px;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .capture-instructions {
-            background: rgba(37, 99, 235, 0.1);
-            padding: 18px;
-            border-radius: var(--border-radius);
-            margin-bottom: 25px;
-            border-left: 4px solid var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .capture-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 25px;
-        }
-
-        .capture-card {
-            background: var(--dark-card);
-            border-radius: var(--border-radius-lg);
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .capture-card:hover {
-            border-color: var(--primary-color);
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-        }
-
-        .capture-header {
-            padding: 18px;
-            background: rgba(255, 255, 255, 0.03);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .capture-preview {
-            height: 220px;
-            background: rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        
+        .action-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .capture-preview img,
-        .capture-preview video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .capture-placeholder {
-            text-align: center;
-            color: var(--dark-text-secondary);
-        }
-
-        .capture-placeholder .icon {
-            font-size: 3.5rem;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            z-index: 2000;
+            display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-btn {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .logout-btn {
+            background: #6c757d;
+            color: white;
+        }
+        
+        /* Plates Table */
+        .plates-table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        .plates-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        
+        .plates-table th {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: right;
+        }
+        
+        .plates-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .plates-table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-healthy {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-damaged {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .exists-badge {
+            font-size: 18px;
+        }
+        
+        /* File Upload Section */
+        .upload-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .upload-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #495057;
+        }
+        
+        .file-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .file-input {
+            flex: 1;
+            padding: 10px;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .file-input:hover {
+            border-color: var(--secondary);
+        }
+        
+        /* Instructions */
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .instructions h4 {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 14px;
             padding: 20px;
         }
-
-        .modal.active {
+        
+        /* New Styles for Add to System */
+        .add-to-system-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f4fd;
+            border: 1px solid #b6d4fe;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .add-to-system-section.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .add-to-system-title {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #0d6efd;
+        }
+        
+        .add-to-system-buttons {
             display: flex;
+            gap: 10px;
         }
-
-        .modal-content {
-            background: var(--dark-card);
-            border-radius: var(--border-radius-lg);
-            padding: 35px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: var(--box-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        
+        .add-btn, .cancel-add-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-
-        /* Responsive Design */
+        
+        .add-btn {
+            background: #0d6efd;
+            color: white;
+        }
+        
+        .add-btn:hover {
+            background: #0b5ed7;
+        }
+        
+        .cancel-add-btn {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .cancel-add-btn:hover {
+            background: #5c636a;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Responsive */
         @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            
             .header {
-                padding: 15px;
                 flex-direction: column;
                 gap: 15px;
             }
             
-            .header-controls {
+            .header-actions {
                 width: 100%;
-                justify-content: space-between;
+                justify-content: center;
             }
             
-            .auth-container {
-                margin: 30px auto;
-                padding: 25px;
-            }
-            
-            .dashboard-nav {
-                flex-direction: column;
-            }
-            
-            .nav-btn {
-                min-width: 100%;
-            }
-            
-            .stats-grid {
+            .status-options {
                 grid-template-columns: 1fr;
             }
             
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .capture-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .driver-info-content {
+            .admin-actions {
                 flex-direction: column;
-                text-align: center;
             }
             
-            .table-header {
+            .action-btn {
+                justify-content: center;
+            }
+            
+            .file-input-container {
                 flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
             }
             
-            .table-actions {
-                width: 100%;
-                justify-content: space-between;
+            .add-to-system-buttons {
+                flex-direction: column;
             }
-            
-            .reports-table {
-                display: block;
-                overflow-x: auto;
-            }
+        }
+        
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .mb-3 {
+            margin-bottom: 15px;
+        }
+        
+        .mt-3 {
+            margin-top: 15px;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
         }
     </style>
 </head>
-<body dir="rtl">
-    <!-- Background Video -->
-    <video id="backgroundVideo" autoplay muted loop></video>
-
-    <!-- Header -->
-    <header class="header">
-        <div class="logo-container" id="logoContainer">
-            <div class="logo" id="appLogo">
-                <i class="fas fa-gas-pump"></i>
-            </div>
-            <h1 class="app-title" id="appTitle">Fuel System Ultra | Al Zahrani</h1>
-        </div>
-        <div class="header-controls">
-            <button class="language-toggle" id="languageToggle">
-                <i class="fas fa-globe"></i>
-                <span id="languageText">English</span>
-            </button>
-            <div id="roleBadgeContainer"></div>
-            <button class="btn btn-secondary" id="logoutBtn" style="display: none;">
-                <i class="fas fa-sign-out-alt"></i>
-                <span id="logoutText">تسجيل الخروج</span>
-            </button>
-        </div>
-    </header>
-
-    <!-- Loading Spinner -->
-    <div class="loading-spinner" id="loadingSpinner">
-        <div class="spinner"></div>
-    </div>
-
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
-
-    <!-- Main Content -->
+<body>
     <div class="container">
-        <!-- Authentication Screen -->
-        <div id="authScreen" class="auth-container">
-            <div class="auth-tabs">
-                <button class="auth-tab active" data-tab="login">
-                    <i class="fas fa-sign-in-alt"></i> <span data-translate="login">تسجيل الدخول</span>
+        <!-- Header -->
+        <header class="header">
+            <h1 class="header-title">
+                <i class="fas fa-car"></i>
+                <span class="title-text">نظام فحص لوحات المركبات</span>
+            </h1>
+            
+            <div class="header-actions">
+                <button class="lang-btn" id="langBtn">
+                    <i class="fas fa-language"></i>
+                    <span class="lang-text">EN</span>
                 </button>
-                <button class="auth-tab" data-tab="register">
-                    <i class="fas fa-user-plus"></i> <span data-translate="register">حساب جديد</span>
+                <button class="admin-btn" id="adminBtn">
+                    <i class="fas fa-lock"></i>
+                    <span class="admin-btn-text">دخول المشرف</span>
                 </button>
             </div>
-            
-            <!-- Login Form -->
-            <div id="loginForm" class="auth-form">
-                <div class="form-group">
-                    <label for="loginUsername">
-                        <i class="fas fa-user"></i> <span data-translate="username">اسم المستخدم</span>
-                    </label>
-                    <input type="text" id="loginUsername" class="form-control" placeholder="أدخل اسم المستخدم">
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">
-                        <i class="fas fa-lock"></i> <span data-translate="password">كلمة المرور</span>
-                    </label>
-                    <input type="password" id="loginPassword" class="form-control" placeholder="أدخل كلمة المرور">
+        </header>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- User Section -->
+            <section class="user-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user"></i>
+                    <span class="section-title-text">فحص اللوحة</span>
+                </h2>
+                
+                <div class="plate-input-container">
+                    <label class="input-label" for="plateInput">أدخل رقم اللوحة</label>
+                    <input type="text" id="plateInput" class="plate-input" placeholder="مثال: XTB-3708">
                 </div>
                 
-                <!-- Human Verification -->
-                <div class="human-verification">
-                    <div class="verification-checkbox" id="adminVerification">
-                        <div class="checkmark"><i class="fas fa-check"></i></div>
-                        <div class="verification-label">
-                            <i class="fas fa-robot"></i> <span data-translate="notRobot">أنا لست روبوت</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Login Button -->
-                <div class="form-group">
-                    <button class="btn btn-primary btn-block" id="loginBtn" disabled>
-                        <i class="fas fa-crown"></i> <span data-translate="adminLogin">دخول المدير</span>
+                <div class="status-options">
+                    <button class="status-btn healthy" id="healthyBtn" data-status="healthy">
+                        <i class="fas fa-check-circle"></i>
+                        <span>سليمة</span>
+                    </button>
+                    <button class="status-btn damaged" id="damagedBtn" data-status="damaged">
+                        <i class="fas fa-times-circle"></i>
+                        <span>تالفة</span>
                     </button>
                 </div>
-            </div>
-            
-            <!-- Registration Form -->
-            <div id="registerForm" class="auth-form" style="display: none;">
-                <div class="form-group">
-                    <label for="regName">
-                        <i class="fas fa-user"></i> <span data-translate="fullName">الاسم الكامل</span>
-                    </label>
-                    <input type="text" id="regName" class="form-control" placeholder="أدخل الاسم الكامل">
-                </div>
-                <div class="form-group">
-                    <label for="regUsername">
-                        <i class="fas fa-at"></i> <span data-translate="username">اسم المستخدم</span>
-                    </label>
-                    <input type="text" id="regUsername" class="form-control" placeholder="أدخل اسم المستخدم">
-                </div>
-                <div class="form-group">
-                    <label for="regPassword">
-                        <i class="fas fa-key"></i> <span data-translate="password">كلمة المرور</span>
-                    </label>
-                    <input type="password" id="regPassword" class="form-control" placeholder="أدخل كلمة المرور">
-                </div>
                 
-                <!-- Human Verification -->
-                <div class="human-verification">
-                    <div class="verification-checkbox" id="driverVerification">
-                        <div class="checkmark"><i class="fas fa-check"></i></div>
-                        <div class="verification-label">
-                            <i class="fas fa-robot"></i> <span data-translate="notRobot">أنا لست روبوت</span>
-                        </div>
-                    </div>
-                </div>
+                <button class="submit-btn" id="submitBtn" disabled>
+                    <i class="fas fa-search"></i>
+                    <span>فحص اللوحة</span>
+                </button>
                 
-                <!-- Register Button -->
-                <div class="form-group">
-                    <button class="btn btn-success btn-block" id="registerBtn" disabled>
-                        <i class="fas fa-truck"></i> <span data-translate="registerDriver">تسجيل سائق جديد</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Driver Dashboard -->
-        <div id="driverDashboard" class="dashboard">
-            <!-- Driver Info -->
-            <div class="driver-info">
-                <div class="driver-info-content">
-                    <div class="driver-avatar"><i class="fas fa-user-circle"></i></div>
-                    <div class="driver-details">
-                        <div class="driver-name" id="driverName">السائق</div>
-                        <div class="driver-meta">
-                            <span id="driverProject"><i class="fas fa-project-diagram"></i> المشروع: --</span>
-                            <span id="driverArea"><i class="fas fa-map-marker-alt"></i> المنطقة: --</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Project & Area Selection -->
-            <div class="selection-section" style="background: var(--dark-card); padding: 25px; border-radius: var(--border-radius-lg); margin-bottom: 35px;">
-                <h3 class="section-title">
-                    <i class="fas fa-building"></i> تحديد المشروع والمنطقة
-                </h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px;">
-                    <div class="form-group">
-                        <label for="driverProjectSelect">
-                            <i class="fas fa-list-alt"></i> المشروع
-                        </label>
-                        <select id="driverProjectSelect" class="form-control">
-                            <option value="">اختر المشروع</option>
-                            <!-- Projects will be loaded dynamically -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="driverAreaSelect">
-                            <i class="fas fa-map-pin"></i> المنطقة
-                        </label>
-                        <select id="driverAreaSelect" class="form-control">
-                            <option value="">اختر المنطقة</option>
-                            <!-- Areas will be loaded dynamically -->
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Photo Capture Section -->
-            <div class="capture-section">
-                <h3 class="section-title">
-                    <i class="fas fa-camera"></i> التقاط الصور المطلوبة
-                </h3>
-                
-                <div class="capture-instructions">
-                    <i class="fas fa-info-circle"></i>
-                    <strong>يجب التقاط 3 صور مباشرة من الكاميرا الأمامية:</strong> لوحة المركبة، قبل التعبئة، بعد التعبئة
-                </div>
-                
-                <div class="capture-grid">
-                    <!-- Photo cards will be loaded dynamically -->
-                </div>
-            </div>
-
-            <!-- Video Recording Section -->
-            <div class="capture-section">
-                <h3 class="section-title">
-                    <i class="fas fa-video"></i> تسجيل الفيديو
-                </h3>
-                
-                <div class="capture-instructions">
-                    <i class="fas fa-info-circle"></i>
-                    <strong>تسجيل الفيديو من الكاميرا الأمامية:</strong> تسجيل 10 ثواني أثناء التعبئة في المحطة
-                </div>
-                
-                <div class="capture-card">
-                    <div class="capture-header">
-                        <i class="fas fa-clock"></i> فيديو التعبئة (10 ثواني)
-                    </div>
-                    <div class="capture-preview" id="videoPreview">
-                        <div class="capture-placeholder">
-                            <div class="icon"><i class="fas fa-video"></i></div>
-                            <div>اضغط للبدء بالتسجيل</div>
-                        </div>
-                    </div>
-                    <div style="padding: 18px; background: rgba(255, 255, 255, 0.03); display: flex; gap: 12px;">
-                        <button class="btn btn-warning" id="startRecordingBtn">
-                            <i class="fas fa-record-vinyl"></i> بدء التسجيل
+                <!-- Add to System Section -->
+                <div class="add-to-system-section" id="addToSystemSection">
+                    <h4 class="add-to-system-title" id="addToSystemTitle"></h4>
+                    <div class="add-to-system-buttons">
+                        <button class="add-btn" id="addBtn">
+                            <i class="fas fa-plus-circle"></i>
+                            <span id="addBtnText">إضافة للنظام</span>
                         </button>
-                        <button class="btn btn-danger" id="stopRecordingBtn" style="display: none;">
-                            <i class="fas fa-stop"></i> إيقاف
+                        <button class="cancel-add-btn" id="cancelAddBtn">
+                            <i class="fas fa-times"></i>
+                            <span id="cancelAddBtnText">إلغاء</span>
                         </button>
                     </div>
                 </div>
-            </div>
-
-            <!-- Submit Report Button -->
-            <div style="text-align: center; margin: 40px 0;">
-                <button class="btn btn-success" style="padding: 18px 40px; font-size: 1.2rem;" id="submitReportBtn">
-                    <i class="fas fa-paper-plane"></i> إرسال التقرير
-                </button>
-            </div>
-        </div>
-
-        <!-- Admin Dashboard -->
-        <div id="adminDashboard" class="dashboard">
-            <!-- Navigation -->
-            <div class="dashboard-nav">
-                <button class="nav-btn active" data-section="reports">
-                    <i class="fas fa-chart-bar"></i> <span data-translate="reports">التقارير</span>
-                </button>
-                <button class="nav-btn" data-section="management">
-                    <i class="fas fa-cogs"></i> <span data-translate="management">الإدارة</span>
-                </button>
-                <button class="nav-btn" data-section="settings">
-                    <i class="fas fa-sliders-h"></i> <span data-translate="settings">الإعدادات</span>
-                </button>
-            </div>
-
-            <!-- Reports Section -->
-            <div class="dashboard-section active" id="reportsSection">
-                <!-- Stats -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
-                        <div class="stat-info">
-                            <h3 id="totalReports">0</h3>
-                            <p>إجمالي التقارير</p>
-                        </div>
+                
+                <div class="result-container" id="resultContainer">
+                    <h3 class="result-title">نتيجة الفحص:</h3>
+                    <div class="result-status" id="resultStatus">
+                        <!-- Dynamic content -->
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-gas-pump"></i></div>
-                        <div class="stat-info">
-                            <h3 id="totalFuel">0</h3>
-                            <p>لتر وقود</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-users"></i></div>
-                        <div class="stat-info">
-                            <h3 id="totalDrivers">0</h3>
-                            <p>سائق نشط</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-calendar"></i></div>
-                        <div class="stat-info">
-                            <h3 id="todayReports">0</h3>
-                            <p>تقارير اليوم</p>
-                        </div>
-                    </div>
+                    <p class="result-details">
+                        <i class="fas fa-info-circle"></i>
+                        <span>يمكنك فقط رؤية ما إذا كانت اللوحة موجودة في النظام أم لا</span>
+                    </p>
                 </div>
-
-                <!-- Reports Table -->
-                <div class="reports-table-container">
-                    <div class="table-header">
-                        <h3 style="color: white;"><i class="fas fa-list"></i> تقارير الوقود</h3>
-                        <div class="table-actions">
-                            <button class="btn btn-success" id="exportExcelBtn">
-                                <i class="fas fa-file-excel"></i> تصدير Excel
-                            </button>
-                            <button class="btn btn-primary" id="refreshReportsBtn">
-                                <i class="fas fa-sync"></i> تحديث
-                            </button>
+            </section>
+            
+            <!-- Admin Section (Initially Hidden) -->
+            <section class="admin-section hidden" id="adminSection">
+                <h2 class="section-title">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span class="section-title-text">لوحة التحكم - المشرف</span>
+                </h2>
+                
+                <div class="admin-dashboard" id="adminDashboard">
+                    <!-- Instructions -->
+                    <div class="instructions">
+                        <h4><i class="fas fa-info-circle"></i> تعليمات الاستخدام</h4>
+                        <p>1. قم بتحميل ملف Excel يحتوي على جميع اللوحات المطلوبة</p>
+                        <p>2. الملف يجب أن يحتوي على عمود واحد فقط بأرقام اللوحات</p>
+                        <p>3. عند فحص أي لوحة، سيتم مقارنتها مع اللوحات الموجودة في الملف</p>
+                        <p>4. يمكنك مسح جميع البيانات والبدء من جديد</p>
+                    </div>
+                    
+                    <!-- Stats -->
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalPlates">0</div>
+                            <div class="stat-label">إجمالي اللوحات</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="healthyPlates">0</div>
+                            <div class="stat-label">فحوصات سليمة</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="damagedPlates">0</div>
+                            <div class="stat-label">فحوصات تالفة</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="todaySubmissions">0</div>
+                            <div class="stat-label">فحوصات اليوم</div>
                         </div>
                     </div>
                     
-                    <div style="overflow-x: auto;">
-                        <table class="reports-table">
+                    <!-- File Upload Section -->
+                    <div class="upload-section">
+                        <div class="upload-info">
+                            <i class="fas fa-file-excel"></i>
+                            <span>تحميل ملف Excel باللوحات المطلوبة</span>
+                        </div>
+                        
+                        <div class="file-input-container">
+                            <input type="file" id="excelFile" class="file-input" accept=".xlsx, .xls, .csv">
+                            <button class="action-btn upload-btn" id="uploadBtn">
+                                <i class="fas fa-upload"></i>
+                                <span>تحميل الملف</span>
+                            </button>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>ملاحظة: الملف يجب أن يحتوي على أرقام اللوحات في العمود الأول فقط</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Admin Actions -->
+                    <div class="admin-actions">
+                        <button class="action-btn delete-btn" id="deleteAllBtn">
+                            <i class="fas fa-trash-alt"></i>
+                            <span>مسح جميع البيانات</span>
+                        </button>
+                        <button class="action-btn logout-btn" id="adminLogoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>تسجيل الخروج</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Plates Table -->
+                    <div class="plates-table-container">
+                        <table class="plates-table">
                             <thead>
                                 <tr>
-                                    <th>التاريخ</th>
-                                    <th>السائق</th>
-                                    <th>المشروع</th>
-                                    <th>الوقود</th>
-                                    <th>المسافة</th>
+                                    <th>رقم اللوحة</th>
                                     <th>الحالة</th>
-                                    <th>الإجراءات</th>
+                                    <th>موجودة في النظام</th>
+                                    <th>تاريخ الإضافة</th>
                                 </tr>
                             </thead>
-                            <tbody id="reportsTableBody">
-                                <!-- Reports will be loaded here -->
+                            <tbody id="platesTableBody">
+                                <!-- Dynamic rows -->
                             </tbody>
                         </table>
                     </div>
                 </div>
+            </section>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <p>نظام فحص لوحات المركبات | جاهز 100% للاستخدام</p>
+            <p class="mt-3">جميع الحقوق محفوظة &copy; <span id="currentYear"></span></p>
+        </footer>
+    </div>
+    
+    <!-- Admin Login Modal -->
+    <div class="admin-login" id="adminLogin">
+        <div class="login-box">
+            <h2 class="login-title">
+                <i class="fas fa-lock"></i>
+                <span>دخول المشرف</span>
+            </h2>
+            
+            <div class="mb-3">
+                <input type="text" id="usernameInput" class="login-input" placeholder="اسم المستخدم">
             </div>
-
-            <!-- Management Section -->
-            <div class="dashboard-section" id="managementSection">
-                <div class="reports-table-container">
-                    <h3 style="color: white; margin-bottom: 25px;"><i class="fas fa-cogs"></i> إدارة النظام</h3>
-                    
-                    <div class="settings-grid">
-                        <!-- Projects Management -->
-                        <div class="setting-card">
-                            <h4 style="color: var(--primary-light); margin-bottom: 15px;">
-                                <i class="fas fa-project-diagram"></i> إدارة المشاريع
-                            </h4>
-                            <div class="form-group">
-                                <input type="text" id="newProjectName" class="form-control" placeholder="اسم المشروع الجديد">
-                            </div>
-                            <button class="btn btn-primary btn-block" id="addProjectBtn">
-                                <i class="fas fa-plus"></i> إضافة مشروع
-                            </button>
-                            
-                            <table class="management-table">
-                                <thead>
-                                    <tr>
-                                        <th>اسم المشروع</th>
-                                        <th>الإجراءات</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="projectsList">
-                                    <!-- Projects will be loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Areas Management -->
-                        <div class="setting-card">
-                            <h4 style="color: var(--primary-light); margin-bottom: 15px;">
-                                <i class="fas fa-map-marker-alt"></i> إدارة المناطق
-                            </h4>
-                            <div class="form-group">
-                                <input type="text" id="newAreaName" class="form-control" placeholder="اسم المنطقة الجديدة">
-                            </div>
-                            <button class="btn btn-primary btn-block" id="addAreaBtn">
-                                <i class="fas fa-plus"></i> إضافة منطقة
-                            </button>
-                            
-                            <table class="management-table">
-                                <thead>
-                                    <tr>
-                                        <th>اسم المنطقة</th>
-                                        <th>الإجراءات</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="areasList">
-                                    <!-- Areas will be loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Drivers Management -->
-                        <div class="setting-card">
-                            <h4 style="color: var(--primary-light); margin-bottom: 15px;">
-                                <i class="fas fa-users"></i> إدارة السائقين
-                            </h4>
-                            <table class="management-table">
-                                <thead>
-                                    <tr>
-                                        <th>اسم السائق</th>
-                                        <th>المشروع</th>
-                                        <th>الحالة</th>
-                                        <th>الإجراءات</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="driversList">
-                                    <!-- Drivers will be loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+            
+            <div class="mb-3">
+                <input type="password" id="passwordInput" class="login-input" placeholder="كلمة المرور">
             </div>
-
-            <!-- Settings Section -->
-            <div class="dashboard-section" id="settingsSection">
-                <div class="reports-table-container">
-                    <h3 style="color: white; margin-bottom: 25px;"><i class="fas fa-sliders-h"></i> إعدادات النظام</h3>
-                    
-                    <div class="settings-grid">
-                        <!-- App Icon Settings -->
-                        <div class="setting-card">
-                            <h4 style="color: var(--primary-light); margin-bottom: 15px;">
-                                <i class="fas fa-image"></i> أيقونة التطبيق
-                            </h4>
-                            <p style="color: var(--dark-text-secondary); margin-bottom: 15px;">
-                                رفع صورة جديدة لأيقونة التطبيق (يوصى بـ 512x512 بكسل)
-                            </p>
-                            
-                            <div class="upload-preview" id="iconPreview">
-                                <div class="upload-placeholder">
-                                    <i class="fas fa-upload"></i>
-                                    <div>انقر للرفع</div>
-                                </div>
-                            </div>
-                            
-                            <input type="file" id="iconUpload" accept="image/*" style="display: none;">
-                            <button class="btn btn-secondary btn-block" id="uploadIconBtn" style="margin-top: 15px;">
-                                <i class="fas fa-upload"></i> رفع أيقونة
-                            </button>
-                        </div>
-
-                        <!-- Background Settings -->
-                        <div class="setting-card">
-                            <h4 style="color: var(--primary-light); margin-bottom: 15px;">
-                                <i class="fas fa-video"></i> خلفية النظام
-                            </h4>
-                            <p style="color: var(--dark-text-secondary); margin-bottom: 15px;">
-                                رفع فيديو أو صورة خلفية للنظام
-                            </p>
-                            
-                            <div class="form-group">
-                                <select id="bgType" class="form-control">
-                                    <option value="none">بدون خلفية</option>
-                                    <option value="image">صورة</option>
-                                    <option value="video">فيديو</option>
-                                </select>
-                            </div>
-                            
-                            <div class="upload-preview" id="bgPreview">
-                                <div class="upload-placeholder">
-                                    <i class="fas fa-upload"></i>
-                                    <div>انقر للرفع</div>
-                                </div>
-                            </div>
-                            
-                            <input type="file" id="bgUpload" accept="video/*,image/*" style="display: none;">
-                            <button class="btn btn-secondary btn-block" id="uploadBgBtn" style="margin-top: 15px;">
-                                <i class="fas fa-upload"></i> رفع خلفية
-                            </button>
-                        </div>
-
-                        <!-- Backup Section -->
-                        <div class="setting-card" style="grid-column: span 2;">
-                            <h4 style="color: var(--primary-light); margin-bottom: 15px;">
-                                <i class="fas fa-database"></i> النسخ الاحتياطي
-                            </h4>
-                            <p style="color: var(--dark-text-secondary); margin-bottom: 15px;">
-                                قم بإنشاء نسخة احتياطية من جميع بيانات النظام أو استعادة من نسخة سابقة
-                            </p>
-                            
-                            <div style="display: flex; gap: 15px; margin-top: 20px;">
-                                <button class="btn btn-success" id="backupBtn">
-                                    <i class="fas fa-download"></i> إنشاء نسخة احتياطية
-                                </button>
-                                <button class="btn btn-warning" id="restoreBtn">
-                                    <i class="fas fa-upload"></i> استعادة نسخة
-                                </button>
-                            </div>
-                            
-                            <div class="form-group" style="margin-top: 20px;">
-                                <label>رفع ملف النسخ الاحتياطي</label>
-                                <input type="file" id="backupFile" class="form-control" accept=".json">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            
+            <div class="login-buttons">
+                <button class="login-btn" id="loginBtn">تسجيل الدخول</button>
+                <button class="cancel-btn" id="cancelLoginBtn">إلغاء</button>
             </div>
+            
+            <p class="text-center mt-3" style="color: #7f8c8d; font-size: 14px;">
+                <i class="fas fa-info-circle"></i>
+                اسم المستخدم: مهند | كلمة المرور: 123321
+            </p>
         </div>
     </div>
 
-    <!-- Confirm Modal -->
-    <div class="modal" id="confirmModal">
-        <div class="modal-content">
-            <h3 style="color: white; margin-bottom: 20px;">تأكيد العملية</h3>
-            <p id="confirmMessage" style="color: var(--dark-text-secondary); margin-bottom: 30px;"></p>
-            <div style="display: flex; gap: 15px;">
-                <button class="btn btn-danger" id="confirmYes">نعم</button>
-                <button class="btn btn-secondary" id="confirmNo">إلغاء</button>
-            </div>
-        </div>
-    </div>
+    <!-- SheetJS Library for Excel processing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script>
-        // System Configuration
-        const SYSTEM_ADMIN = {
-            username: 'honda@gmail.com',
-            password: '212775@#',
-            name: 'مدير النظام الرئيسي',
-            role: 'admin'
+        // الترجمات
+        const translations = {
+            ar: {
+                title: "نظام فحص لوحات المركبات",
+                adminBtn: "دخول المشرف",
+                userSectionTitle: "فحص اللوحة",
+                plateLabel: "أدخل رقم اللوحة",
+                platePlaceholder: "مثال: XTB-3708",
+                healthy: "سليمة",
+                damaged: "تالفة",
+                submit: "فحص اللوحة",
+                resultTitle: "نتيجة الفحص:",
+                resultDetails: "يمكنك فقط رؤية ما إذا كانت اللوحة موجودة في النظام أم لا",
+                adminSectionTitle: "لوحة التحكم - المشرف",
+                totalPlates: "إجمالي اللوحات",
+                healthyPlates: "فحوصات سليمة",
+                damagedPlates: "فحوصات تالفة",
+                todaySubmissions: "فحوصات اليوم",
+                uploadExcel: "تحميل ملف Excel",
+                deleteAll: "مسح جميع البيانات",
+                logout: "تسجيل الخروج",
+                plateNumber: "رقم اللوحة",
+                status: "الحالة",
+                existsInSystem: "موجودة في النظام",
+                addDate: "تاريخ الإضافة",
+                loginTitle: "دخول المشرف",
+                usernamePlaceholder: "اسم المستخدم",
+                passwordPlaceholder: "كلمة المرور",
+                login: "تسجيل الدخول",
+                cancel: "إلغاء",
+                loginInfo: "اسم المستخدم: مهند | كلمة المرور: 123321",
+                footer: "نظام فحص لوحات المركبات | جاهز 100% للاستخدام",
+                exists: "موجودة",
+                notExists: "غير موجودة",
+                checkAgain: "فحص لوحة أخرى",
+                submitted: "تم إرسال الفحص بنجاح",
+                adminOnly: "المشرف فقط يمكنه رؤية لوحة التحكم",
+                error: "حدث خطأ. حاول مرة أخرى.",
+                loading: "جاري التحميل...",
+                noPlates: "لا توجد لوحات مسجلة بعد",
+                uploadSuccess: "تم تحميل الملف بنجاح",
+                deleteConfirm: "هل أنت متأكد من مسح جميع البيانات؟",
+                deleteSuccess: "تم مسح جميع البيانات بنجاح",
+                fileRequired: "يرجى اختيار ملف Excel أولاً",
+                fileFormatError: "يرجى اختيار ملف Excel صالح (xlsx, xls, csv)",
+                noDataInFile: "الملف لا يحتوي على بيانات",
+                fileProcessed: "تم معالجة الملف بنجاح",
+                // New translations for add to system
+                addToSystemTitle: "اللوحة غير موجودة. هل ترغب في إضافتها للنظام؟",
+                addToSystemBtn: "إضافة للنظام",
+                cancelAddBtn: "إلغاء",
+                addedSuccessfully: "تم إضافة اللوحة للنظام بنجاح",
+                alreadyInSystem: "اللوحة موجودة بالفعل في النظام"
+            },
+            en: {
+                title: "Vehicle Plate Checking System",
+                adminBtn: "Admin Login",
+                userSectionTitle: "Check Plate",
+                plateLabel: "Enter plate number",
+                platePlaceholder: "Example: XTB-3708",
+                healthy: "Healthy",
+                damaged: "Damaged",
+                submit: "Check Plate",
+                resultTitle: "Check Result:",
+                resultDetails: "You can only see if the plate exists in the system or not",
+                adminSectionTitle: "Control Panel - Admin",
+                totalPlates: "Total Plates",
+                healthyPlates: "Healthy Checks",
+                damagedPlates: "Damaged Checks",
+                todaySubmissions: "Today's Checks",
+                uploadExcel: "Upload Excel File",
+                deleteAll: "Delete All Data",
+                logout: "Logout",
+                plateNumber: "Plate Number",
+                status: "Status",
+                existsInSystem: "Exists in System",
+                addDate: "Add Date",
+                loginTitle: "Admin Login",
+                usernamePlaceholder: "Username",
+                passwordPlaceholder: "Password",
+                login: "Login",
+                cancel: "Cancel",
+                loginInfo: "Username: mohand | Password: 123321",
+                footer: "Vehicle Plate Checking System | 100% Ready",
+                exists: "Exists",
+                notExists: "Not Exists",
+                checkAgain: "Check Another Plate",
+                submitted: "Check submitted successfully",
+                adminOnly: "Only admin can see the control panel",
+                error: "An error occurred. Please try again.",
+                loading: "Loading...",
+                noPlates: "No plates registered yet",
+                uploadSuccess: "File uploaded successfully",
+                deleteConfirm: "Are you sure you want to delete all data?",
+                deleteSuccess: "All data deleted successfully",
+                fileRequired: "Please select an Excel file first",
+                fileFormatError: "Please select a valid Excel file (xlsx, xls, csv)",
+                noDataInFile: "File does not contain any data",
+                fileProcessed: "File processed successfully",
+                // New translations for add to system
+                addToSystemTitle: "Plate not found. Do you want to add it to the system?",
+                addToSystemBtn: "Add to System",
+                cancelAddBtn: "Cancel",
+                addedSuccessfully: "Plate added to system successfully",
+                alreadyInSystem: "Plate already exists in system"
+            }
         };
 
-        // Application State
+        // حالة التطبيق
+        let currentLang = 'ar';
         let currentUser = null;
-        let userRole = null;
-        let currentLanguage = 'ar';
-        let systemSettings = {};
-        let systemProjects = [];
-        let systemAreas = [];
-        let registeredDrivers = {};
-        let fuelReports = {};
-        let capturedPhotos = {};
-        let recordedVideo = null;
+        let selectedStatus = null;
+        let currentPlateCheck = null; // لتخزين معلومات اللوحة الحالية
+        
+        // تخزين البيانات محلياً
+        let plates = []; // اللوحات من ملف Excel
+        let submissions = []; // الفحوصات
 
-        // Initialize Application
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeApp();
+        // عناصر DOM
+        const elements = {
+            titleText: document.querySelector('.title-text'),
+            adminBtnText: document.querySelector('.admin-btn-text'),
+            langBtn: document.getElementById('langBtn'),
+            langText: document.querySelector('.lang-text'),
+            adminBtn: document.getElementById('adminBtn'),
+            sectionTitleText: document.querySelector('.section-title-text'),
+            plateLabel: document.querySelector('.input-label'),
+            plateInput: document.getElementById('plateInput'),
+            healthyBtn: document.getElementById('healthyBtn'),
+            damagedBtn: document.getElementById('damagedBtn'),
+            submitBtn: document.getElementById('submitBtn'),
+            resultContainer: document.getElementById('resultContainer'),
+            resultStatus: document.getElementById('resultStatus'),
+            resultDetails: document.querySelector('.result-details'),
+            adminSection: document.getElementById('adminSection'),
+            adminSectionTitle: document.querySelectorAll('.section-title-text')[1],
+            totalPlates: document.getElementById('totalPlates'),
+            healthyPlates: document.getElementById('healthyPlates'),
+            damagedPlates: document.getElementById('damagedPlates'),
+            todaySubmissions: document.getElementById('todaySubmissions'),
+            excelFile: document.getElementById('excelFile'),
+            uploadBtn: document.getElementById('uploadBtn'),
+            deleteAllBtn: document.getElementById('deleteAllBtn'),
+            adminLogoutBtn: document.getElementById('adminLogoutBtn'),
+            platesTableBody: document.getElementById('platesTableBody'),
+            adminLogin: document.getElementById('adminLogin'),
+            loginTitle: document.querySelector('.login-title span'),
+            usernameInput: document.getElementById('usernameInput'),
+            passwordInput: document.getElementById('passwordInput'),
+            loginBtn: document.getElementById('loginBtn'),
+            cancelLoginBtn: document.getElementById('cancelLoginBtn'),
+            loginInfo: document.querySelector('.login-box p'),
+            footer: document.querySelector('.footer p'),
+            currentYear: document.getElementById('currentYear'),
+            // New elements
+            addToSystemSection: document.getElementById('addToSystemSection'),
+            addToSystemTitle: document.getElementById('addToSystemTitle'),
+            addBtn: document.getElementById('addBtn'),
+            cancelAddBtn: document.getElementById('cancelAddBtn'),
+            addBtnText: document.getElementById('addBtnText'),
+            cancelAddBtnText: document.getElementById('cancelAddBtnText')
+        };
+
+        // تهيئة التطبيق
+        function initApp() {
+            // تعيين السنة الحالية
+            elements.currentYear.textContent = new Date().getFullYear();
+            
+            // تحميل البيانات المحفوظة
+            loadSavedData();
+            
+            // إعداد معالجات الأحداث
             setupEventListeners();
-            loadSystemData();
-            checkAuthState();
-        });
-
-        function initializeApp() {
-            // Load language preference
-            const savedLanguage = localStorage.getItem('system_language') || 'ar';
-            setLanguage(savedLanguage);
+            
+            // تطبيق اللغة الحالية
+            applyLanguage();
+            
+            // إخفاء قسم الإضافة
+            elements.addToSystemSection.classList.remove('show');
         }
 
-        function loadSystemData() {
-            // Load system settings
+        // تحميل البيانات المحفوظة
+        function loadSavedData() {
             try {
-                const savedSettings = localStorage.getItem('system_settings');
-                if (savedSettings) {
-                    systemSettings = JSON.parse(savedSettings);
-                } else {
-                    systemSettings = {
-                        appIcon: null,
-                        background: { type: 'none', url: null }
-                    };
+                // تحميل اللوحات
+                const savedPlates = localStorage.getItem('plateSystem_plates');
+                if (savedPlates) {
+                    plates = JSON.parse(savedPlates);
                 }
-                applySystemSettings();
+                
+                // تحميل الفحوصات
+                const savedSubmissions = localStorage.getItem('plateSystem_submissions');
+                if (savedSubmissions) {
+                    submissions = JSON.parse(savedSubmissions);
+                }
             } catch (error) {
-                console.error('Error loading settings:', error);
-                systemSettings = {
-                    appIcon: null,
-                    background: { type: 'none', url: null }
-                };
-            }
-            
-            // Load projects
-            const savedProjects = localStorage.getItem('system_projects');
-            if (savedProjects) {
-                systemProjects = JSON.parse(savedProjects);
-            } else {
-                systemProjects = ['مشروع النقل العام', 'مشروع التوصيل', 'مشروع البناء', 'مشروع الصيانة'];
-                localStorage.setItem('system_projects', JSON.stringify(systemProjects));
-            }
-            
-            // Load areas
-            const savedAreas = localStorage.getItem('system_areas');
-            if (savedAreas) {
-                systemAreas = JSON.parse(savedAreas);
-            } else {
-                systemAreas = ['الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'المدينة المنورة'];
-                localStorage.setItem('system_areas', JSON.stringify(systemAreas));
-            }
-            
-            // Load drivers
-            const savedDrivers = localStorage.getItem('registered_users');
-            if (savedDrivers) {
-                registeredDrivers = JSON.parse(savedDrivers);
-            } else {
-                registeredDrivers = {};
-            }
-            
-            // Load reports
-            const savedReports = localStorage.getItem('fuel_reports');
-            if (savedReports) {
-                fuelReports = JSON.parse(savedReports);
-            } else {
-                fuelReports = {};
-            }
-            
-            console.log('Loaded data:', { 
-                projects: systemProjects, 
-                areas: systemAreas,
-                drivers: Object.keys(registeredDrivers).length
-            });
-        }
-
-        function applySystemSettings() {
-            // Apply app icon
-            if (systemSettings.appIcon) {
-                const logo = document.getElementById('appLogo');
-                if (logo) {
-                    logo.innerHTML = `<img src="${systemSettings.appIcon}" alt="App Logo">`;
-                }
-            }
-            
-            // Apply background
-            applyBackgroundSettings();
-        }
-
-        function applyBackgroundSettings() {
-            const bg = systemSettings.background;
-            const body = document.body;
-            
-            // Remove existing background classes
-            body.classList.remove('background-image', 'background-video');
-            
-            // Remove existing video
-            const existingVideo = document.getElementById('backgroundVideo');
-            if (existingVideo) {
-                existingVideo.remove();
-            }
-            
-            // Clear background image
-            body.style.backgroundImage = '';
-            
-            if (bg && bg.type !== 'none' && bg.url) {
-                if (bg.type === 'video') {
-                    // Add video background
-                    const video = document.createElement('video');
-                    video.id = 'backgroundVideo';
-                    video.src = bg.url;
-                    video.autoplay = true;
-                    video.muted = true;
-                    video.loop = true;
-                    video.style.cssText = `
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                        z-index: -2;
-                        opacity: 0.3;
-                    `;
-                    document.body.appendChild(video);
-                    body.classList.add('background-video');
-                } else if (bg.type === 'image') {
-                    // Add image background
-                    body.style.backgroundImage = `url('${bg.url}')`;
-                    body.style.backgroundSize = 'cover';
-                    body.style.backgroundPosition = 'center';
-                    body.style.backgroundAttachment = 'fixed';
-                    body.classList.add('background-image');
-                }
+                console.log("No saved data found, starting fresh");
+                plates = [];
+                submissions = [];
             }
         }
 
+        // حفظ البيانات
+        function saveData() {
+            localStorage.setItem('plateSystem_plates', JSON.stringify(plates));
+            localStorage.setItem('plateSystem_submissions', JSON.stringify(submissions));
+        }
+
+        // إعداد معالجات الأحداث
         function setupEventListeners() {
-            // Language toggle
-            document.getElementById('languageToggle').addEventListener('click', toggleLanguage);
+            // أزرار الحالة
+            elements.healthyBtn.addEventListener('click', () => selectStatus('healthy'));
+            elements.damagedBtn.addEventListener('click', () => selectStatus('damaged'));
             
-            // Auth tabs
-            document.querySelectorAll('.auth-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabName = tab.dataset.tab;
-                    switchAuthTab(tabName);
-                });
+            // زر الفحص
+            elements.submitBtn.addEventListener('click', checkPlate);
+            
+            // حقل الإدخال
+            elements.plateInput.addEventListener('input', validateForm);
+            elements.plateInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !elements.submitBtn.disabled) {
+                    checkPlate();
+                }
             });
             
-            // Human verification
-            document.getElementById('adminVerification').addEventListener('click', function() {
-                this.classList.toggle('verified');
-                document.getElementById('loginBtn').disabled = !this.classList.contains('verified');
+            // زر المشرف
+            elements.adminBtn.addEventListener('click', showAdminLogin);
+            
+            // زر اللغة
+            elements.langBtn.addEventListener('click', toggleLanguage);
+            
+            // تسجيل الدخول
+            elements.loginBtn.addEventListener('click', adminLogin);
+            elements.cancelLoginBtn.addEventListener('click', hideAdminLogin);
+            
+            // إدخال كلمة المرور عند الضغط على Enter
+            elements.passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') adminLogin();
             });
             
-            document.getElementById('driverVerification').addEventListener('click', function() {
-                this.classList.toggle('verified');
-                document.getElementById('registerBtn').disabled = !this.classList.contains('verified');
-            });
+            // زر تحميل الملف
+            elements.uploadBtn.addEventListener('click', uploadExcelFile);
             
-            // Login/Register
-            document.getElementById('loginBtn').addEventListener('click', loginUser);
-            document.getElementById('registerBtn').addEventListener('click', registerUser);
+            // زر مسح البيانات
+            elements.deleteAllBtn.addEventListener('click', deleteAllData);
             
-            // Logout
-            document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+            // زر تسجيل الخروج
+            elements.adminLogoutBtn.addEventListener('click', adminLogout);
             
-            // Navigation
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const section = this.dataset.section;
-                    switchAdminSection(section);
-                });
-            });
+            // زر إضافة اللوحة للنظام
+            elements.addBtn.addEventListener('click', addPlateToSystem);
             
-            // Project and area management
-            document.getElementById('addProjectBtn').addEventListener('click', addProject);
-            document.getElementById('addAreaBtn').addEventListener('click', addArea);
-            
-            // Settings
-            document.getElementById('uploadIconBtn').addEventListener('click', () => {
-                document.getElementById('iconUpload').click();
-            });
-            
-            document.getElementById('uploadBgBtn').addEventListener('click', () => {
-                document.getElementById('bgUpload').click();
-            });
-            
-            document.getElementById('iconUpload').addEventListener('change', uploadAppIcon);
-            document.getElementById('bgUpload').addEventListener('change', uploadBackground);
-            document.getElementById('bgType').addEventListener('change', changeBackgroundType);
-            
-            // Backup
-            document.getElementById('backupBtn').addEventListener('click', createBackup);
-            document.getElementById('restoreBtn').addEventListener('click', restoreBackup);
-            
-            // Confirm modal
-            document.getElementById('confirmNo').addEventListener('click', () => {
-                document.getElementById('confirmModal').classList.remove('active');
-            });
-            
-            // Driver actions
-            document.getElementById('driverProjectSelect')?.addEventListener('change', updateDriverProject);
-            document.getElementById('driverAreaSelect')?.addEventListener('change', updateDriverArea);
-            document.getElementById('submitReportBtn')?.addEventListener('click', submitDriverReport);
-            document.getElementById('startRecordingBtn')?.addEventListener('click', startRecording);
-            document.getElementById('stopRecordingBtn')?.addEventListener('click', stopRecording);
-            
-            // Refresh button
-            document.getElementById('refreshReportsBtn')?.addEventListener('click', loadReportsData);
-            
-            // Export button
-            document.getElementById('exportExcelBtn')?.addEventListener('click', exportToExcel);
+            // زر إلغاء الإضافة
+            elements.cancelAddBtn.addEventListener('click', hideAddToSystemSection);
         }
 
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            localStorage.setItem('system_language', lang);
-            
-            // Update direction
-            document.body.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
-            
-            // Update button text
-            document.getElementById('languageText').textContent = 
-                currentLanguage === 'ar' ? 'English' : 'العربية';
-        }
-
+        // تبديل اللغة
         function toggleLanguage() {
-            setLanguage(currentLanguage === 'ar' ? 'en' : 'ar');
-            showToast('تم تغيير اللغة', 'success');
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            document.body.classList.toggle('ltr', currentLang === 'en');
+            applyLanguage();
         }
 
-        function switchAuthTab(tabName) {
-            document.querySelectorAll('.auth-tab').forEach(tab => {
-                tab.classList.toggle('active', tab.dataset.tab === tabName);
-            });
+        // تطبيق اللغة
+        function applyLanguage() {
+            const t = translations[currentLang];
             
-            document.getElementById('loginForm').style.display = tabName === 'login' ? 'block' : 'none';
-            document.getElementById('registerForm').style.display = tabName === 'register' ? 'block' : 'none';
-        }
-
-        function switchAdminSection(section) {
-            // Update buttons
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.section === section);
-            });
+            // Header
+            elements.titleText.textContent = t.title;
+            elements.adminBtnText.textContent = t.adminBtn;
+            elements.langText.textContent = currentLang === 'ar' ? 'EN' : 'عربي';
             
-            // Show section
-            const sections = ['reports', 'management', 'settings'];
-            sections.forEach(sec => {
-                const element = document.getElementById(sec + 'Section');
-                if (element) {
-                    element.style.display = sec === section ? 'block' : 'none';
-                }
-            });
+            // User Section
+            elements.sectionTitleText.textContent = t.userSectionTitle;
+            elements.plateLabel.textContent = t.plateLabel;
+            elements.plateInput.placeholder = t.platePlaceholder;
+            elements.healthyBtn.querySelector('span').textContent = t.healthy;
+            elements.damagedBtn.querySelector('span').textContent = t.damaged;
+            elements.submitBtn.querySelector('span').textContent = t.submit;
             
-            // Load section data
-            if (section === 'reports') {
-                loadReportsData();
-            } else if (section === 'management') {
-                loadManagementData();
-            } else if (section === 'settings') {
-                loadSettingsData();
-            }
-        }
-
-        function loginUser() {
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            if (!document.getElementById('adminVerification').classList.contains('verified')) {
-                showToast('الرجاء التحقق من أنك لست روبوت', 'error');
-                return;
+            // Result (if visible)
+            if (elements.resultContainer.classList.contains('show')) {
+                elements.resultContainer.querySelector('.result-title').textContent = t.resultTitle;
+                elements.resultDetails.querySelector('span').textContent = t.resultDetails;
             }
             
-            showLoading(true);
+            // Add to System Section
+            elements.addBtnText.textContent = t.addToSystemBtn;
+            elements.cancelAddBtnText.textContent = t.cancelAddBtn;
             
-            setTimeout(() => {
-                // Check admin login
-                if (username === SYSTEM_ADMIN.username && password === SYSTEM_ADMIN.password) {
-                    currentUser = { ...SYSTEM_ADMIN, id: 'admin' };
-                    userRole = 'admin';
-                    showDashboard();
-                    showToast('مرحباً أيها المدير', 'success');
-                } 
-                // Check driver login
-                else {
-                    const driver = Object.values(registeredDrivers).find(d => 
-                        d.username === username && d.password === password
-                    );
-                    
-                    if (driver) {
-                        const driverId = Object.keys(registeredDrivers).find(key => 
-                            registeredDrivers[key].username === username && 
-                            registeredDrivers[key].password === password
-                        );
-                        currentUser = {
-                            id: driverId,
-                            ...driver
-                        };
-                        userRole = 'driver';
-                        showDashboard();
-                        showToast('مرحباً ' + driver.fullName, 'success');
-                    } else {
-                        showToast('بيانات الدخول غير صحيحة', 'error');
-                    }
-                }
-                
-                showLoading(false);
-            }, 1000);
-        }
-
-        function registerUser() {
-            const fullName = document.getElementById('regName').value;
-            const username = document.getElementById('regUsername').value;
-            const password = document.getElementById('regPassword').value;
-            
-            if (!document.getElementById('driverVerification').classList.contains('verified')) {
-                showToast('الرجاء التحقق من أنك لست روبوت', 'error');
-                return;
-            }
-            
-            if (!fullName || !username || !password) {
-                showToast('الرجاء ملء جميع الحقول', 'error');
-                return;
-            }
-            
-            if (password.length < 6) {
-                showToast('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
-                return;
-            }
-            
-            // Check if username exists
-            const existingUser = Object.values(registeredDrivers).find(d => d.username === username);
-            if (existingUser) {
-                showToast('اسم المستخدم موجود بالفعل', 'error');
-                return;
-            }
-            
-            showLoading(true);
-            
-            setTimeout(() => {
-                const driverId = 'driver_' + Date.now();
-                const newDriver = {
-                    fullName,
-                    username,
-                    password,
-                    role: 'driver',
-                    createdAt: new Date().toISOString(),
-                    project: '',
-                    area: '',
-                    status: 'active'
-                };
-                
-                registeredDrivers[driverId] = newDriver;
-                localStorage.setItem('registered_users', JSON.stringify(registeredDrivers));
-                
-                currentUser = { id: driverId, ...newDriver };
-                userRole = 'driver';
-                
-                showDashboard();
-                showToast('تم إنشاء الحساب بنجاح', 'success');
-                showLoading(false);
-            }, 1000);
-        }
-
-        function checkAuthState() {
-            const lastSession = localStorage.getItem('last_session');
-            if (lastSession) {
-                try {
-                    const session = JSON.parse(lastSession);
-                    if (session.userId && session.timestamp) {
-                        const sessionAge = Date.now() - new Date(session.timestamp).getTime();
-                        if (sessionAge < 24 * 60 * 60 * 1000) { // 24 hours
-                            if (session.userId === 'admin') {
-                                currentUser = { ...SYSTEM_ADMIN, id: 'admin' };
-                                userRole = 'admin';
-                                showDashboard();
-                            } else if (registeredDrivers[session.userId]) {
-                                currentUser = { 
-                                    id: session.userId, 
-                                    ...registeredDrivers[session.userId] 
-                                };
-                                userRole = 'driver';
-                                showDashboard();
-                            }
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error restoring session:', error);
-                }
-            }
-        }
-
-        function saveSession() {
+            // Admin Section
             if (currentUser) {
-                const session = {
-                    userId: currentUser.id,
-                    timestamp: new Date().toISOString()
-                };
-                localStorage.setItem('last_session', JSON.stringify(session));
+                elements.adminSectionTitle.textContent = t.adminSectionTitle;
+                document.querySelectorAll('.stat-label')[0].textContent = t.totalPlates;
+                document.querySelectorAll('.stat-label')[1].textContent = t.healthyPlates;
+                document.querySelectorAll('.stat-label')[2].textContent = t.damagedPlates;
+                document.querySelectorAll('.stat-label')[3].textContent = t.todaySubmissions;
+                elements.uploadBtn.querySelector('span').textContent = t.uploadExcel;
+                elements.deleteAllBtn.querySelector('span').textContent = t.deleteAll;
+                elements.adminLogoutBtn.querySelector('span').textContent = t.logout;
+                
+                // Update table headers
+                const ths = document.querySelectorAll('.plates-table th');
+                ths[0].textContent = t.plateNumber;
+                ths[1].textContent = t.status;
+                ths[2].textContent = t.existsInSystem;
+                ths[3].textContent = t.addDate;
             }
+            
+            // Admin Login
+            elements.loginTitle.textContent = t.loginTitle;
+            elements.usernameInput.placeholder = t.usernamePlaceholder;
+            elements.passwordInput.placeholder = t.passwordPlaceholder;
+            elements.loginBtn.textContent = t.login;
+            elements.cancelLoginBtn.textContent = t.cancel;
+            elements.loginInfo.innerHTML = `<i class="fas fa-info-circle"></i> ${t.loginInfo}`;
+            
+            // Footer
+            elements.footer.textContent = t.footer;
         }
 
-        function showDashboard() {
-            saveSession();
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('logoutBtn').style.display = 'flex';
+        // تحديد الحالة
+        function selectStatus(status) {
+            selectedStatus = status;
             
-            // Update role badge
-            const badgeContainer = document.getElementById('roleBadgeContainer');
-            if (userRole === 'admin') {
-                document.getElementById('adminDashboard').classList.add('active');
-                document.getElementById('driverDashboard').classList.remove('active');
-                
-                badgeContainer.innerHTML = `
-                    <div class="role-badge admin">
-                        <i class="fas fa-crown"></i>
-                        <span>المدير</span>
-                    </div>
-                `;
-                
-                // Load admin data
-                loadReportsData();
-            } else {
-                document.getElementById('driverDashboard').classList.add('active');
-                document.getElementById('adminDashboard').classList.remove('active');
-                
-                badgeContainer.innerHTML = `
-                    <div class="role-badge driver">
-                        <i class="fas fa-truck"></i>
-                        <span>السائق</span>
-                    </div>
-                `;
-                
-                // Update driver info
-                updateDriverInfo();
-                setupDriverDashboard();
-            }
+            // تحديث الأزرار
+            elements.healthyBtn.classList.toggle('active', status === 'healthy');
+            elements.damagedBtn.classList.toggle('active', status === 'damaged');
+            
+            validateForm();
         }
 
-        function updateDriverInfo() {
-            if (currentUser) {
-                document.getElementById('driverName').textContent = currentUser.fullName;
-                document.getElementById('driverProject').innerHTML = 
-                    `<i class="fas fa-project-diagram"></i> المشروع: ${currentUser.project || 'لم يتم التحديد'}`;
-                document.getElementById('driverArea').innerHTML = 
-                    `<i class="fas fa-map-marker-alt"></i> المنطقة: ${currentUser.area || 'لم يتم التحديد'}`;
-            }
+        // التحقق من النموذج
+        function validateForm() {
+            const plateNumber = elements.plateInput.value.trim();
+            const isValid = plateNumber.length > 0 && selectedStatus !== null;
+            
+            elements.submitBtn.disabled = !isValid;
         }
 
-        function setupDriverDashboard() {
-            updateProjectAndAreaSelects();
-            setupPhotoCapture();
-        }
-
-        function updateProjectAndAreaSelects() {
-            const projectSelect = document.getElementById('driverProjectSelect');
-            const areaSelect = document.getElementById('driverAreaSelect');
+        // فحص اللوحة - معدل للبحث بشكل صحيح
+        function checkPlate() {
+            const plateNumber = elements.plateInput.value.trim().toUpperCase();
+            const status = selectedStatus;
             
-            if (projectSelect) {
-                projectSelect.innerHTML = '<option value="">اختر المشروع</option>' +
-                    systemProjects.map(p => `<option value="${p}">${p}</option>`).join('');
+            if (!plateNumber || !status) return;
+            
+            // تنظيف رقم اللوحة للبحث
+            const cleanedPlate = plateNumber.replace(/\s+/g, '').replace(/-/g, '');
+            
+            // البحث في اللوحات - البحث بشكل مرن
+            let exists = false;
+            let foundPlate = null;
+            
+            for (let plate of plates) {
+                // تنظيف رقم اللوحة المخزن
+                const cleanedStoredPlate = plate.number.replace(/\s+/g, '').replace(/-/g, '').toUpperCase();
                 
-                if (currentUser?.project) {
-                    projectSelect.value = currentUser.project;
-                }
-                
-                console.log('Projects loaded:', systemProjects);
-            }
-            
-            if (areaSelect) {
-                areaSelect.innerHTML = '<option value="">اختر المنطقة</option>' +
-                    systemAreas.map(a => `<option value="${a}">${a}</option>`).join('');
-                
-                if (currentUser?.area) {
-                    areaSelect.value = currentUser.area;
-                }
-                
-                console.log('Areas loaded:', systemAreas);
-            }
-        }
-
-        function updateDriverProject() {
-            const select = document.getElementById('driverProjectSelect');
-            if (currentUser && select) {
-                currentUser.project = select.value;
-                registeredDrivers[currentUser.id].project = select.value;
-                localStorage.setItem('registered_users', JSON.stringify(registeredDrivers));
-                updateDriverInfo();
-            }
-        }
-
-        function updateDriverArea() {
-            const select = document.getElementById('driverAreaSelect');
-            if (currentUser && select) {
-                currentUser.area = select.value;
-                registeredDrivers[currentUser.id].area = select.value;
-                localStorage.setItem('registered_users', JSON.stringify(registeredDrivers));
-                updateDriverInfo();
-            }
-        }
-
-        function setupPhotoCapture() {
-            const captureGrid = document.querySelector('.capture-grid');
-            if (!captureGrid) return;
-            
-            const photos = [
-                { id: 'plate', name: 'لوحة المركبة', icon: 'fa-car' },
-                { id: 'before', name: 'قبل التعبئة', icon: 'fa-gas-pump' },
-                { id: 'after', name: 'بعد التعبئة', icon: 'fa-check-circle' }
-            ];
-            
-            captureGrid.innerHTML = photos.map(photo => `
-                <div class="capture-card">
-                    <div class="capture-header">
-                        <i class="fas ${photo.icon}"></i> ${photo.name}
-                    </div>
-                    <div class="capture-preview" onclick="capturePhoto('${photo.id}')" id="${photo.id}Preview">
-                        <div class="capture-placeholder">
-                            <div class="icon"><i class="fas fa-camera"></i></div>
-                            <div>اضغط للتقاط</div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Load existing photos if any
-            photos.forEach(photo => {
-                if (capturedPhotos[photo.id]) {
-                    const preview = document.getElementById(`${photo.id}Preview`);
-                    preview.innerHTML = `<img src="${capturedPhotos[photo.id]}" alt="${photo.name}">`;
-                }
-            });
-        }
-
-        function capturePhoto(type) {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                showToast('الكاميرا غير متوفرة على هذا الجهاز', 'error');
-                return;
-            }
-            
-            // Always use front camera (user-facing)
-            const constraints = { 
-                video: { 
-                    facingMode: 'user' // هذا يختار الكاميرا الأمامية دائماً
-                } 
-            };
-            
-            navigator.mediaDevices.getUserMedia(constraints)
-                .then(stream => {
-                    const video = document.createElement('video');
-                    video.srcObject = stream;
-                    video.play();
-                    
-                    setTimeout(() => {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = video.videoWidth;
-                        canvas.height = video.videoHeight;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(video, 0, 0);
-                        
-                        const photoData = canvas.toDataURL('image/jpeg', 0.8);
-                        
-                        // Stop stream
-                        stream.getTracks().forEach(track => track.stop());
-                        
-                        // Save photo
-                        capturedPhotos[type] = photoData;
-                        
-                        // Update preview
-                        const preview = document.getElementById(`${type}Preview`);
-                        preview.innerHTML = `<img src="${photoData}" alt="${type}">`;
-                        
-                        showToast('تم التقاط الصورة بنجاح', 'success');
-                    }, 1000);
-                })
-                .catch(error => {
-                    console.error('Camera error:', error);
-                    showToast('فشل في الوصول للكاميرا الأمامية', 'error');
-                });
-        }
-
-        let mediaRecorder;
-        let recordedChunks = [];
-        let recordingStream;
-
-        function startRecording() {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                showToast('الكاميرا غير متوفرة على هذا الجهاز', 'error');
-                return;
-            }
-            
-            // Always use front camera for video recording too
-            const constraints = { 
-                video: { 
-                    facingMode: 'user' // الكاميرا الأمامية
-                }, 
-                audio: false 
-            };
-            
-            navigator.mediaDevices.getUserMedia(constraints)
-                .then(stream => {
-                    recordingStream = stream;
-                    mediaRecorder = new MediaRecorder(stream);
-                    recordedChunks = [];
-                    
-                    mediaRecorder.ondataavailable = (event) => {
-                        if (event.data.size > 0) {
-                            recordedChunks.push(event.data);
-                        }
-                    };
-                    
-                    mediaRecorder.onstop = () => {
-                        const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                        recordedVideo = URL.createObjectURL(blob);
-                        
-                        const preview = document.getElementById('videoPreview');
-                        preview.innerHTML = `
-                            <video controls autoplay style="width: 100%; height: 100%;">
-                                <source src="${recordedVideo}" type="video/webm">
-                            </video>
-                        `;
-                    };
-                    
-                    mediaRecorder.start();
-                    
-                    // Update UI
-                    document.getElementById('startRecordingBtn').style.display = 'none';
-                    document.getElementById('stopRecordingBtn').style.display = 'inline-block';
-                    
-                    // Auto stop after 10 seconds
-                    setTimeout(() => {
-                        if (mediaRecorder && mediaRecorder.state === 'recording') {
-                            stopRecording();
-                        }
-                    }, 10000);
-                    
-                    showToast('بدأ التسجيل (10 ثواني)', 'success');
-                })
-                .catch(error => {
-                    console.error('Recording error:', error);
-                    showToast('فشل في بدء التسجيل من الكاميرا الأمامية', 'error');
-                });
-        }
-
-        function stopRecording() {
-            if (mediaRecorder && mediaRecorder.state === 'recording') {
-                mediaRecorder.stop();
-                
-                // Stop all tracks
-                if (recordingStream) {
-                    recordingStream.getTracks().forEach(track => track.stop());
-                }
-                
-                // Update UI
-                document.getElementById('startRecordingBtn').style.display = 'inline-block';
-                document.getElementById('stopRecordingBtn').style.display = 'none';
-                
-                showToast('تم إيقاف التسجيل', 'success');
-            }
-        }
-
-        function submitDriverReport() {
-            if (!currentUser.project || !currentUser.area) {
-                showToast('الرجاء تحديد المشروع والمنطقة أولاً', 'error');
-                return;
-            }
-            
-            // Check if all photos are captured
-            const requiredPhotos = ['plate', 'before', 'after'];
-            const missingPhotos = requiredPhotos.filter(photo => !capturedPhotos[photo]);
-            
-            if (missingPhotos.length > 0) {
-                showToast('الرجاء التقاط جميع الصور المطلوبة', 'error');
-                return;
-            }
-            
-            showLoading(true);
-            
-            setTimeout(() => {
-                const reportId = 'report_' + Date.now();
-                const report = {
-                    id: reportId,
-                    driverId: currentUser.id,
-                    driverName: currentUser.fullName,
-                    project: currentUser.project,
-                    area: currentUser.area,
-                    fuelAmount: Math.floor(Math.random() * 100) + 50,
-                    distance: Math.floor(Math.random() * 300) + 100,
-                    photos: { ...capturedPhotos },
-                    videoUrl: recordedVideo,
-                    timestamp: new Date().toISOString(),
-                    status: 'pending'
-                };
-                
-                fuelReports[reportId] = report;
-                localStorage.setItem('fuel_reports', JSON.stringify(fuelReports));
-                
-                // Reset captured data
-                capturedPhotos = {};
-                recordedVideo = null;
-                
-                // Reset UI
-                setupPhotoCapture();
-                const videoPreview = document.getElementById('videoPreview');
-                videoPreview.innerHTML = `
-                    <div class="capture-placeholder">
-                        <div class="icon"><i class="fas fa-video"></i></div>
-                        <div>اضغط للبدء بالتسجيل</div>
-                    </div>
-                `;
-                
-                showToast('تم إرسال التقرير بنجاح', 'success');
-                showLoading(false);
-            }, 1500);
-        }
-
-        function loadReportsData() {
-            // Update stats
-            const totalReports = Object.keys(fuelReports).length;
-            const totalFuel = Object.values(fuelReports).reduce((sum, r) => sum + r.fuelAmount, 0);
-            const totalDrivers = Object.keys(registeredDrivers).filter(id => registeredDrivers[id].status === 'active').length;
-            const today = new Date().toISOString().split('T')[0];
-            const todayReports = Object.values(fuelReports).filter(r => 
-                r.timestamp.split('T')[0] === today
-            ).length;
-            
-            document.getElementById('totalReports').textContent = totalReports;
-            document.getElementById('totalFuel').textContent = totalFuel;
-            document.getElementById('totalDrivers').textContent = totalDrivers;
-            document.getElementById('todayReports').textContent = todayReports;
-            
-            // Update table
-            const tbody = document.getElementById('reportsTableBody');
-            tbody.innerHTML = '';
-            
-            Object.values(fuelReports).sort((a, b) => 
-                new Date(b.timestamp) - new Date(a.timestamp)
-            ).forEach(report => {
-                const row = document.createElement('tr');
-                const date = new Date(report.timestamp);
-                const dateStr = date.toLocaleDateString('ar-SA');
-                
-                row.innerHTML = `
-                    <td>${dateStr}</td>
-                    <td>${report.driverName}</td>
-                    <td>${report.project}</td>
-                    <td>${report.fuelAmount} لتر</td>
-                    <td>${report.distance} كم</td>
-                    <td>
-                        <span class="status-badge ${report.status === 'approved' ? 'status-normal' : 'status-suspicious'}">
-                            ${report.status === 'approved' ? 'مقبول' : report.status === 'pending' ? 'قيد المراجعة' : 'مرفوض'}
-                        </span>
-                    </td>
-                    <td>
-                        <button class="btn btn-sm btn-primary" onclick="viewReport('${report.id}')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function loadManagementData() {
-            // Load projects
-            const projectsList = document.getElementById('projectsList');
-            if (projectsList) {
-                projectsList.innerHTML = systemProjects.map((project, index) => `
-                    <tr>
-                        <td>${project}</td>
-                        <td>
-                            <button class="btn btn-sm btn-warning" onclick="editProject(${index})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteProject(${index})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-            
-            // Load areas
-            const areasList = document.getElementById('areasList');
-            if (areasList) {
-                areasList.innerHTML = systemAreas.map((area, index) => `
-                    <tr>
-                        <td>${area}</td>
-                        <td>
-                            <button class="btn btn-sm btn-warning" onclick="editArea(${index})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteArea(${index})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-            
-            // Load drivers
-            const driversList = document.getElementById('driversList');
-            if (driversList) {
-                driversList.innerHTML = Object.entries(registeredDrivers).map(([id, driver]) => `
-                    <tr>
-                        <td>${driver.fullName} (${driver.username})</td>
-                        <td>${driver.project || '--'}</td>
-                        <td>
-                            <span class="status-badge ${driver.status === 'active' ? 'status-normal' : 'status-suspicious'}">
-                                ${driver.status === 'active' ? 'نشط' : 'غير نشط'}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-warning" onclick="editDriver('${id}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-        }
-
-        function loadSettingsData() {
-            // Load current settings
-            if (systemSettings.appIcon) {
-                document.getElementById('iconPreview').innerHTML = 
-                    `<img src="${systemSettings.appIcon}" alt="App Icon">`;
-            }
-            
-            if (systemSettings.background?.url) {
-                const bgType = systemSettings.background.type;
-                document.getElementById('bgType').value = bgType;
-                
-                if (bgType === 'video') {
-                    document.getElementById('bgPreview').innerHTML = 
-                        `<video src="${systemSettings.background.url}" autoplay muted loop></video>`;
-                } else if (bgType === 'image') {
-                    document.getElementById('bgPreview').innerHTML = 
-                        `<img src="${systemSettings.background.url}" alt="Background">`;
+                if (cleanedStoredPlate === cleanedPlate) {
+                    exists = true;
+                    foundPlate = plate;
+                    break;
                 }
             }
-        }
-
-        function addProject() {
-            const input = document.getElementById('newProjectName');
-            const name = input.value.trim();
             
-            if (!name) {
-                showToast('الرجاء إدخال اسم المشروع', 'error');
-                return;
-            }
-            
-            if (systemProjects.includes(name)) {
-                showToast('هذا المشروع موجود بالفعل', 'error');
-                return;
-            }
-            
-            systemProjects.push(name);
-            localStorage.setItem('system_projects', JSON.stringify(systemProjects));
-            input.value = '';
-            loadManagementData();
-            updateProjectAndAreaSelects();
-            showToast('تم إضافة المشروع بنجاح', 'success');
-        }
-
-        function addArea() {
-            const input = document.getElementById('newAreaName');
-            const name = input.value.trim();
-            
-            if (!name) {
-                showToast('الرجاء إدخال اسم المنطقة', 'error');
-                return;
-            }
-            
-            if (systemAreas.includes(name)) {
-                showToast('هذه المنطقة موجودة بالفعل', 'error');
-                return;
-            }
-            
-            systemAreas.push(name);
-            localStorage.setItem('system_areas', JSON.stringify(systemAreas));
-            input.value = '';
-            loadManagementData();
-            updateProjectAndAreaSelects();
-            showToast('تم إضافة المنطقة بنجاح', 'success');
-        }
-
-        function editProject(index) {
-            const newName = prompt('أدخل الاسم الجديد:', systemProjects[index]);
-            if (newName && newName.trim()) {
-                systemProjects[index] = newName.trim();
-                localStorage.setItem('system_projects', JSON.stringify(systemProjects));
-                loadManagementData();
-                updateProjectAndAreaSelects();
-                showToast('تم تعديل المشروع', 'success');
-            }
-        }
-
-        function deleteProject(index) {
-            showConfirm('هل تريد حذف هذا المشروع؟', () => {
-                systemProjects.splice(index, 1);
-                localStorage.setItem('system_projects', JSON.stringify(systemProjects));
-                loadManagementData();
-                updateProjectAndAreaSelects();
-                showToast('تم حذف المشروع', 'success');
-            });
-        }
-
-        function editArea(index) {
-            const newName = prompt('أدخل الاسم الجديد:', systemAreas[index]);
-            if (newName && newName.trim()) {
-                systemAreas[index] = newName.trim();
-                localStorage.setItem('system_areas', JSON.stringify(systemAreas));
-                loadManagementData();
-                updateProjectAndAreaSelects();
-                showToast('تم تعديل المنطقة', 'success');
-            }
-        }
-
-        function deleteArea(index) {
-            showConfirm('هل تريد حذف هذه المنطقة؟', () => {
-                systemAreas.splice(index, 1);
-                localStorage.setItem('system_areas', JSON.stringify(systemAreas));
-                loadManagementData();
-                updateProjectAndAreaSelects();
-                showToast('تم حذف المنطقة', 'success');
-            });
-        }
-
-        function editDriver(driverId) {
-            const driver = registeredDrivers[driverId];
-            if (!driver) return;
-            
-            const newProject = prompt('أدخل المشروع الجديد للسائق:', driver.project || '');
-            if (newProject !== null) {
-                driver.project = newProject.trim();
-                registeredDrivers[driverId] = driver;
-                localStorage.setItem('registered_users', JSON.stringify(registeredDrivers));
-                loadManagementData();
-                showToast('تم تحديث بيانات السائق', 'success');
-            }
-        }
-
-        function uploadAppIcon(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            if (!file.type.startsWith('image/')) {
-                showToast('الرجاء اختيار ملف صورة', 'error');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                systemSettings.appIcon = e.target.result;
-                localStorage.setItem('system_settings', JSON.stringify(systemSettings));
-                
-                document.getElementById('iconPreview').innerHTML = 
-                    `<img src="${e.target.result}" alt="App Icon">`;
-                
-                // Update logo
-                document.getElementById('appLogo').innerHTML = 
-                    `<img src="${e.target.result}" alt="App Logo">`;
-                
-                showToast('تم تحديث أيقونة التطبيق', 'success');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function uploadBackground(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const bgType = document.getElementById('bgType').value;
-            
-            if (bgType === 'video' && !file.type.startsWith('video/')) {
-                showToast('الرجاء اختيار ملف فيديو', 'error');
-                return;
-            }
-            
-            if (bgType === 'image' && !file.type.startsWith('image/')) {
-                showToast('الرجاء اختيار ملف صورة', 'error');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                systemSettings.background = {
-                    type: bgType,
-                    url: e.target.result
-                };
-                localStorage.setItem('system_settings', JSON.stringify(systemSettings));
-                
-                if (bgType === 'video') {
-                    document.getElementById('bgPreview').innerHTML = 
-                        `<video src="${e.target.result}" autoplay muted loop></video>`;
-                } else {
-                    document.getElementById('bgPreview').innerHTML = 
-                        `<img src="${e.target.result}" alt="Background">`;
-                }
-                
-                applyBackgroundSettings();
-                showToast('تم تحديث الخلفية', 'success');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function changeBackgroundType() {
-            const bgType = document.getElementById('bgType').value;
-            
-            if (bgType === 'none') {
-                systemSettings.background = { type: 'none', url: null };
-                localStorage.setItem('system_settings', JSON.stringify(systemSettings));
-                
-                document.getElementById('bgPreview').innerHTML = `
-                    <div class="upload-placeholder">
-                        <i class="fas fa-upload"></i>
-                        <div>انقر للرفع</div>
-                    </div>
-                `;
-                
-                applyBackgroundSettings();
-                showToast('تم إزالة الخلفية', 'success');
-            }
-        }
-
-        function createBackup() {
-            const backupData = {
+            // حفظ معلومات اللوحة الحالية
+            currentPlateCheck = {
+                plateNumber,
+                cleanedPlate,
+                status,
+                exists,
+                foundPlate,
                 timestamp: new Date().toISOString(),
-                version: '1.0',
-                data: {
-                    settings: systemSettings,
-                    projects: systemProjects,
-                    areas: systemAreas,
-                    drivers: registeredDrivers,
-                    reports: fuelReports
-                }
+                date: new Date().toISOString().split('T')[0]
             };
             
-            const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `fuel_system_backup_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            // حفظ الفحص
+            submissions.push(currentPlateCheck);
+            saveData();
             
-            showToast('تم إنشاء النسخة الاحتياطية', 'success');
+            // عرض النتيجة
+            showResult(exists);
+            
+            // إظهار خيار الإضافة إذا لم تكن موجودة
+            if (!exists) {
+                showAddToSystemSection();
+            } else {
+                hideAddToSystemSection();
+            }
+            
+            // تحديث الإحصائيات إذا كان المشرف مسجلاً
+            if (currentUser) {
+                updateStats();
+                updatePlatesTable();
+            }
         }
 
-        function restoreBackup() {
-            const fileInput = document.getElementById('backupFile');
-            const file = fileInput.files[0];
+        // عرض النتيجة
+        function showResult(exists) {
+            const t = translations[currentLang];
+            
+            let resultHTML = '';
+            if (exists) {
+                resultHTML = `
+                    <i class="fas fa-check-circle status-exists"></i>
+                    <span class="status-exists">${t.exists} ✔</span>
+                    <p style="margin-top: 10px; color: #27ae60;">
+                        <i class="fas fa-check"></i> اللوحة موجودة في النظام
+                    </p>
+                `;
+            } else {
+                resultHTML = `
+                    <i class="fas fa-times-circle status-not-exists"></i>
+                    <span class="status-not-exists">${t.notExists} ✖</span>
+                    <p style="margin-top: 10px; color: #e74c3c;">
+                        <i class="fas fa-times"></i> اللوحة غير موجودة في النظام
+                    </p>
+                `;
+            }
+            
+            elements.resultStatus.innerHTML = resultHTML;
+            elements.resultContainer.classList.add('show');
+            
+            // إضافة زر للفحص مرة أخرى
+            const checkAgainBtn = document.createElement('button');
+            checkAgainBtn.className = 'submit-btn mt-3';
+            checkAgainBtn.innerHTML = `<i class="fas fa-redo"></i> <span>${t.checkAgain}</span>`;
+            checkAgainBtn.onclick = () => {
+                elements.resultContainer.classList.remove('show');
+                elements.plateInput.focus();
+            };
+            
+            // إزالة الزر السابق إذا كان موجوداً
+            const existingBtn = elements.resultContainer.querySelector('button');
+            if (existingBtn) {
+                existingBtn.remove();
+            }
+            
+            elements.resultContainer.appendChild(checkAgainBtn);
+        }
+
+        // إظهار قسم إضافة اللوحة للنظام
+        function showAddToSystemSection() {
+            const t = translations[currentLang];
+            elements.addToSystemTitle.textContent = t.addToSystemTitle;
+            elements.addToSystemSection.classList.add('show');
+        }
+
+        // إخفاء قسم إضافة اللوحة للنظام
+        function hideAddToSystemSection() {
+            elements.addToSystemSection.classList.remove('show');
+        }
+
+        // إضافة اللوحة للنظام
+        function addPlateToSystem() {
+            if (!currentPlateCheck) return;
+            
+            const t = translations[currentLang];
+            
+            // التحقق من عدم تكرار اللوحة
+            const alreadyExists = plates.some(plate => {
+                const cleanedStoredPlate = plate.number.replace(/\s+/g, '').replace(/-/g, '').toUpperCase();
+                return cleanedStoredPlate === currentPlateCheck.cleanedPlate;
+            });
+            
+            if (alreadyExists) {
+                alert(t.alreadyInSystem);
+                hideAddToSystemSection();
+                return;
+            }
+            
+            // إضافة اللوحة للنظام
+            plates.push({
+                number: currentPlateCheck.plateNumber,
+                status: currentPlateCheck.status,
+                timestamp: new Date().toISOString(),
+                addedFromUser: true,
+                addedDate: new Date().toISOString().split('T')[0]
+            });
+            
+            // تحديث حالة اللوحة الحالية
+            currentPlateCheck.exists = true;
+            
+            // حفظ البيانات
+            saveData();
+            
+            // تحديث النتيجة
+            showResult(true);
+            hideAddToSystemSection();
+            
+            // تحديث الواجهة إذا كان المشرف مسجلاً
+            if (currentUser) {
+                updatePlatesTable();
+                updateStats();
+            }
+            
+            // إظهار رسالة تأكيد
+            alert(t.addedSuccessfully);
+        }
+
+        // تحميل ملف Excel - معدل لمعالجة الملف بشكل صحيح
+        function uploadExcelFile() {
+            const file = elements.excelFile.files[0];
+            const t = translations[currentLang];
             
             if (!file) {
-                showToast('الرجاء اختيار ملف النسخة الاحتياطية', 'error');
+                alert(t.fileRequired);
+                return;
+            }
+            
+            // التحقق من صيغة الملف
+            const validExtensions = ['.xlsx', '.xls', '.csv'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!validExtensions.includes(fileExtension)) {
+                alert(t.fileFormatError);
                 return;
             }
             
             const reader = new FileReader();
+            
             reader.onload = function(e) {
                 try {
-                    const backupData = JSON.parse(e.target.result);
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
                     
-                    // Restore data
-                    if (backupData.data.settings) {
-                        systemSettings = backupData.data.settings;
-                        localStorage.setItem('system_settings', JSON.stringify(systemSettings));
+                    // الحصول على اسم الورقة الأولى
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // تحويل الورقة إلى JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    if (jsonData.length === 0) {
+                        alert(t.noDataInFile);
+                        return;
                     }
                     
-                    if (backupData.data.projects) {
-                        systemProjects = backupData.data.projects;
-                        localStorage.setItem('system_projects', JSON.stringify(systemProjects));
+                    let addedCount = 0;
+                    
+                    // معالجة البيانات
+                    jsonData.forEach((row, index) => {
+                        // تجاهل الصف الفارغ
+                        if (!row || row.length === 0) return;
+                        
+                        // أخذ أول عمود فقط
+                        if (row[0]) {
+                            let plateNumber = String(row[0]).trim().toUpperCase();
+                            
+                            if (plateNumber && plateNumber.length >= 2) {
+                                // تنظيف رقم اللوحة
+                                const cleanedPlate = plateNumber.replace(/\s+/g, '').replace(/-/g, '');
+                                
+                                // التحقق من عدم تكرار اللوحة
+                                const isDuplicate = plates.some(plate => {
+                                    const cleanedStoredPlate = plate.number.replace(/\s+/g, '').replace(/-/g, '').toUpperCase();
+                                    return cleanedStoredPlate === cleanedPlate;
+                                });
+                                
+                                if (!isDuplicate) {
+                                    plates.push({
+                                        number: plateNumber,
+                                        timestamp: new Date().toISOString(),
+                                        addedFromExcel: true
+                                    });
+                                    addedCount++;
+                                }
+                            }
+                        }
+                    });
+                    
+                    // حفظ البيانات
+                    saveData();
+                    
+                    // تحديث الواجهة
+                    if (currentUser) {
+                        updatePlatesTable();
+                        updateStats();
                     }
                     
-                    if (backupData.data.areas) {
-                        systemAreas = backupData.data.areas;
-                        localStorage.setItem('system_areas', JSON.stringify(systemAreas));
-                    }
+                    // إعادة تعيين حقل الملف
+                    elements.excelFile.value = '';
                     
-                    if (backupData.data.drivers) {
-                        registeredDrivers = backupData.data.drivers;
-                        localStorage.setItem('registered_users', JSON.stringify(registeredDrivers));
-                    }
+                    alert(`${t.fileProcessed} - ${addedCount} ${currentLang === 'ar' ? 'لوحة مضافة' : 'plates added'}`);
                     
-                    if (backupData.data.reports) {
-                        fuelReports = backupData.data.reports;
-                        localStorage.setItem('fuel_reports', JSON.stringify(fuelReports));
-                    }
-                    
-                    // Reload data
-                    loadSystemData();
-                    showToast('تم استعادة النسخة الاحتياطية', 'success');
-                    
-                    // Reload page after 1 second
-                    setTimeout(() => location.reload(), 1000);
                 } catch (error) {
-                    console.error('Restore error:', error);
-                    showToast('خطأ في ملف النسخة الاحتياطية', 'error');
+                    console.error("Error processing file:", error);
+                    alert(t.error);
                 }
             };
-            reader.readAsText(file);
+            
+            reader.onerror = function() {
+                alert(t.error);
+            };
+            
+            reader.readAsArrayBuffer(file);
         }
 
-        function exportToExcel() {
-            try {
-                const reports = Object.values(fuelReports).map(report => ({
-                    'التاريخ': new Date(report.timestamp).toLocaleDateString('ar-SA'),
-                    'السائق': report.driverName,
-                    'المشروع': report.project,
-                    'المنطقة': report.area,
-                    'كمية الوقود (لتر)': report.fuelAmount,
-                    'المسافة (كم)': report.distance,
-                    'الحالة': report.status === 'approved' ? 'مقبول' : report.status === 'pending' ? 'قيد المراجعة' : 'مرفوض'
-                }));
-                
-                const ws = XLSX.utils.json_to_sheet(reports);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'تقارير الوقود');
-                
-                const fileName = `تقارير_الوقود_${new Date().toISOString().split('T')[0]}.xlsx`;
-                XLSX.writeFile(wb, fileName);
-                
-                showToast('تم تصدير البيانات إلى Excel', 'success');
-            } catch (error) {
-                console.error('Export error:', error);
-                showToast('فشل في تصدير البيانات', 'error');
+        // مسح جميع البيانات
+        function deleteAllData() {
+            const t = translations[currentLang];
+            
+            if (!confirm(t.deleteConfirm)) {
+                return;
             }
+            
+            // مسح البيانات
+            plates = [];
+            submissions = [];
+            
+            // مسح التخزين المحلي
+            localStorage.removeItem('plateSystem_plates');
+            localStorage.removeItem('plateSystem_submissions');
+            
+            // تحديث الواجهة
+            if (currentUser) {
+                updatePlatesTable();
+                updateStats();
+            }
+            
+            alert(t.deleteSuccess);
         }
 
-        function viewReport(reportId) {
-            const report = fuelReports[reportId];
-            if (!report) return;
+        // تحديث جدول اللوحات
+        function updatePlatesTable() {
+            const t = translations[currentLang];
             
-            const modal = document.getElementById('confirmModal');
-            const message = document.getElementById('confirmMessage');
+            if (plates.length === 0) {
+                elements.platesTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center">${t.noPlates}</td>
+                    </tr>
+                `;
+                return;
+            }
             
-            const date = new Date(report.timestamp);
-            const dateStr = date.toLocaleDateString('ar-SA') + ' ' + date.toLocaleTimeString('ar-SA');
-            
-            let photosHtml = '';
-            if (report.photos) {
-                photosHtml = '<br><strong>الصور المرفوعة:</strong><br>';
-                for (const [key, photo] of Object.entries(report.photos)) {
-                    photosHtml += `<img src="${photo}" style="width: 100px; height: 100px; margin: 5px; border: 1px solid #ccc;" alt="${key}">`;
+            let tableHTML = '';
+            plates.forEach((plate, index) => {
+                const date = plate.timestamp ? new Date(plate.timestamp).toLocaleDateString(currentLang === 'ar' ? 'ar-SA' : 'en-US') : 'N/A';
+                
+                tableHTML += `
+                    <tr>
+                        <td>${plate.number}</td>
+                        <td>
+                            <span class="status-badge ${plate.status === 'damaged' ? 'status-damaged' : 'status-healthy'}">
+                                ${plate.status === 'damaged' ? t.damaged : t.healthy}
+                            </span>
+                        </td>
+                        <td class="exists-badge">
+                            ✔
+                        </td>
+                        <td>${date}</td>
+                    </tr>
+                `;
+                
+                // عرض 50 لوحة فقط للسرعة
+                if (index >= 50) {
+                    return;
                 }
-            }
-            
-            let videoHtml = '';
-            if (report.videoUrl) {
-                videoHtml = '<br><strong>الفيديو المرفوع:</strong><br>' +
-                           `<video controls style="width: 100%; max-height: 200px; margin-top: 10px;">
-                                <source src="${report.videoUrl}" type="video/webm">
-                            </video>`;
-            }
-            
-            message.innerHTML = `
-                <strong>تفاصيل التقرير:</strong><br>
-                السائق: ${report.driverName}<br>
-                المشروع: ${report.project}<br>
-                المنطقة: ${report.area}<br>
-                كمية الوقود: ${report.fuelAmount} لتر<br>
-                المسافة: ${report.distance} كم<br>
-                التاريخ: ${dateStr}<br>
-                الحالة: ${report.status === 'approved' ? 'مقبول' : report.status === 'pending' ? 'قيد المراجعة' : 'مرفوض'}
-                ${photosHtml}
-                ${videoHtml}
-            `;
-            
-            document.getElementById('confirmYes').style.display = 'none';
-            document.getElementById('confirmNo').textContent = 'إغلاق';
-            
-            modal.classList.add('active');
-        }
-
-        function showConfirm(message, callback) {
-            const modal = document.getElementById('confirmModal');
-            const confirmMessage = document.getElementById('confirmMessage');
-            const yesBtn = document.getElementById('confirmYes');
-            const noBtn = document.getElementById('confirmNo');
-            
-            confirmMessage.textContent = message;
-            yesBtn.style.display = 'inline-block';
-            noBtn.textContent = 'إلغاء';
-            
-            yesBtn.onclick = function() {
-                modal.classList.remove('active');
-                if (callback) callback();
-            };
-            
-            noBtn.onclick = function() {
-                modal.classList.remove('active');
-            };
-            
-            modal.classList.add('active');
-        }
-
-        function logoutUser() {
-            showConfirm('هل تريد تسجيل الخروج؟', () => {
-                currentUser = null;
-                userRole = null;
-                
-                document.getElementById('roleBadgeContainer').innerHTML = '';
-                document.getElementById('logoutBtn').style.display = 'none';
-                document.getElementById('adminDashboard').classList.remove('active');
-                document.getElementById('driverDashboard').classList.remove('active');
-                document.getElementById('authScreen').style.display = 'block';
-                
-                // Clear session
-                localStorage.removeItem('last_session');
-                
-                showToast('تم تسجيل الخروج', 'success');
             });
+            
+            if (plates.length > 50) {
+                tableHTML += `
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            ${currentLang === 'ar' ? '... وعرض ' : '... and '} ${plates.length - 50} ${currentLang === 'ar' ? 'لوحة أخرى' : 'more plates'}
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            elements.platesTableBody.innerHTML = tableHTML;
         }
 
-        function showToast(message, type = 'info') {
-            const toastContainer = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
+        // تحديث الإحصائيات
+        function updateStats() {
+            // إجمالي اللوحات
+            elements.totalPlates.textContent = plates.length;
             
-            const icons = {
-                success: '<i class="fas fa-check-circle"></i>',
-                error: '<i class="fas fa-exclamation-circle"></i>',
-                warning: '<i class="fas fa-exclamation-triangle"></i>',
-                info: '<i class="fas fa-info-circle"></i>'
-            };
+            // الفحوصات السليمة
+            const healthyCount = submissions.filter(sub => sub.status === 'healthy').length;
+            elements.healthyPlates.textContent = healthyCount;
             
-            toast.innerHTML = `
-                ${icons[type] || icons.info}
-                <span>${message}</span>
-            `;
+            // الفحوصات التالفة
+            const damagedCount = submissions.filter(sub => sub.status === 'damaged').length;
+            elements.damagedPlates.textContent = damagedCount;
             
-            toastContainer.appendChild(toast);
-            
-            setTimeout(() => toast.classList.add('show'), 10);
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            // فحوصات اليوم
+            const today = new Date().toISOString().split('T')[0];
+            const todayCount = submissions.filter(sub => sub.date === today).length;
+            elements.todaySubmissions.textContent = todayCount;
         }
 
-        function showLoading(show) {
-            document.getElementById('loadingSpinner').classList.toggle('active', show);
+        // عرض تسجيل دخول المشرف
+        function showAdminLogin() {
+            elements.adminLogin.classList.add('show');
+            elements.usernameInput.focus();
         }
 
-        // Export functions to window
-        window.capturePhoto = capturePhoto;
-        window.editProject = editProject;
-        window.deleteProject = deleteProject;
-        window.editArea = editArea;
-        window.deleteArea = deleteArea;
-        window.editDriver = editDriver;
-        window.viewReport = viewReport;
+        // إخفاء تسجيل دخول المشرف
+        function hideAdminLogin() {
+            elements.adminLogin.classList.remove('show');
+            elements.usernameInput.value = '';
+            elements.passwordInput.value = '';
+        }
+
+        // تسجيل دخول المشرف
+        function adminLogin() {
+            const username = elements.usernameInput.value.trim();
+            const password = elements.passwordInput.value;
+            
+            if ((username === 'مهند' || username === 'mohand') && password === '123321') {
+                currentUser = { username: 'مهند' };
+                
+                // إخفاء نافذة التسجيل
+                hideAdminLogin();
+                
+                // عرض قسم المشرف
+                elements.adminSection.classList.remove('hidden');
+                document.querySelector('.admin-dashboard').classList.add('show');
+                
+                // تحديث البيانات
+                updatePlatesTable();
+                updateStats();
+                
+                // إخفاء زر المشرف
+                elements.adminBtn.style.display = 'none';
+                
+                // رسالة تأكيد
+                alert(translations[currentLang].adminOnly);
+            } else {
+                alert('اسم المستخدم أو كلمة المرور غير صحيحة');
+            }
+        }
+
+        // تسجيل خروج المشرف
+        function adminLogout() {
+            currentUser = null;
+            
+            // إخفاء قسم المشرف
+            elements.adminSection.classList.add('hidden');
+            document.querySelector('.admin-dashboard').classList.remove('show');
+            
+            // إظهار زر المشرف
+            elements.adminBtn.style.display = 'flex';
+        }
+
+        // بدء تشغيل التطبيق
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
